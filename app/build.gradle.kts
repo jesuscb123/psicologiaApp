@@ -67,6 +67,7 @@ dependencies {
     // Es recomendable usar las versiones KTX para proyectos en Kotlin.
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation(libs.firebase.auth.ktx)
 
     // Dependencias de Testing
     testImplementation(libs.junit)

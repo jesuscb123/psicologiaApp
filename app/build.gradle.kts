@@ -1,6 +1,4 @@
-
-plugins {
-    alias(libs.plugins.android.application)
+plugins {alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
@@ -55,19 +53,15 @@ dependencies {
     // Dependencia para Google Sign-In (One Tap)
     implementation(libs.play.services.auth)
 
-    // Dependencia para Navegación en Compose
-    implementation("androidx.navigation:navigation-compose:2.8.3")
+    // Dependencia para Navegación en Compose (ahora desde libs)
+    implementation(libs.navigation.compose)
 
-    // --- BLOQUE DE FIREBASE ---
+    // --- BLOQUE DE FIREBASE (ahora desde libs) ---
     // 1. Importa el BoM (Bill of Materials) de Firebase.
-    // Esto asegura que todas las librerías de Firebase sean compatibles entre sí.
-    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation(platform(libs.firebase.bom))
 
-    // 2. Añade las dependencias de Firebase que necesites SIN especificar la versión.
-    // Es recomendable usar las versiones KTX para proyectos en Kotlin.
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation(libs.firebase.auth.ktx)
+    // 2. Añade las dependencias de Firebase usando los alias del catálogo.
+    implementation(libs.firebase.auth)
 
     // Dependencias de Testing
     testImplementation(libs.junit)

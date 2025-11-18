@@ -1,3 +1,4 @@
+
 [versions]
 agp = "8.10.1"
 kotlin = "2.0.21"
@@ -8,9 +9,16 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2024.09.00"
-# firebaseAuthKtx = "24.0.1"
 playServicesAuth = "21.4.0"
-firebaseAuthKtx = "24.0.1"
+services = "4.4.4"
+
+# --- Versiones añadidas ---
+# Versión para Firebase BoM
+firebaseBom = "34.5.0"
+# Versión para Navigation Compose
+navigationCompose = "2.8.3"
+
+# Ya no necesitas firebaseAuthKtx aquí, el BoM se encargará de la versión.
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,12 +35,20 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-# firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+
+# --- Librerías añadidas y reestructuradas ---
+
+# 1. Navigation Compose
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# 2. Firebase BoM (Bill of Materials) - para gestionar todas las versiones de Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+googleServices = { id = "com.google.gms.google-services", version.ref = "services" }

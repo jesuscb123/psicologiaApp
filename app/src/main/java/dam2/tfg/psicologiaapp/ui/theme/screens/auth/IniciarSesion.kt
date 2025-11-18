@@ -57,7 +57,7 @@ fun IniciarSesionPantalla(navController: NavController, auth: AuthManager){
 suspend fun iniciarSesion(email: String, password: String, auth: AuthManager, navController: NavController, context: Context){
     if (auth.iniciarSesionConEmailPassword(email, password)){
         Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_LONG).show()
-        navController.navigate("home")
+        navController.navigate("iniciarSesion")
     }
 }
 

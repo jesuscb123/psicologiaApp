@@ -51,5 +51,7 @@ private suspend fun registro(email: String, password: String, auth: AuthManager,
     if (auth.crearUsuarioConEmailPassword(email, password)) {
         Toast.makeText(context, "Registro exitoso", Toast.LENGTH_LONG).show()
         navController.popBackStack()
+    }else{
+        Toast.makeText(context, "registro fallido", Toast.LENGTH_SHORT).show()
     }
 }

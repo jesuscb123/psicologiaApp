@@ -43,12 +43,12 @@ class AuthManager(private val context: Context) {
     fun cerrarSesion(): Boolean {
         return try {
             auth.signOut()
-            signInClient.signOut()
+           signInClient.signOut()
             Log.d("AuthManager", "Sesión cerrada correctamente.")
             true
         } catch (e: Exception) {
             Log.e("AuthManager", "Error al cerrar sesión", e)
-            false // Devuelve false si algo falla
+            false
         }
     }
 

@@ -1,7 +1,10 @@
-plugins {alias(libs.plugins.android.application)
+plugins {
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.kotlinKapt)
 }
 
 android {
@@ -40,7 +43,7 @@ android {
 }
 
 dependencies {
-    // Dependencias básicas de AndroidX y Compose
+    // --- AndroidX + Compose (ya lo tienes) ---
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -50,20 +53,35 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Dependencia para Google Sign-In (One Tap)
-    implementation(libs.play.services.auth)
+    // --- Coroutines + ViewModel ---
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    // Dependencia para Navegación en Compose (ahora desde libs)
+    // --- Google Sign-In + Navigation ---
+    implementation(libs.play.services.auth)
     implementation(libs.navigation.compose)
 
-    // --- BLOQUE DE FIREBASE (ahora desde libs) ---
-    // 1. Importa el BoM (Bill of Materials) de Firebase.
+    // --- Firebase ---
     implementation(platform(libs.firebase.bom))
-
-    // 2. Añade las dependencias de Firebase usando los alias del catálogo.
     implementation(libs.firebase.auth)
 
-    // Dependencias de Testing
+    // --- Retrofit + OkHttp ---
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+
+    // --- ROOM ---
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    // --- HILT ---
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // --- Testing ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

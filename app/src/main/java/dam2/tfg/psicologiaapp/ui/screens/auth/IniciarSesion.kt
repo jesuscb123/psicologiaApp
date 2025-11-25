@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.ui.theme.screens.auth
+package dam2.tfg.psicologiaapp.ui.screens.auth
 
 import android.content.Context
 import android.widget.Toast

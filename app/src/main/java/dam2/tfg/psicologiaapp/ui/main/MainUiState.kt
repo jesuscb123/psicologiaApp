@@ -1,7 +1,6 @@
 package dam2.tfg.psicologiaapp.ui.main
 
-import dam2.tfg.psicologiaapp.domain.model.Usuario
-import dam2.tfg.psicologiaapp.domain.usecase.GetUsuariosRegistrados
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 sealed class MainUiState {
     object Loading : MainUiState()

@@ -2,7 +2,7 @@ package dam2.tfg.psicologiaapp.core.di
 
 import android.content.Context
 import androidx.room.Room
-import dam2.tfg.psicologiaapp.data.local.dao.UsuarioDao
+import dam2.tfg.psicologiaapp.usuario.data.local.dao.UsuarioDao
 import dam2.tfg.psicologiaapp.data.local.db.AppDataBase
 import dagger.Module
 import dagger.Provides

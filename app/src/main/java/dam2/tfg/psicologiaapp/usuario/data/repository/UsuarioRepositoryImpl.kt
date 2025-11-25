@@ -1,15 +1,15 @@
-package dam2.tfg.psicologiaapp.data.repository
+package dam2.tfg.psicologiaapp.usuario.data.repository
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import dam2.tfg.psicologiaapp.data.local.dao.UsuarioDao
 import dam2.tfg.psicologiaapp.data.remote.api.PsicologiaApi
-import dam2.tfg.psicologiaapp.data.remote.dto.CrearUsuarioRequest
-import dam2.tfg.psicologiaapp.data.toDomain
-import dam2.tfg.psicologiaapp.data.toEntity
-import dam2.tfg.psicologiaapp.domain.model.Usuario
-import dam2.tfg.psicologiaapp.domain.repository.UsuarioRepository
+import dam2.tfg.psicologiaapp.usuario.data.dto.CrearUsuarioRequest
+import dam2.tfg.psicologiaapp.usuario.toDomain
+import dam2.tfg.psicologiaapp.usuario.toEntity
+import dam2.tfg.psicologiaapp.usuario.data.local.dao.UsuarioDao
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
+import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import javax.inject.Inject
 
 class UsuarioRepositoryImpl @Inject constructor(

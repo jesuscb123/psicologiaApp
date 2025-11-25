@@ -1,6 +1,6 @@
-package dam2.tfg.psicologiaapp.domain.repository
+package dam2.tfg.psicologiaapp.usuario.domain.repository
 
-import dam2.tfg.psicologiaapp.domain.model.Usuario
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 interface UsuarioRepository {
 

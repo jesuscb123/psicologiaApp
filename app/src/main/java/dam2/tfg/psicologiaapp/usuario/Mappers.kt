@@ -1,8 +1,8 @@
-package dam2.tfg.psicologiaapp.data
+package dam2.tfg.psicologiaapp.usuario
 
-import dam2.tfg.psicologiaapp.data.local.entity.UsuarioEntity
-import dam2.tfg.psicologiaapp.data.remote.dto.UsuarioDto
-import dam2.tfg.psicologiaapp.domain.model.Usuario
+import dam2.tfg.psicologiaapp.usuario.data.local.entity.UsuarioEntity
+import dam2.tfg.psicologiaapp.usuario.data.dto.UsuarioDto
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 
 fun UsuarioDto.toDomain() = Usuario(

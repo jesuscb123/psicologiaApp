@@ -3,7 +3,7 @@ package dam2.tfg.psicologiaapp.ui.screens.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import dam2.tfg.psicologiaapp.domain.usecase.RegistrarUsuarioEnBackendUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.RegistrarUsuarioEnBackendUseCase
 import dam2.tfg.psicologiaapp.utils.auth.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

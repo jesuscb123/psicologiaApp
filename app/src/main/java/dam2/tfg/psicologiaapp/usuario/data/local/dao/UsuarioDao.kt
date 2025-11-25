@@ -1,10 +1,10 @@
-package dam2.tfg.psicologiaapp.data.local.dao
+package dam2.tfg.psicologiaapp.usuario.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import dam2.tfg.psicologiaapp.data.local.entity.UsuarioEntity
+import dam2.tfg.psicologiaapp.usuario.data.local.entity.UsuarioEntity
 
 @Dao
 interface UsuarioDao {

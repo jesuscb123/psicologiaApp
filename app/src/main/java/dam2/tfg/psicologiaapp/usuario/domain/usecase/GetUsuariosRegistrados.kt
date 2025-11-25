@@ -1,7 +1,7 @@
-package dam2.tfg.psicologiaapp.domain.usecase
+package dam2.tfg.psicologiaapp.usuario.domain.usecase
 
-import dam2.tfg.psicologiaapp.domain.model.Usuario
-import dam2.tfg.psicologiaapp.domain.repository.UsuarioRepository
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
+import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import javax.inject.Inject
 
 class GetUsuariosRegistrados @Inject constructor(

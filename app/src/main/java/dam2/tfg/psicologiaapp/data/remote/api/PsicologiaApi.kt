@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.data.remote.api
 
-import dam2.tfg.psicologiaapp.data.remote.dto.CrearUsuarioRequest
-import dam2.tfg.psicologiaapp.data.remote.dto.UsuarioDto
+import dam2.tfg.psicologiaapp.usuario.data.dto.CrearUsuarioRequest
+import dam2.tfg.psicologiaapp.usuario.data.dto.UsuarioDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header

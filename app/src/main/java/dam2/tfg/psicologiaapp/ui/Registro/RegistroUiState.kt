@@ -1,6 +1,6 @@
 package dam2.tfg.psicologiaapp.ui.screens.auth
 
-import dam2.tfg.psicologiaapp.domain.model.Usuario
+import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 sealed interface RegistroUiState {
     object Idle : RegistroUiState

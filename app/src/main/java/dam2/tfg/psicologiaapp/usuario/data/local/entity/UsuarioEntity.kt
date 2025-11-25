@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.data.local.entity
+package dam2.tfg.psicologiaapp.usuario.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.domain.model
+package dam2.tfg.psicologiaapp.usuario.domain.model
 
 data class Usuario(
     val idBackend: Long?,

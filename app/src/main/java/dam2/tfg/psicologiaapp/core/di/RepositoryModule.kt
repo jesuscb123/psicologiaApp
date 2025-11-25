@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.core.di
 
-import dam2.tfg.psicologiaapp.data.repository.UsuarioRepositoryImpl
-import dam2.tfg.psicologiaapp.domain.repository.UsuarioRepository
+import dam2.tfg.psicologiaapp.usuario.data.repository.UsuarioRepositoryImpl
+import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

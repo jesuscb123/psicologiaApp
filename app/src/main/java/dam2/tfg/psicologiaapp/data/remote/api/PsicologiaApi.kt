@@ -9,15 +9,15 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface PsicologiaApi {
-    @POST("api/usuarios")
+    @POST("/api/usuarios")
     suspend fun crearUsuario(
         @Header("Authorization") authHeader: String,
         @Body request: CrearUsuarioRequest
     ): UsuarioDto
-    @GET("usuarios/{firebaseUid}")
+    @GET("/api/usuarios/{firebaseUid}")
     suspend fun getUsuarioByFirebaseUid(@Path("firebaseUid") firebaseUid: String): UsuarioDto
 
-    @GET("usuarios")
+    @GET("/api/usuarios")
     suspend fun getUsuariosRegistrados(): List<UsuarioDto>
 
 

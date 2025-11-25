@@ -30,7 +30,10 @@ fun MainScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Hola, ${s.usuario.nombreUsuario}")
                     Spacer(Modifier.height(8.dp))
-                    Text("Email: ${s.usuario.email}")
+                    Text("Usuarios registrados:")
+                    s.usuariosRegistrados.forEach {
+                        Text(it.nombreUsuario)
+                    }
                 }
             }
 

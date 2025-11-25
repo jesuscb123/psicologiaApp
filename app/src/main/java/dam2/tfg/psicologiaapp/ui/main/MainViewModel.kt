@@ -3,23 +3,20 @@ package dam2.tfg.psicologiaapp.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import dam2.tfg.psicologiaapp.domain.model.Usuario
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dam2.tfg.psicologiaapp.domain.usecase.GetUsuarioByFirebaseUidUsedCase
+import dam2.tfg.psicologiaapp.domain.usecase.GetUsuariosRegistrados
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class MainUiState {
-    object Loading : MainUiState()
-    data class Success(val usuario: Usuario) : MainUiState()
-    data class Error(val message: String) : MainUiState()
-}
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getUsuarioByFirebaseUid: GetUsuarioByFirebaseUidUsedCase
+    private val getUsuarioByFirebaseUid: GetUsuarioByFirebaseUidUsedCase,
+    private val getUsuariosRegistrados: GetUsuariosRegistrados
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
@@ -34,8 +31,26 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val usuario = getUsuarioByFirebaseUid(currentUser.uid)
-                _uiState.value = MainUiState.Success(usuario)
+                // DEBUG: separar llamadas
+                val usuario = try {
+                    getUsuarioByFirebaseUid(currentUser.uid)
+                } catch (e: Exception) {
+                    _uiState.value = MainUiState.Error("Fallo en getUsuarioByFirebaseUid: ${e.message}")
+                    return@launch
+                }
+
+                val usuariosRegistrados = try {
+                    getUsuariosRegistrados()
+                } catch (e: Exception) {
+                    _uiState.value = MainUiState.Error("Fallo en getUsuariosRegistrados: ${e.message}")
+                    return@launch
+                }
+
+                _uiState.value = MainUiState.Success(
+                    usuario = usuario,
+                    usuariosRegistrados = usuariosRegistrados
+                )
+
             } catch (e: Exception) {
                 _uiState.value = MainUiState.Error(e.message ?: "Error desconocido")
             }

@@ -17,11 +17,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import dam2.tfg.psicologiaapp.ui.Registro.RegistroPantalla
 import dam2.tfg.psicologiaapp.ui.main.MainScreen
 import dam2.tfg.psicologiaapp.ui.theme.PsicologiaAppTheme
-import dam2.tfg.psicologiaapp.ui.screens.auth.IniciarSesionPantalla
-import dam2.tfg.psicologiaapp.ui.screens.auth.RegistroPantalla
-import dam2.tfg.psicologiaapp.utils.auth.AuthManager
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,30 +35,3 @@ class MainActivity : ComponentActivity() {
 }
 
 
-/*
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun IniciarAPP(){
-    val LocalContext = LocalContext.current
-    var navController = rememberNavController()
-    var auth = AuthManager(LocalContext)
-
-    PsicologiaAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = {
-                Text("AppPsicología")
-            })
-        }
-            ) { innerPadding ->
-            NavHost(navController, startDestination = "iniciarSesion", modifier = Modifier.padding(innerPadding)) {
-                composable("iniciarSesion") { IniciarSesionPantalla(navController, auth) }
-                composable("registro") { RegistroPantalla(navController, auth) }
-            }
-        }
-    }
-}
-
- */

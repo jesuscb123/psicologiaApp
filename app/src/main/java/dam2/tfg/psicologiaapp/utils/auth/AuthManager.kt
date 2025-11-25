@@ -7,9 +7,12 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.tasks.await
+import dagger.hilt.android.qualifiers.ApplicationContext
 
-class AuthManager(private val context: Context) {
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+
+class AuthManager @Inject constructor(@ApplicationContext private val context: Context) {
     private val auth: FirebaseAuth by lazy { Firebase.auth}
 
     private val signInClient = Identity.getSignInClient(context)

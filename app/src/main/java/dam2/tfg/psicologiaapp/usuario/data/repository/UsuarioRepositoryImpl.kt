@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.usuario.data.repository
 
+import com.google.firebase.auth.FirebaseAuth
 import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioDao
 import dam2.tfg.psicologiaapp.usuario.data.mapper.toDomain
 import dam2.tfg.psicologiaapp.usuario.data.mapper.toEntity
@@ -7,43 +8,46 @@ import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioApi
 import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioRequest
 import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UsuarioRepositoryImpl @Inject constructor(
     private val api: UsuarioApi,
-    private val dao: UsuarioDao
+    private val dao: UsuarioDao,
+    private val auth: FirebaseAuth
 ) : UsuarioRepository {
 
     override suspend fun registrarUsuario(
-        firebaseUid: String,
         email: String,
+        password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
         numeroColegiado: String?
     ): Result<Usuario> {
         return try {
-            // 1. Creamos el Request para la API (incluye el número de colegiado)
+            // 1. Firebase Auth (Como vimos antes)
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val firebaseUid = authResult.user?.uid ?: throw Exception("Error UID")
+
+            // 2. Preparamos el objeto de datos
             val request = UsuarioRequest(
                 nombreUsuario = nombreUsuario,
                 fotoPerfilUrl = fotoPerfilBase64,
                 numeroColegiado = numeroColegiado
             )
 
-            // 2. Llamada a Retrofit
-            val response = api.registrarUsuario("Bearer $firebaseUid", request)
+            val response = if (numeroColegiado != null) {
+                api.registrarPsicologo("Bearer $firebaseUid", request)
+            } else {
+                api.registrarPaciente("Bearer $firebaseUid", request)
+            }
 
             if (response.isSuccessful && response.body() != null) {
-                val usuarioResponse = response.body()!!
-
-                // 3. Convertimos a Entity (Room) y guardamos
-                // El mapper ahora se encarga de que la Entity tenga el numeroColegiado
-                val entity = usuarioResponse.toEntity()
+                val entity = response.body()!!.toEntity()
                 dao.guardarUsuario(entity)
-
-                // 4. Devolvemos el modelo de dominio (que será Paciente o Psicologo)
                 Result.success(entity.toDomain())
             } else {
-                Result.failure(Exception("Error en el servidor: ${response.code()}"))
+                Result.failure(Exception("Error backend: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

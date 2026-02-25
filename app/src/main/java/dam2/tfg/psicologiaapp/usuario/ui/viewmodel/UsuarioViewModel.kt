@@ -26,8 +26,8 @@ class UsuarioViewModel @Inject constructor(
     val uiState: StateFlow<UsuarioUiState> = _uiState
 
     fun registrarUsuario(
-        firebaseUid: String,
         email: String,
+        password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
         numeroColegiado: String? = null
@@ -36,8 +36,8 @@ class UsuarioViewModel @Inject constructor(
 
         viewModelScope.launch {
             val result = registrarUsuarioUseCase(
-                firebaseUid = firebaseUid,
                 email = email,
+                password = password,
                 nombreUsuario = nombreUsuario,
                 fotoPerfilBase64 = fotoPerfilBase64,
                 numeroColegiado = numeroColegiado

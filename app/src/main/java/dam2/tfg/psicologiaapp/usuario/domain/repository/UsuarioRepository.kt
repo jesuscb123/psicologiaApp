@@ -5,8 +5,8 @@ import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 interface UsuarioRepository {
     suspend fun registrarUsuario(
-        firebaseUid: String,
         email: String,
+        password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
         numeroColegiado: String?

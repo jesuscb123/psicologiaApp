@@ -8,8 +8,8 @@ class RegistrarUsuarioUseCase @Inject constructor(
     private val repository: UsuarioRepository
 ) {
     suspend operator fun invoke(
-        firebaseUid: String,
         email: String,
+        password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
         numeroColegiado: String? = null // <--- Nuevo parámetro opcional

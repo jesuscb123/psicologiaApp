@@ -91,8 +91,8 @@ fun RegisterScreen(
                     onClick = {
                         // 4. Pasamos el dato al ViewModel
                         viewModel.registrarUsuario(
-                            firebaseUid = "temp_uid_${(1..100).random()}",
                             email = email,
+                            password = password,
                             nombreUsuario = nombreUsuario,
                             fotoPerfilBase64 = null,
                             numeroColegiado = if (role == "psicologo") numeroColegiado else null

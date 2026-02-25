@@ -25,11 +25,9 @@ class UsuarioRepositoryImpl @Inject constructor(
         numeroColegiado: String?
     ): Result<Usuario> {
         return try {
-            // 1. Firebase Auth (Como vimos antes)
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val firebaseUid = authResult.user?.uid ?: throw Exception("Error UID")
+            val firebaseUid = authResult.user?.uid ?: throw Exception("No se pudo obtener el UID")
 
-            // 2. Preparamos el objeto de datos
             val request = UsuarioRequest(
                 nombreUsuario = nombreUsuario,
                 fotoPerfilUrl = fotoPerfilBase64,
@@ -47,7 +45,7 @@ class UsuarioRepositoryImpl @Inject constructor(
                 dao.guardarUsuario(entity)
                 Result.success(entity.toDomain())
             } else {
-                Result.failure(Exception("Error backend: ${response.code()}"))
+                Result.failure(Exception("Error en el servidor: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

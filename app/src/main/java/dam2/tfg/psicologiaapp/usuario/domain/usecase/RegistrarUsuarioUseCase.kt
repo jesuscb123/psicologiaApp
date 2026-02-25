@@ -25,8 +25,8 @@ class RegistrarUsuarioUseCase @Inject constructor(
         }
 
         return repository.registrarUsuario(
-            firebaseUid = firebaseUid,
             email = email,
+            password = password,
             nombreUsuario = nombreUsuario,
             fotoPerfilBase64 = fotoPerfilBase64,
             numeroColegiado = numeroColegiado // <--- Se lo pasamos al repo

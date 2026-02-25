@@ -17,7 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-
+import dam2.tfg.psicologiaapp.core.ui.theme.PsicologiaAppTheme
+import dam2.tfg.psicologiaapp.usuario.ui.navigation.AppNavigation
 
 
 @AndroidEntryPoint
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
             super.onCreate(savedInstanceState)
             setContent {
                 PsicologiaAppTheme {
-
+                    AppNavigation()
                 }
             }
         }

@@ -1,12 +1,19 @@
 package dam2.tfg.psicologiaapp.usuario.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dam2.tfg.psicologiaapp.usuario.ui.screen.RegisterScreen
 import dam2.tfg.psicologiaapp.usuario.ui.screen.RoleScreen
 import dam2.tfg.psicologiaapp.usuario.ui.screen.StartScreen
+import dam2.tfg.psicologiaapp.usuario.ui.viewmodel.UsuarioViewModel
 
 @Composable
 fun AppNavigation() {
@@ -40,7 +47,26 @@ fun AppNavigation() {
         // 4. Pantalla de Registro (Un placeholder por ahora)
         composable("register/{role}") { backStackEntry ->
             val role = backStackEntry.arguments?.getString("role") ?: "paciente"
-            Text("Pantalla de Registro para: $role")
+
+            // Hilt te da el ViewModel ya inyectado con todo el core!
+            val usuarioViewModel: UsuarioViewModel = hiltViewModel()
+
+            RegisterScreen(
+                role = role,
+                viewModel = usuarioViewModel,
+                onNavigateToHome = {
+                    // Aquí navegarías a la Home de tu app después de registrarse
+                    navController.navigate("home") {
+                        popUpTo("start") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("home") {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("¡Bienvenido! Registro completado con éxito.")
+            }
         }
     }
 }

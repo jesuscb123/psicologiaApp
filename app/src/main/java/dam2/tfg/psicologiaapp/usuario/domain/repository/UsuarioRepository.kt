@@ -8,7 +8,8 @@ interface UsuarioRepository {
         firebaseUid: String,
         email: String,
         nombreUsuario: String,
-        fotoPerfilBase64: String?
+        fotoPerfilBase64: String?,
+        numeroColegiado: String?
     ): Result<Usuario>
 
     suspend fun obtenerUsuarioLocal(): Result<Usuario?>

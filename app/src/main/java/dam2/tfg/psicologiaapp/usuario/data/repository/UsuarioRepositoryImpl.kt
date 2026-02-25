@@ -18,22 +18,32 @@ class UsuarioRepositoryImpl @Inject constructor(
         firebaseUid: String,
         email: String,
         nombreUsuario: String,
-        fotoPerfilBase64: String?
+        fotoPerfilBase64: String?,
+        numeroColegiado: String?
     ): Result<Usuario> {
         return try {
-            val request = UsuarioRequest(nombreUsuario, fotoPerfilBase64)
+            // 1. Creamos el Request para la API (incluye el número de colegiado)
+            val request = UsuarioRequest(
+                nombreUsuario = nombreUsuario,
+                fotoPerfilUrl = fotoPerfilBase64,
+                numeroColegiado = numeroColegiado
+            )
 
-            // OJO: Aquí estoy simulando el token, luego veremos cómo inyectarlo bien con Firebase Auth
+            // 2. Llamada a Retrofit
             val response = api.registrarUsuario("Bearer $firebaseUid", request)
 
             if (response.isSuccessful && response.body() != null) {
                 val usuarioResponse = response.body()!!
 
+                // 3. Convertimos a Entity (Room) y guardamos
+                // El mapper ahora se encarga de que la Entity tenga el numeroColegiado
                 val entity = usuarioResponse.toEntity()
                 dao.guardarUsuario(entity)
+
+                // 4. Devolvemos el modelo de dominio (que será Paciente o Psicologo)
                 Result.success(entity.toDomain())
             } else {
-                Result.failure(Exception("Error en servidor: ${response.code()}"))
+                Result.failure(Exception("Error en el servidor: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

@@ -29,7 +29,8 @@ class UsuarioViewModel @Inject constructor(
         firebaseUid: String,
         email: String,
         nombreUsuario: String,
-        fotoPerfilBase64: String?
+        fotoPerfilBase64: String?,
+        numeroColegiado: String? = null
     ) {
         _uiState.value = UsuarioUiState.Loading
 
@@ -38,7 +39,8 @@ class UsuarioViewModel @Inject constructor(
                 firebaseUid = firebaseUid,
                 email = email,
                 nombreUsuario = nombreUsuario,
-                fotoPerfilBase64 = fotoPerfilBase64
+                fotoPerfilBase64 = fotoPerfilBase64,
+                numeroColegiado = numeroColegiado
             )
 
             result.fold(

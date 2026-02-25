@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "dam2.tfg.psicologiaapp"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dam2.tfg.psicologiaapp"

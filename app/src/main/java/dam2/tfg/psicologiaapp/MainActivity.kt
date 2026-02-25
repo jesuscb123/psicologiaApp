@@ -17,9 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dam2.tfg.psicologiaapp.ui.Registro.RegistroPantalla
-import dam2.tfg.psicologiaapp.ui.main.MainScreen
-import dam2.tfg.psicologiaapp.ui.theme.PsicologiaAppTheme
+
 
 
 @AndroidEntryPoint
@@ -28,7 +26,7 @@ class MainActivity : ComponentActivity() {
             super.onCreate(savedInstanceState)
             setContent {
                 PsicologiaAppTheme {
-                    MainScreen()
+
                 }
             }
         }

@@ -1,12 +1,10 @@
 package dam2.tfg.psicologiaapp.core.di
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import dam2.tfg.psicologiaapp.data.remote.api.PsicologiaApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,43 +14,25 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "https://bdpsicologiaapp-1.onrender.com/api/"
 
     @Provides
     @Singleton
-    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
-        HttpLoggingInterceptor().apply {
+    fun provideRetrofit(): Retrofit {
+        val interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
-
-    @Provides
-    @Singleton
-    fun provideGson(): Gson =
-        GsonBuilder().create()
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(
-        client: OkHttpClient,
-        gson: Gson
-    ): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
+        return Retrofit.Builder()
+            .baseUrl("https://bdpsicologiaapp-1.onrender.com/") // Tu backend
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
 
     @Provides
     @Singleton
-    fun providePsicologiaApi(retrofit: Retrofit): PsicologiaApi =
-        retrofit.create(PsicologiaApi::class.java)
+    fun provideUsuarioApi(retrofit: Retrofit): UsuarioApi {
+        return retrofit.create(UsuarioApi::class.java)
+    }
 }

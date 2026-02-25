@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "dam2.tfg.psicologiaapp"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "dam2.tfg.psicologiaapp"
@@ -90,4 +90,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //-- Imágenes ---
+    implementation(libs.coil.compose)
 }

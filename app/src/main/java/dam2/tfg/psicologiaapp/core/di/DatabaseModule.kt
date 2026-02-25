@@ -2,13 +2,13 @@ package dam2.tfg.psicologiaapp.core.di
 
 import android.content.Context
 import androidx.room.Room
-import dam2.tfg.psicologiaapp.usuario.data.local.dao.UsuarioDao
-import dam2.tfg.psicologiaapp.data.local.db.AppDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dam2.tfg.psicologiaapp.core.database.PsicologiaDatabase
+import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioDao
 import javax.inject.Singleton
 
 @Module
@@ -17,17 +17,16 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context
-    ): AppDataBase =
-        Room.databaseBuilder(
+    fun providePsicologiaDatabase(@ApplicationContext context: Context): PsicologiaDatabase {
+        return Room.databaseBuilder(
             context,
-            AppDataBase::class.java,
+            PsicologiaDatabase::class.java,
             "psicologia_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
+    }
 
     @Provides
-    @Singleton
-    fun provideUsuarioDao(db: AppDataBase): UsuarioDao =
-        db.usuarioDao()
+    fun provideUsuarioDao(database: PsicologiaDatabase): UsuarioDao {
+        return database.usuarioDao()
+    }
 }

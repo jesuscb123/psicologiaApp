@@ -1,59 +1,55 @@
 package dam2.tfg.psicologiaapp.usuario.data.repository
 
-import androidx.annotation.OptIn
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
-import dam2.tfg.psicologiaapp.data.remote.api.PsicologiaApi
-import dam2.tfg.psicologiaapp.usuario.data.dto.CrearUsuarioRequest
-import dam2.tfg.psicologiaapp.usuario.toDomain
-import dam2.tfg.psicologiaapp.usuario.toEntity
-import dam2.tfg.psicologiaapp.usuario.data.local.dao.UsuarioDao
+import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioDao
+import dam2.tfg.psicologiaapp.usuario.data.mapper.toDomain
+import dam2.tfg.psicologiaapp.usuario.data.mapper.toEntity
+import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioApi
+import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioRequest
 import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import javax.inject.Inject
 
 class UsuarioRepositoryImpl @Inject constructor(
-    private val api: PsicologiaApi,
-    private val usuarioDao: UsuarioDao
+    private val api: UsuarioApi,
+    private val dao: UsuarioDao
 ) : UsuarioRepository {
 
-    override suspend fun getUsuarioByFirebaseUid(firebaseUid: String): Usuario {
-        val dto = api.getUsuarioByFirebaseUid(firebaseUid)
-        val usuario = dto.toDomain()
-        usuarioDao.insertUsuario(usuario.toEntity())
-        return usuario
-    }
-
-    override suspend fun getUsuariosRegistrados(): List<Usuario> {
-        val dtos = api.getUsuariosRegistrados()
-        val usuarios = dtos.map { it.toDomain() }
-        usuarioDao.insertUsuarios(usuarios.map { it.toEntity() })
-        return usuarios
-    }
-
-    @OptIn(UnstableApi::class)
-    override suspend fun registrarUsuarioEnBackend(
-        idToken: String,
-        nombreUsuario: String
-    ): Usuario {
+    override suspend fun registrarUsuario(
+        firebaseUid: String,
+        email: String,
+        nombreUsuario: String,
+        fotoPerfilBase64: String?
+    ): Result<Usuario> {
         return try {
-            Log.d("UsuarioRepo", "Llamando a crearUsuario en backend, nombre=$nombreUsuario")
+            val request = UsuarioRequest(nombreUsuario, fotoPerfilBase64)
 
-            val request = CrearUsuarioRequest(nombreUsuario = nombreUsuario)
+            // OJO: Aquí estoy simulando el token, luego veremos cómo inyectarlo bien con Firebase Auth
+            val response = api.registrarUsuario("Bearer $firebaseUid", request)
 
-            val dto = api.crearUsuario(
-                authHeader = "Bearer $idToken",
-                request = request
-            )
+            if (response.isSuccessful && response.body() != null) {
+                val usuarioResponse = response.body()!!
 
-            Log.d("UsuarioRepo", "Backend respondió, firebaseUid=${dto.firebaseUid}, email=${dto.email}")
-
-            val usuario = dto.toDomain()
-            usuarioDao.insertUsuario(usuario.toEntity())
-            usuario
+                val entity = usuarioResponse.toEntity()
+                dao.guardarUsuario(entity)
+                Result.success(entity.toDomain())
+            } else {
+                Result.failure(Exception("Error en servidor: ${response.code()}"))
+            }
         } catch (e: Exception) {
-            Log.e("UsuarioRepo", "Error al registrar usuario en backend", e)
-            throw e
+            Result.failure(e)
         }
+    }
+
+    override suspend fun obtenerUsuarioLocal(): Result<Usuario?> {
+        return try {
+            val entity = dao.obtenerUsuarioActual()
+            Result.success(entity?.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun cerrarSesion() {
+        dao.borrarUsuario()
     }
 }

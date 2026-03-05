@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.usuario.domain.repository
 
+import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioRequest
 import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 
 
@@ -9,7 +10,8 @@ interface UsuarioRepository {
         password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
-        numeroColegiado: String?
+        numeroColegiado: String?,
+        especialidad: String?
     ): Result<Usuario>
 
     suspend fun obtenerUsuarioLocal(): Result<Usuario?>

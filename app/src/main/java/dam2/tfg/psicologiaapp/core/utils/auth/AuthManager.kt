@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.utils.auth
+package dam2.tfg.psicologiaapp.core.utils.auth
 
 import android.content.Context
 import android.util.Log
@@ -17,16 +17,13 @@ class AuthManager @Inject constructor(@ApplicationContext private val context: C
 
     private val signInClient = Identity.getSignInClient(context)
 
-    suspend fun crearUsuarioConEmailPassword(email: String, password: String): Boolean{
-        return try{
-           auth.createUserWithEmailAndPassword(email, password).await()
-            true
-        }catch (e: FirebaseAuthException){
-            Log.e("AuthManager", "Error al crear usuario: ${e.errorCode}")
-            false
-        }catch (e: Exception){
-            Log.e("Auth Maneger", "Error desconocido: $e")
-            false
+    suspend fun crearUsuarioConEmailPassword(email: String, password: String): String?{
+        return try {
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            result.user?.uid
+        } catch (e: Exception) {
+            Log.e("AuthManager", "Error: ${e.message}")
+            null
         }
     }
 
@@ -51,6 +48,28 @@ class AuthManager @Inject constructor(@ApplicationContext private val context: C
             true
         } catch (e: Exception) {
             Log.e("AuthManager", "Error al cerrar sesión", e)
+            false
+        }
+    }
+
+    suspend fun obtenerIdToken(): String? {
+        return try {
+            val mUser = auth.currentUser
+            val tokenResult = mUser?.getIdToken(true)?.await()
+            tokenResult?.token
+        } catch (e: Exception) {
+            Log.e("AuthManager", "Error al obtener IdToken: ${e.message}")
+            null
+        }
+    }
+
+
+    suspend fun eliminarUsuarioActual(): Boolean {
+        return try {
+            auth.currentUser?.delete()?.await()
+            true
+        } catch (e: Exception) {
+            Log.e("AuthManager", "Error eliminando usuario tras fallo en DB", e)
             false
         }
     }

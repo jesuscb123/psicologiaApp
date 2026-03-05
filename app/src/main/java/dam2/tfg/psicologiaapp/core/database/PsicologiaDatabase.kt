@@ -7,7 +7,7 @@ import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioEntity
 
 @Database(
     entities = [UsuarioEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class PsicologiaDatabase : RoomDatabase() {

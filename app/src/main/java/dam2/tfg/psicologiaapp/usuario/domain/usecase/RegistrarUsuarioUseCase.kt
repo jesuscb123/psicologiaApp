@@ -12,7 +12,8 @@ class RegistrarUsuarioUseCase @Inject constructor(
         password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
-        numeroColegiado: String? = null // <--- Nuevo parámetro opcional
+        numeroColegiado: String? = null,
+        especialidad: String? = null
     ): Result<Usuario> {
 
         // Validaciones de negocio comunes
@@ -29,7 +30,8 @@ class RegistrarUsuarioUseCase @Inject constructor(
             password = password,
             nombreUsuario = nombreUsuario,
             fotoPerfilBase64 = fotoPerfilBase64,
-            numeroColegiado = numeroColegiado // <--- Se lo pasamos al repo
+            numeroColegiado = numeroColegiado,
+            especialidad = especialidad
         )
     }
 }

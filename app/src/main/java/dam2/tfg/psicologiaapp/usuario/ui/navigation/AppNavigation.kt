@@ -10,7 +10,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dam2.tfg.psicologiaapp.usuario.ui.screen.RegisterScreen
+import dam2.tfg.psicologiaapp.usuario.ui.screens.RegisterScreen
 import dam2.tfg.psicologiaapp.usuario.ui.screen.RoleScreen
 import dam2.tfg.psicologiaapp.usuario.ui.screen.StartScreen
 import dam2.tfg.psicologiaapp.usuario.ui.viewmodel.UsuarioViewModel

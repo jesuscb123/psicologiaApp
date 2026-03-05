@@ -1,6 +1,7 @@
 package dam2.tfg.psicologiaapp.usuario.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import dam2.tfg.psicologiaapp.core.utils.auth.AuthManager
 import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioDao
 import dam2.tfg.psicologiaapp.usuario.data.mapper.toDomain
 import dam2.tfg.psicologiaapp.usuario.data.mapper.toEntity
@@ -14,7 +15,7 @@ import javax.inject.Inject
 class UsuarioRepositoryImpl @Inject constructor(
     private val api: UsuarioApi,
     private val dao: UsuarioDao,
-    private val auth: FirebaseAuth
+    private val auth: AuthManager
 ) : UsuarioRepository {
 
     override suspend fun registrarUsuario(
@@ -22,35 +23,42 @@ class UsuarioRepositoryImpl @Inject constructor(
         password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
-        numeroColegiado: String?
+        numeroColegiado: String?,
+        especialidad: String?
     ): Result<Usuario> {
         return try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val firebaseUid = authResult.user?.uid ?: throw Exception("No se pudo obtener el UID")
+            // 1. Firebase
+            val uid = auth.crearUsuarioConEmailPassword(email, password)
+                ?: return Result.failure(Exception("Error al crear usuario en Firebase"))
 
+            val tokenReal = auth.obtenerIdToken()
+                ?: return Result.failure(Exception("No se pudo generar el Token de seguridad"))
+
+            // 2. ¡AQUÍ MONTAS EL REQUEST! (Dentro de la capa de Datos)
             val request = UsuarioRequest(
                 nombreUsuario = nombreUsuario,
                 fotoPerfilUrl = fotoPerfilBase64,
-                numeroColegiado = numeroColegiado
+                numeroColegiado = numeroColegiado,
+                especialidad = especialidad,
+                rol = if (numeroColegiado != null) "PSICOLOGO" else "PACIENTE"
             )
 
-            val response = if (numeroColegiado != null) {
-                api.registrarPsicologo("Bearer $firebaseUid", request)
-            } else {
-                api.registrarPaciente("Bearer $firebaseUid", request)
-            }
+            val response = api.registrarUsuarioCompleto("Bearer $tokenReal", request)
 
             if (response.isSuccessful && response.body() != null) {
                 val entity = response.body()!!.toEntity()
                 dao.guardarUsuario(entity)
                 Result.success(entity.toDomain())
             } else {
-                Result.failure(Exception("Error en el servidor: ${response.code()}"))
+                auth.eliminarUsuarioActual()
+                Result.failure(Exception("Error en servidor: ${response.errorBody()?.string()}"))
             }
         } catch (e: Exception) {
+            auth.eliminarUsuarioActual()
             Result.failure(e)
         }
     }
+
 
     override suspend fun obtenerUsuarioLocal(): Result<Usuario?> {
         return try {

@@ -30,7 +30,8 @@ class UsuarioViewModel @Inject constructor(
         password: String,
         nombreUsuario: String,
         fotoPerfilBase64: String?,
-        numeroColegiado: String? = null
+        numeroColegiado: String? = null,
+        especialidad: String? = null,
     ) {
         _uiState.value = UsuarioUiState.Loading
 
@@ -40,7 +41,8 @@ class UsuarioViewModel @Inject constructor(
                 password = password,
                 nombreUsuario = nombreUsuario,
                 fotoPerfilBase64 = fotoPerfilBase64,
-                numeroColegiado = numeroColegiado
+                numeroColegiado = numeroColegiado,
+                especialidad = especialidad
             )
 
             result.fold(

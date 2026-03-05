@@ -21,7 +21,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             PsicologiaDatabase::class.java,
-            "psicologia_db"
+            "psicologia_db_v2"
         ).fallbackToDestructiveMigration().build()
     }
 

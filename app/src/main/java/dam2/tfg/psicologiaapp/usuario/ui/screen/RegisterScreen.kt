@@ -112,9 +112,9 @@ fun RegisterScreen(
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
         // 4. Campo Colegiado (Solo si es psicólogo)
         if (role == "psicologo") {
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = numeroColegiado,
                 onValueChange = { numeroColegiado = it },
@@ -126,12 +126,14 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = especialidad,
-            onValueChange = { especialidad = it },
-            label = { Text("Especialidad (ej. Clínica, Cognitiva)") },
-            modifier = Modifier.fillMaxWidth()
-        )
+       if(role == "paciente"){
+           OutlinedTextField(
+               value = especialidad,
+               onValueChange = { especialidad = it },
+               label = { Text("Especialidad (ej. Clínica, Cognitiva)") },
+               modifier = Modifier.fillMaxWidth()
+           )
+       }
 
         Spacer(modifier = Modifier.height(16.dp))
 

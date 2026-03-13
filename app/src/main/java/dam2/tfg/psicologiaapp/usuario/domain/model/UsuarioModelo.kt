@@ -103,3 +103,24 @@ data class Paciente(
     val psicologoId: Long?,
     val idPaciente: Long
 )
+
+/**
+ * Modelo de dominio para crear usuario (alineado con UsuarioRequestDto del backend).
+ */
+sealed interface UsuarioRequest {
+    val nombreUsuario: String
+    val fotoPerfilUrl: String?
+}
+
+data class PsicologoRequest(
+    override val nombreUsuario: String,
+    override val fotoPerfilUrl: String? = null,
+    val numeroColegiado: String,
+    val especialidad: String
+) : UsuarioRequest
+
+data class PacienteRequest(
+    override val nombreUsuario: String,
+    override val fotoPerfilUrl: String? = null,
+    val psicologoId: Long?
+) : UsuarioRequest

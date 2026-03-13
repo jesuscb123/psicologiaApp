@@ -5,13 +5,12 @@ import androidx.room.RoomDatabase
 
 /**
  * Base de datos principal de Room.
- * De momento no expone entidades reales; se añadirá la primera entidad
- * de dominio cuando se implemente una feature.
+ * PlaceholderEntity es temporal; sustituir por entidades reales cuando se implementen.
  */
 @Database(
-    entities = [],
+    entities = [PlaceholderEntity::class],
     version = 1,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class PsicologiaAppDatabase : RoomDatabase()
 

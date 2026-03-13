@@ -1,0 +1,54 @@
+# Android MVVM — Cursor Rules
+Rol: Trabaja como si fueras un experto en frontend con kotlin y Jetpack Compose, trabaja con HILT para inyección de dependencias y ROOM para persistencia local. 
+
+** Instrucciones ** 
+Debes tener en cuenta el proyecto del backend ya que es una api REST que trabajará para este frontend, los modelos deben ser iguales para permitir la transferencia de datos y que haya consistencia.
+
+## Arquitectura
+Este proyecto sigue arquitectura MVVM por capas:
+- `data/` → fuentes de datos (Room, Retrofit)
+- `domain/` → lógica de negocio pura (UseCases, modelos, contratos)
+- `presentation/` → UI con Jetpack Compose + ViewModels
+
+**Regla de dependencias:**
+`presentation` → `domain` ← `data`
+---
+Cada paquete (usuario, nota, tarea) tiene las siguiente estructura de carpetas:
+├── data/
+│   ├── local/ (dao, database, entities)
+│   ├── remote/ (api, dto)
+│   ├── mappers/
+│   └── repository/
+├── domain/
+│   ├── model/
+│   ├── repository/
+│   └── usecase/
+├── presentation/
+│   ├── ui/{feature}/ (Screen, ViewModel, UiState)
+│   ├── components/
+│   └── navigation/
+
+
+## Patrones obligatorios
+### UiState
+Siempre `data class` con estado completo. Nunca múltiples `StateFlow` sueltos.
+### Mapper
+Siempre funciones de extensión en `data/mappers/`:
+```kotlin
+fun {Name}Entity.toDomain(): {Name} = ...
+fun {Name}Dto.toDomain(): {Name} = ...
+fun {Name}.toEntity(): {Name}Entity = ...
+```
+## Gestión de estado asíncrono
+Usar siempre `Result<T>` o `sealed class` para manejar éxito/error. Nunca lanzar excepciones sin capturar hacia la UI.
+---
+## Lo que NO hacer
+- ❌ No importar clases de `data/` desde `domain/`
+- ❌ No importar clases de `presentation/` desde `domain/`
+- ❌ No poner lógica de negocio en ViewModels — eso va en UseCases
+- ❌ No poner lógica de negocio en Composables — eso va en ViewModels
+- ❌ No usar `LiveData` — usar `StateFlow` o `mutableStateOf`
+- ❌ No pasar el `NavController` a los Screens como parámetro
+- ❌ No crear `StateFlow` múltiples sueltos en el ViewModel — usar `UiState`
+- ❌ No usar `GlobalScope` — siempre `viewModelScope`
+- ❌ No hacer llamadas a la API directamente desde el ViewModel

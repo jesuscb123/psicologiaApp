@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.tarea.data.remote
 
-import dam2.tfg.psicologiaapp.usuario.data.remote.PacienteResponseDto
-import dam2.tfg.psicologiaapp.usuario.data.remote.PsicologoResponseDto
+import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteResponseDto
+import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoResponseDto
 
 /**
  * DTOs remotos de tareas, alineados con los contratos del backend.

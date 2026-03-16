@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.paciente.data.remote
 
-import dam2.tfg.psicologiaapp.usuario.data.remote.AsignarPsicologoRequestDto
-import dam2.tfg.psicologiaapp.usuario.data.remote.PacienteResponseDto
+import dam2.tfg.psicologiaapp.paciente.data.remote.AsignarPsicologoRequestDto
+import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH

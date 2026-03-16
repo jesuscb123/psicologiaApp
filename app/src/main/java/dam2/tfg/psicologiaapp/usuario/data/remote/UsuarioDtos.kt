@@ -5,54 +5,19 @@ package dam2.tfg.psicologiaapp.usuario.data.remote
  * alineados con los contratos del backend.
  */
 
-sealed interface UsuarioRequestDto {
+interface UsuarioRequestDto {
     val nombreUsuario: String
     val fotoPerfilUrl: String?
     val rol: String
 }
 
-data class PsicologoRequestDto(
-    override val nombreUsuario: String,
-    override val fotoPerfilUrl: String? = null,
-    val numeroColegiado: String,
-    val especialidad: String,
-    override val rol: String = "PSICOLOGO"
-) : UsuarioRequestDto
-
-data class PacienteRequestDto(
-    override val nombreUsuario: String,
-    override val fotoPerfilUrl: String? = null,
-    val psicologoId: Long?,
-    override val rol: String = "PACIENTE"
-) : UsuarioRequestDto
-
-sealed interface UsuarioResponseDto {
+interface UsuarioResponseDto {
     val id: Long
     val firebaseUid: String
     val nombreUsuario: String
     val fotoPerfilUrl: String?
     val rol: String
 }
-
-data class PsicologoResponseDto(
-    override val id: Long,
-    override val firebaseUid: String,
-    override val nombreUsuario: String,
-    override val fotoPerfilUrl: String?,
-    override val rol: String,
-    val numeroColegiado: String,
-    val especialidad: String
-) : UsuarioResponseDto
-
-data class PacienteResponseDto(
-    override val id: Long,
-    override val firebaseUid: String,
-    override val nombreUsuario: String,
-    override val fotoPerfilUrl: String?,
-    override val rol: String,
-    val psicologoId: Long?,
-    val idPaciente: Long
-) : UsuarioResponseDto
 
 data class UsuarioBasicoResponseDto(
     override val id: Long,
@@ -62,7 +27,7 @@ data class UsuarioBasicoResponseDto(
     override val rol: String
 ) : UsuarioResponseDto
 
-sealed interface UsuarioPerfilResponseDto {
+interface UsuarioPerfilResponseDto {
     val id: Long
     val firebaseUid: String
     val nombreUsuario: String
@@ -70,27 +35,6 @@ sealed interface UsuarioPerfilResponseDto {
     val fotoPerfilUrl: String?
     val rol: String
 }
-
-data class PsicologoPerfilResponseDto(
-    override val id: Long,
-    override val firebaseUid: String,
-    override val nombreUsuario: String,
-    override val email: String,
-    override val fotoPerfilUrl: String?,
-    override val rol: String,
-    val numeroColegiado: String,
-    val especialidad: String
-) : UsuarioPerfilResponseDto
-
-data class PacientePerfilResponseDto(
-    override val id: Long,
-    override val firebaseUid: String,
-    override val nombreUsuario: String,
-    override val email: String,
-    override val fotoPerfilUrl: String?,
-    override val rol: String,
-    val psicologoId: Long?
-) : UsuarioPerfilResponseDto
 
 data class UsuarioPerfilBasicoResponseDto(
     override val id: Long,

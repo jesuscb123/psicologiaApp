@@ -1,6 +1,6 @@
 package dam2.tfg.psicologiaapp.paciente.domain.repository
 
-import dam2.tfg.psicologiaapp.usuario.domain.model.Paciente
+import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 
 /**
  * Contrato del repositorio de pacientes en dominio.

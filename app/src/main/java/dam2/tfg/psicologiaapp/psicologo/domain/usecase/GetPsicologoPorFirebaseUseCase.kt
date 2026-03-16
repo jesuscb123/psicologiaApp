@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.psicologo.domain.usecase
 
 import dam2.tfg.psicologiaapp.psicologo.domain.repository.PsicologoRepository
-import dam2.tfg.psicologiaapp.usuario.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import javax.inject.Inject
 
 class GetPsicologoPorFirebaseUseCase @Inject constructor(

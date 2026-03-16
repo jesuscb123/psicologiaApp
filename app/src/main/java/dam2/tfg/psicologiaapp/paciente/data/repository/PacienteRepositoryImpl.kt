@@ -1,9 +1,9 @@
 package dam2.tfg.psicologiaapp.paciente.data.repository
 
+import dam2.tfg.psicologiaapp.paciente.data.remote.AsignarPsicologoRequestDto
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
-import dam2.tfg.psicologiaapp.usuario.data.mappers.toDomain
-import dam2.tfg.psicologiaapp.usuario.data.remote.AsignarPsicologoRequestDto
-import dam2.tfg.psicologiaapp.usuario.domain.model.Paciente
+import dam2.tfg.psicologiaapp.paciente.data.mappers.toDomain
+import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.paciente.domain.repository.PacienteRepository
 import javax.inject.Inject
 import javax.inject.Singleton

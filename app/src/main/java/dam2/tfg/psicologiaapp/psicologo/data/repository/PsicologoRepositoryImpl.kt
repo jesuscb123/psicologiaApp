@@ -1,9 +1,10 @@
 package dam2.tfg.psicologiaapp.psicologo.data.repository
 
-import dam2.tfg.psicologiaapp.usuario.domain.model.Paciente
-import dam2.tfg.psicologiaapp.usuario.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
+import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
-import dam2.tfg.psicologiaapp.usuario.data.mappers.toDomain
+import dam2.tfg.psicologiaapp.paciente.data.mappers.toDomain as pacienteToDomain
+import dam2.tfg.psicologiaapp.psicologo.data.mappers.toDomain as psicologoToDomain
 import dam2.tfg.psicologiaapp.psicologo.domain.repository.PsicologoRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,18 +15,18 @@ class PsicologoRepositoryImpl @Inject constructor(
 ) : PsicologoRepository {
 
     override suspend fun listarPsicologos(): Result<List<Psicologo>> = runCatching {
-        psicologoApi.listarPsicologos().map { it.toDomain() }
+        psicologoApi.listarPsicologos().map { it.psicologoToDomain() }
     }
 
     override suspend fun buscarPsicologos(nombreUsuario: String): Result<List<Psicologo>> = runCatching {
-        psicologoApi.buscarPsicologos(nombreUsuario).map { it.toDomain() }
+        psicologoApi.buscarPsicologos(nombreUsuario).map { it.psicologoToDomain() }
     }
 
     override suspend fun getPsicologoPorFirebase(firebaseId: String): Result<Psicologo> = runCatching {
-        psicologoApi.getPsicologoPorFirebase(firebaseId).toDomain()
+        psicologoApi.getPsicologoPorFirebase(firebaseId).psicologoToDomain()
     }
 
     override suspend fun getPacientesDePsicologo(): Result<List<Paciente>> = runCatching {
-        psicologoApi.getPacientesDePsicologo().map { it.toDomain() }
+        psicologoApi.getPacientesDePsicologo().map { it.pacienteToDomain() }
     }
 }

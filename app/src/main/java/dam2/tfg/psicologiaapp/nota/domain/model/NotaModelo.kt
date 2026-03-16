@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.nota.domain.model
 
-import dam2.tfg.psicologiaapp.usuario.domain.model.Paciente
-import dam2.tfg.psicologiaapp.usuario.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
+import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
 /**
  * Modelo de dominio de nota, alineado con el backend.

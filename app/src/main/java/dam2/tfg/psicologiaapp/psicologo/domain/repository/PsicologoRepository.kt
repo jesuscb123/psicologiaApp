@@ -1,7 +1,7 @@
 package dam2.tfg.psicologiaapp.psicologo.domain.repository
 
-import dam2.tfg.psicologiaapp.usuario.domain.model.Paciente
-import dam2.tfg.psicologiaapp.usuario.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
+import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
 /**
  * Contrato del repositorio de psicólogos en dominio.

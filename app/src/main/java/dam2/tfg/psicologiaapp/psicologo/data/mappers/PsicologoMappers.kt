@@ -5,6 +5,7 @@ import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
 fun PsicologoResponseDto.toDomain(): Psicologo = Psicologo(
     usuarioId = id,
+    idEntidadPsicologo = idEntidadPsicologo,
     firebaseUid = firebaseUid,
     nombreUsuario = nombreUsuario,
     fotoPerfilUrl = fotoPerfilUrl,

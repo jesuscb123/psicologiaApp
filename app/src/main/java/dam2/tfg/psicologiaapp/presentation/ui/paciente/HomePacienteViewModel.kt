@@ -121,7 +121,7 @@ class HomePacienteViewModel @Inject constructor(
         psicologoId: Long?,
     ): Psicologo? {
         if (psicologoId == null) return null
-        return listaPsicologos.firstOrNull { it.usuarioId == psicologoId }
+        return listaPsicologos.firstOrNull { it.idEntidadPsicologo == psicologoId }
     }
 }
 

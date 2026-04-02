@@ -58,7 +58,7 @@ class PerfilPsicologoViewModel @Inject constructor(
     }
 
     fun asignarPsicologo() {
-        val psicologoId = uiState.value.psicologo?.usuarioId
+        val psicologoId = uiState.value.psicologo?.idEntidadPsicologo
         if (psicologoId == null) {
             _uiState.update { it.copy(mensajeError = "No hay psicólogo para asignar") }
             return

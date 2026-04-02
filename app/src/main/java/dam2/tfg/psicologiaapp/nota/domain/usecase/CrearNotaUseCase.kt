@@ -8,8 +8,7 @@ class CrearNotaUseCase @Inject constructor(
     private val notaRepository: NotaRepository
 ) {
     suspend operator fun invoke(
-        firebaseId: String,
         asunto: String,
         descripcion: String
-    ): Result<Nota> = notaRepository.crearNota(firebaseId, asunto, descripcion)
+    ): Result<Nota> = notaRepository.crearNota(asunto, descripcion)
 }

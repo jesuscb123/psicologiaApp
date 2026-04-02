@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
+import dam2.tfg.psicologiaapp.BuildConfig
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenInterceptor
 import dam2.tfg.psicologiaapp.data.remote.FirebaseProveedorToken
 import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
@@ -24,12 +25,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-
-/**
- * URL base del backend. En emulador usar "http://10.0.2.2:8080/".
- * Se puede sustituir por BuildConfig.BASE_URL cuando se configure.
- */
-private const val URL_BASE_BACKEND = "http://10.0.2.2:8080/"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -73,7 +68,7 @@ abstract class RedModulo {
             okHttpClient: OkHttpClient,
             gson: com.google.gson.Gson
         ): Retrofit = Retrofit.Builder()
-            .baseUrl(URL_BASE_BACKEND)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

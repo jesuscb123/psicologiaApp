@@ -11,7 +11,7 @@ interface NotaRepository {
 
     suspend fun getNotasDePaciente(pacienteId: Long): Result<List<Nota>>
 
-    suspend fun crearNota(firebaseId: String, asunto: String, descripcion: String): Result<Nota>
+    suspend fun crearNota(asunto: String, descripcion: String): Result<Nota>
 
     suspend fun actualizarNota(notaId: Long, asunto: String, descripcion: String): Result<Nota>
 

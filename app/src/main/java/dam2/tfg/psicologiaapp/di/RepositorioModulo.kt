@@ -1,5 +1,7 @@
 package dam2.tfg.psicologiaapp.di
 
+import dam2.tfg.psicologiaapp.auth.data.repository.AuthRepositoryImpl
+import dam2.tfg.psicologiaapp.auth.domain.repository.AuthRepository
 import dam2.tfg.psicologiaapp.nota.data.repository.NotaRepositoryImpl
 import dam2.tfg.psicologiaapp.nota.domain.repository.NotaRepository
 import dam2.tfg.psicologiaapp.paciente.data.repository.PacienteRepositoryImpl
@@ -19,6 +21,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositorioModulo {
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
     @Binds
     @Singleton

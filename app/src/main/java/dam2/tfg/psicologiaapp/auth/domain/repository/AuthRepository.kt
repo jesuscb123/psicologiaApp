@@ -17,5 +17,10 @@ interface AuthRepository {
      * @return uid del usuario creado.
      */
     suspend fun crearCuenta(correo: String, contrasena: String): Result<String>
+
+    /**
+     * Elimina el usuario actual en Firebase (p. ej. rollback tras fallo al crear usuario en API).
+     */
+    suspend fun eliminarUsuarioActual(): Result<Unit>
 }
 

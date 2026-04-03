@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam2.tfg.psicologiaapp.nota.domain.usecase.BorrarNotaUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.GetNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
@@ -9,7 +10,9 @@ import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ListarPsicologosUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -21,24 +24,26 @@ class HomePacienteViewModel @Inject constructor(
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
     private val listarPsicologosUseCase: ListarPsicologosUseCase,
     private val getNotasPacienteActualUseCase: GetNotasPacienteActualUseCase,
+    private val borrarNotaUseCase: BorrarNotaUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomePacienteUiState())
     val uiState: StateFlow<HomePacienteUiState> = _uiState
 
-    init {
-        recargar()
-    }
+    private var trabajoRecarga: Job? = null
 
     fun recargar() {
-        viewModelScope.launch {
+        trabajoRecarga?.cancel()
+        trabajoRecarga = viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, mensajeError = null) }
 
             val perfilDeferred = async { getPerfilActualUseCase() }
             val psicologosDeferred = async { listarPsicologosUseCase() }
 
             val resultadoPerfil = perfilDeferred.await()
+            ensureActive()
             val resultadoPsicologos = psicologosDeferred.await()
+            ensureActive()
 
             var perfilPaciente: PacientePerfil? = null
             resultadoPerfil.fold(
@@ -91,6 +96,7 @@ class HomePacienteViewModel @Inject constructor(
 
             if (perfilPaciente?.psicologoId != null) {
                 val resultadoNotas = getNotasPacienteActualUseCase()
+                ensureActive()
                 resultadoNotas.fold(
                     onSuccess = { notas ->
                         _uiState.update {
@@ -113,6 +119,28 @@ class HomePacienteViewModel @Inject constructor(
             } else {
                 _uiState.update { it.copy(cargando = false, notas = emptyList()) }
             }
+        }
+    }
+
+    fun eliminarNota(notaId: Long) {
+        viewModelScope.launch {
+            borrarNotaUseCase(notaId).fold(
+                onSuccess = {
+                    _uiState.update { estado ->
+                        estado.copy(
+                            notas = estado.notas.filter { nota -> nota.id != notaId },
+                            mensajeError = null,
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            mensajeError = error.message ?: "No se pudo eliminar la nota"
+                        )
+                    }
+                }
+            )
         }
     }
 

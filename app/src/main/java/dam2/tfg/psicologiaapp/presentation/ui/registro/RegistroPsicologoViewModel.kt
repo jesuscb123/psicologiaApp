@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.registro
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.CrearCuentaUseCase
+import dam2.tfg.psicologiaapp.auth.domain.usecase.EliminarUsuarioFirebaseActualUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.model.PsicologoRequest
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.CrearUsuarioUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RegistroPsicologoViewModel @Inject constructor(
     private val crearCuentaUseCase: CrearCuentaUseCase,
-    private val crearUsuarioUseCase: CrearUsuarioUseCase
+    private val crearUsuarioUseCase: CrearUsuarioUseCase,
+    private val eliminarUsuarioFirebaseActualUseCase: EliminarUsuarioFirebaseActualUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistroPsicologoUiState())
@@ -82,10 +84,17 @@ class RegistroPsicologoViewModel @Inject constructor(
                             _uiState.update { it.copy(cargando = false, registroCompletado = true) }
                         },
                         onFailure = { error ->
+                            val mensajeBase = error.message ?: "No se pudo completar el registro"
+                            val mensajeFinal = eliminarUsuarioFirebaseActualUseCase().fold(
+                                onSuccess = { mensajeBase },
+                                onFailure = { eRollback ->
+                                    "$mensajeBase. Además, no se pudo revertir la cuenta en Firebase: ${eRollback.message ?: "error desconocido"}"
+                                }
+                            )
                             _uiState.update {
                                 it.copy(
                                     cargando = false,
-                                    mensajeError = error.message ?: "No se pudo completar el registro"
+                                    mensajeError = mensajeFinal
                                 )
                             }
                         }

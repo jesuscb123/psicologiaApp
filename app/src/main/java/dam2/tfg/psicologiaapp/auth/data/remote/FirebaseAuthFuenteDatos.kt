@@ -53,5 +53,29 @@ class FirebaseAuthFuenteDatos @Inject constructor(
                     }
                 }
         }
+
+    /**
+     * Elimina el usuario actualmente autenticado en Firebase (compensación si falla el registro en backend).
+     */
+    suspend fun eliminarUsuarioActual(): Unit =
+        suspendCancellableCoroutine { continuación ->
+            val usuario = firebaseAuth.currentUser
+            if (usuario == null) {
+                continuación.resumeWithException(
+                    IllegalStateException("No hay usuario de Firebase autenticado para eliminar")
+                )
+                return@suspendCancellableCoroutine
+            }
+            usuario.delete()
+                .addOnCompleteListener { tarea ->
+                    if (tarea.isSuccessful) {
+                        continuación.resume(Unit)
+                    } else {
+                        val excepción =
+                            tarea.exception ?: Exception("Error desconocido al eliminar usuario en Firebase")
+                        continuación.resumeWithException(excepción)
+                    }
+                }
+        }
 }
 

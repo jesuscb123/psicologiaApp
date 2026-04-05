@@ -236,8 +236,27 @@ Sirve para **persistencia en dispositivo** (caché, offline limitado) según la 
 
 ## 4. Diseño de la interfaz de usuario
 
-  - Login Screen: 
-  
+Capturas de la aplicación Android (Jetpack Compose). Las imágenes están en la carpeta `doc/diseño-interfaz-app/`. Se muestran con ancho fijo (~480px) para una lectura cómoda en PDF y visores Markdown; si la vista es estrecha, el visor puede escalarlas.
+
+### 4.1. Inicio de sesión
+
+<img src="diseño-interfaz-app/LoginScreen.jpeg" alt="Pantalla de inicio de sesión" width="480" />
+
+### 4.2. Registro
+
+<img src="diseño-interfaz-app/RegistrationScreen.jpeg" alt="Pantalla de registro" width="480" />
+
+### 4.3. Inicio del paciente
+
+<img src="diseño-interfaz-app/PatientHome.jpeg" alt="Pantalla principal del paciente" width="480" />
+
+### 4.4. Tareas asignadas
+
+<img src="diseño-interfaz-app/AssignedTasks.jpeg" alt="Listado de tareas asignadas" width="480" />
+
+### 4.5. Perfil de usuario
+
+<img src="diseño-interfaz-app/UserProfile.jpeg" alt="Pantalla de perfil de usuario" width="480" />
 
 ---
 

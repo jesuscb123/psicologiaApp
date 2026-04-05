@@ -11,7 +11,6 @@ import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,12 +36,9 @@ class HomePacienteViewModel @Inject constructor(
         trabajoRecarga = viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, mensajeError = null) }
 
-            val perfilDeferred = async { getPerfilActualUseCase() }
-            val psicologosDeferred = async { listarPsicologosUseCase() }
-
-            val resultadoPerfil = perfilDeferred.await()
+            val resultadoPerfil = getPerfilActualUseCase()
             ensureActive()
-            val resultadoPsicologos = psicologosDeferred.await()
+            val resultadoPsicologos = listarPsicologosUseCase()
             ensureActive()
 
             var perfilPaciente: PacientePerfil? = null

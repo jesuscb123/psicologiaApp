@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.nota.data.repository
 
+import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
 import dam2.tfg.psicologiaapp.nota.data.mappers.toDomain
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaRequestDto
@@ -11,15 +12,26 @@ import javax.inject.Singleton
 @Singleton
 class NotaRepositoryImpl @Inject constructor(
     private val notaApi: NotaApi,
+    private val proveedorTokenFirebase: ProveedorTokenFirebase,
 ) : NotaRepository {
 
     override suspend fun getNotasPacienteActual(): Result<List<Nota>> = runCatching {
-        val respuesta = notaApi.getNotasPacienteActual()
+        var respuesta = notaApi.getNotasPacienteActual()
+        if (respuesta.code() == 401) {
+            proveedorTokenFirebase.obtenerToken(forzarRenovacion = true)
+            respuesta = notaApi.getNotasPacienteActual()
+        }
         if (respuesta.code() == 204) {
             emptyList()
         } else {
             if (!respuesta.isSuccessful) {
-                throw IllegalStateException("Error al obtener notas: HTTP ${respuesta.code()}")
+                val codigo = respuesta.code()
+                val detalle = when (codigo) {
+                    401 -> "HTTP 401: el servidor no aceptó el token (revisa logs del API y FIREBASE_CREDENTIALS / proyecto)"
+                    403 -> "HTTP 403: el usuario no tiene rol PACIENTE en la API (revisa la BD)"
+                    else -> "HTTP $codigo"
+                }
+                throw IllegalStateException("Error al obtener notas: $detalle")
             }
             respuesta.body()?.map { it.toDomain() } ?: emptyList()
         }

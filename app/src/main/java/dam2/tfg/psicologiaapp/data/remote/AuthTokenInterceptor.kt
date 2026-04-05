@@ -19,7 +19,10 @@ class AuthTokenInterceptor @Inject constructor(
         if (solicitudOriginal.header("Authorization") != null) {
             return chain.proceed(solicitudOriginal)
         }
-        val token = runBlocking { proveedorToken.obtenerToken(forzarRenovacion = false) }
+        var token = runBlocking { proveedorToken.obtenerToken(forzarRenovacion = false) }
+        if (token == null) {
+            token = runBlocking { proveedorToken.obtenerToken(forzarRenovacion = true) }
+        }
         val solicitud = if (token != null) {
             solicitudOriginal.newBuilder()
                 .header("Authorization", "Bearer $token")

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
+import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaPsicologoApp
@@ -40,6 +41,10 @@ import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 fun PantallaHomePaciente(
     alIrAPerfilPsicologo: (String) -> Unit,
     alIrAAnadirNota: () -> Unit,
+    alAbrirMenuPerfil: () -> Unit,
+    nombreUsuarioBarra: String,
+    fotoPerfilUrlBarra: String?,
+    revisionCacheFotoBarra: Long = 0L,
     viewModel: HomePacienteViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
@@ -81,7 +86,15 @@ fun PantallaHomePaciente(
             val titulo = uiState.psicologoAsignado?.let { "Tu psicólogo" } ?: "Home paciente"
             BarraSuperiorApp(
                 titulo = titulo,
-                subtitulo = uiState.psicologoAsignado?.nombreUsuario
+                subtitulo = uiState.psicologoAsignado?.nombreUsuario,
+                acciones = {
+                    AccionesBarraMenuPerfilPaciente(
+                        nombreUsuario = nombreUsuarioBarra,
+                        fotoPerfilUrl = fotoPerfilUrlBarra,
+                        revisionCacheFoto = revisionCacheFotoBarra,
+                        alAbrirMenu = alAbrirMenuPerfil,
+                    )
+                },
             )
         },
         floatingActionButton = {

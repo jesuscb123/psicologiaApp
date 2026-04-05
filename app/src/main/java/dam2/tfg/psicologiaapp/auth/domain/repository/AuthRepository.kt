@@ -22,5 +22,16 @@ interface AuthRepository {
      * Elimina el usuario actual en Firebase (p. ej. rollback tras fallo al crear usuario en API).
      */
     suspend fun eliminarUsuarioActual(): Result<Unit>
+
+    /**
+     * Cierra la sesión actual en Firebase Auth.
+     */
+    suspend fun cerrarSesion(): Result<Unit>
+
+    /**
+     * Fuerza la renovación del idToken en Firebase (actualiza la caché local).
+     * Útil antes de ráfagas HTTP tras Storage u otras operaciones que cargan el SDK.
+     */
+    suspend fun forzarRenovacionTokenIdentidad()
 }
 

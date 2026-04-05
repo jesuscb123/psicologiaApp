@@ -5,19 +5,16 @@ import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaRequestDto
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.nota.domain.repository.NotaRepository
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NotaRepositoryImpl @Inject constructor(
-    private val notaApi: NotaApi
+    private val notaApi: NotaApi,
 ) : NotaRepository {
 
     override suspend fun getNotasPacienteActual(): Result<List<Nota>> = runCatching {
-        val respuesta: Response<List<dam2.tfg.psicologiaapp.nota.data.remote.NotaResponseDto>> =
-            notaApi.getNotasPacienteActual()
-
+        val respuesta = notaApi.getNotasPacienteActual()
         if (respuesta.code() == 204) {
             emptyList()
         } else {

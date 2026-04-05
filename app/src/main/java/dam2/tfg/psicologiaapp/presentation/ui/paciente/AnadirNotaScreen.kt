@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
 
@@ -26,6 +27,10 @@ import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
 fun PantallaAnadirNota(
     alNotaGuardada: () -> Unit,
     alVolver: () -> Unit,
+    alAbrirMenuPerfil: () -> Unit,
+    nombreUsuarioBarra: String,
+    fotoPerfilUrlBarra: String?,
+    revisionCacheFotoBarra: Long = 0L,
     viewModel: AnadirNotaViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -44,7 +49,15 @@ fun PantallaAnadirNota(
         topBar = {
             BarraSuperiorApp(
                 titulo = "Añadir nota",
-                alVolver = alVolver
+                alVolver = alVolver,
+                acciones = {
+                    AccionesBarraMenuPerfilPaciente(
+                        nombreUsuario = nombreUsuarioBarra,
+                        fotoPerfilUrl = fotoPerfilUrlBarra,
+                        revisionCacheFoto = revisionCacheFotoBarra,
+                        alAbrirMenu = alAbrirMenuPerfil,
+                    )
+                },
             )
         }
     ) { padding ->

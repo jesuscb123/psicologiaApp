@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import dam2.tfg.psicologiaapp.BuildConfig
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenInterceptor
+import dam2.tfg.psicologiaapp.data.remote.AuthTokenRefrescoAuthenticator
 import dam2.tfg.psicologiaapp.data.remote.FirebaseProveedorToken
 import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
@@ -51,8 +52,10 @@ abstract class RedModulo {
         @Provides
         @Singleton
         fun proporcionarOkHttpClient(
-            authInterceptor: AuthTokenInterceptor
+            authInterceptor: AuthTokenInterceptor,
+            authTokenRefrescoAuthenticator: AuthTokenRefrescoAuthenticator
         ): OkHttpClient = OkHttpClient.Builder()
+            .authenticator(authTokenRefrescoAuthenticator)
             .addInterceptor(authInterceptor)
             .addInterceptor(
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }

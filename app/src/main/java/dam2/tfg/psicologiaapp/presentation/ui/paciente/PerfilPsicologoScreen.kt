@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.AvatarInicialApp
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 
@@ -30,6 +31,10 @@ fun PantallaPerfilPsicologo(
     psicologoId: String,
     alAsignacionCompletada: () -> Unit,
     alVolver: () -> Unit,
+    alAbrirMenuPerfil: () -> Unit,
+    nombreUsuarioBarra: String,
+    fotoPerfilUrlBarra: String?,
+    revisionCacheFotoBarra: Long = 0L,
     viewModel: PerfilPsicologoViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -52,7 +57,15 @@ fun PantallaPerfilPsicologo(
         topBar = {
             BarraSuperiorApp(
                 titulo = "Perfil psicólogo",
-                alVolver = alVolver
+                alVolver = alVolver,
+                acciones = {
+                    AccionesBarraMenuPerfilPaciente(
+                        nombreUsuario = nombreUsuarioBarra,
+                        fotoPerfilUrl = fotoPerfilUrlBarra,
+                        revisionCacheFoto = revisionCacheFotoBarra,
+                        alAbrirMenu = alAbrirMenuPerfil,
+                    )
+                },
             )
         }
     ) { padding ->

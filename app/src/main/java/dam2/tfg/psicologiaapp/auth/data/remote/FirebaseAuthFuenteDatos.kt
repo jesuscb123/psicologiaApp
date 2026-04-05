@@ -77,5 +77,12 @@ class FirebaseAuthFuenteDatos @Inject constructor(
                     }
                 }
         }
+
+    /**
+     * Cierra la sesión en Firebase (operación síncrona; segura aunque no haya usuario autenticado).
+     */
+    fun cerrarSesion() {
+        firebaseAuth.signOut()
+    }
 }
 

@@ -10,6 +10,8 @@ import dam2.tfg.psicologiaapp.psicologo.data.repository.PsicologoRepositoryImpl
 import dam2.tfg.psicologiaapp.psicologo.domain.repository.PsicologoRepository
 import dam2.tfg.psicologiaapp.tarea.data.repository.TareaRepositoryImpl
 import dam2.tfg.psicologiaapp.tarea.domain.repository.TareaRepository
+import dam2.tfg.psicologiaapp.preferencias.data.repository.TemaPreferenciasRepositoryImpl
+import dam2.tfg.psicologiaapp.preferencias.domain.repository.TemaPreferenciasRepository
 import dam2.tfg.psicologiaapp.usuario.data.repository.UsuarioRepositoryImpl
 import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import dagger.Binds
@@ -45,4 +47,10 @@ abstract class RepositorioModulo {
     @Binds
     @Singleton
     abstract fun bindTareaRepository(impl: TareaRepositoryImpl): TareaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTemaPreferenciasRepository(
+        impl: TemaPreferenciasRepositoryImpl,
+    ): TemaPreferenciasRepository
 }

@@ -1,15 +1,10 @@
 package dam2.tfg.psicologiaapp.presentation.navegacion
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import dam2.tfg.psicologiaapp.presentation.ui.inicio.PantallaIniciarSesion
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAnadirNota
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaHomePaciente
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaPerfilPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaPsicologoPlaceholder
 import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPaciente
 import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPsicologo
@@ -21,13 +16,13 @@ fun AppNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = RutasApp.INICIAR_SESION
+        startDestination = RutasApp.INICIAR_SESION,
     ) {
         composable(RutasApp.INICIAR_SESION) {
             PantallaIniciarSesion(
                 alPulsarCrearCuenta = { navController.navigate(RutasApp.REGISTRO_SELECCION_ROL) },
                 alEntrarComoPaciente = {
-                    navController.navigate(RutasApp.HOME_PACIENTE) {
+                    navController.navigate(RutasApp.GRAFO_PACIENTE) {
                         popUpTo(RutasApp.INICIAR_SESION) { inclusive = true }
                     }
                 },
@@ -35,7 +30,7 @@ fun AppNavHost() {
                     navController.navigate(RutasApp.PLACEHOLDER_PSICOLOGO) {
                         popUpTo(RutasApp.INICIAR_SESION) { inclusive = true }
                     }
-                }
+                },
             )
         }
 
@@ -43,7 +38,7 @@ fun AppNavHost() {
             PantallaSeleccionRolRegistro(
                 alElegirPaciente = { navController.navigate(RutasApp.REGISTRO_PACIENTE) },
                 alElegirPsicologo = { navController.navigate(RutasApp.REGISTRO_PSICOLOGO) },
-                alVolver = { navController.popBackStack() }
+                alVolver = { navController.popBackStack() },
             )
         }
 
@@ -54,7 +49,7 @@ fun AppNavHost() {
                         popUpTo(RutasApp.INICIAR_SESION) { inclusive = true }
                     }
                 },
-                alVolver = { navController.popBackStack() }
+                alVolver = { navController.popBackStack() },
             )
         }
 
@@ -65,41 +60,14 @@ fun AppNavHost() {
                         popUpTo(RutasApp.INICIAR_SESION) { inclusive = true }
                     }
                 },
-                alVolver = { navController.popBackStack() }
+                alVolver = { navController.popBackStack() },
             )
         }
 
-        composable(RutasApp.HOME_PACIENTE) {
-            PantallaHomePaciente(
-                alIrAPerfilPsicologo = { psicologoId ->
-                    navController.navigate(RutasApp.crearRutaPerfilPsicologo(psicologoId))
-                },
-                alIrAAnadirNota = { navController.navigate(RutasApp.ANADIR_NOTA) }
-            )
-        }
-
-        composable(
-            route = RutasApp.PERFIL_PSICOLOGO,
-            arguments = listOf(
-                navArgument(RutasApp.ARG_PSICOLOGO_ID) { type = NavType.StringType }
-            )
-        ) { entrada ->
-            val psicologoId = entrada.arguments?.getString(RutasApp.ARG_PSICOLOGO_ID).orEmpty()
-            PantallaPerfilPsicologo(
-                psicologoId = psicologoId,
-                alAsignacionCompletada = {
-                    navController.navigate(RutasApp.HOME_PACIENTE) {
-                        popUpTo(RutasApp.HOME_PACIENTE) { inclusive = true }
-                    }
-                },
-                alVolver = { navController.popBackStack() }
-            )
-        }
-
-        composable(RutasApp.ANADIR_NOTA) {
-            PantallaAnadirNota(
-                alNotaGuardada = { navController.popBackStack() },
-                alVolver = { navController.popBackStack() }
+        composable(RutasApp.GRAFO_PACIENTE) { entradaGrafo ->
+            GrafoPacienteNavegacion(
+                navControllerRaiz = navController,
+                entradaGrafo = entradaGrafo,
             )
         }
 
@@ -107,11 +75,10 @@ fun AppNavHost() {
             PantallaPsicologoPlaceholder(
                 alCerrarSesion = {
                     navController.navigate(RutasApp.INICIAR_SESION) {
-                        popUpTo(0)
+                        popUpTo(0) { inclusive = true }
                     }
-                }
+                },
             )
         }
     }
 }
-

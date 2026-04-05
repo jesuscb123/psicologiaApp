@@ -7,14 +7,22 @@ object RutasApp {
     const val REGISTRO_PACIENTE = "registro/paciente"
     const val REGISTRO_PSICOLOGO = "registro/psicologo"
 
-    const val HOME_PACIENTE = "home/paciente"
+    /** Ruta raíz del flujo paciente (NavHost anidado + menú lateral). */
+    const val GRAFO_PACIENTE = "grafo/paciente"
 
-    const val PERFIL_PSICOLOGO = "psicologo/{psicologoId}"
     const val ARG_PSICOLOGO_ID = "psicologoId"
-    fun crearRutaPerfilPsicologo(psicologoId: String): String = "psicologo/$psicologoId"
-
-    const val ANADIR_NOTA = "nota/anadir"
 
     const val PLACEHOLDER_PSICOLOGO = "psicologo/placeholder"
+}
+
+/** Rutas del [androidx.navigation.compose.NavHost] interno del grafo paciente. */
+object RutasGrafoPaciente {
+    const val HOME = "home"
+    const val ANADIR_NOTA = "nota/anadir"
+    const val PERFIL_PSICOLOGO = "psicologo/{psicologoId}"
+    const val AJUSTES = "ajustes"
+    const val ACERCA = "acerca"
+
+    fun crearRutaPerfilPsicologo(psicologoId: String): String = "psicologo/$psicologoId"
 }
 

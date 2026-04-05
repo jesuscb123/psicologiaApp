@@ -16,6 +16,8 @@ interface UsuarioRepository {
 
     suspend fun actualizarEmail(nuevoEmail: String): Result<UsuarioPerfil>
 
+    suspend fun subirFotoPerfil(bytes: ByteArray, tipoMime: String): Result<UsuarioPerfil>
+
     suspend fun borrarUsuario(): Result<Unit>
 
     suspend fun obtenerUsuarioPorFirebase(fireBaseUid: String): Result<Usuario>

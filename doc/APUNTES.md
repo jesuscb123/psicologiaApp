@@ -97,3 +97,69 @@ Tras guardar una nota nueva en `PantallaAnadirNota` y volver al home con `popBac
 - `app/src/main/java/dam2/tfg/psicologiaapp/presentation/navegacion/AppNavHost.kt` (vuelta desde añadir nota solo con `popBackStack()`)
 
 Casos de uso: `BorrarNotaUseCase`; para la lista tras crear nota se reutiliza la misma `recargar()` que ya llama a `GetNotasPacienteActualUseCase`.
+
+---
+
+# Foto de perfil (paciente) y Firebase Storage
+
+**Fecha:** 4 de abril de 2026  
+
+---
+
+## Por qué Firebase Storage si Firebase solo se usa para autenticación
+
+El backend guarda la foto como **URL en texto** (`fotoPerfilUrl`), no como fichero en el servidor Spring. Para obtener esa URL hace falta **subir los bytes de la imagen a algún almacenamiento** y luego persistir la cadena con `PATCH /api/usuarios/me/foto`.
+
+**Firebase Auth** solo cubre identidad y tokens; **no aloja imágenes** ni genera URLs de ficheros. Por eso el flujo de la app usa **Firebase Storage** como almacén de objetos dentro del **mismo proyecto Firebase** que ya tiene Auth: es la pieza estándar para “subir archivo → URL de descarga → enviar URL al API”. No implica usar Firebase para lógica de negocio adicional; es almacenamiento de ficheros acoplado al usuario autenticado (reglas con `request.auth`).
+
+**Alternativas** si se quisiera evitar Storage por completo: subida `multipart` al propio backend (o a S3, etc.) y que el servidor devuelva o guarde la URL pública. Eso es más trabajo en Spring y despliegue.
+
+---
+
+## Flujo resumido en la app
+
+1. El usuario abre el menú lateral y pulsa el avatar → selector de galería (`PickVisualMedia`).
+2. Se leen los bytes del `Uri` (con límite de tamaño, p. ej. 5 MB).
+3. **Data:** `UsuarioRepositoryImpl` envía `multipart/form-data` a `POST api/usuarios/me/foto` (parte `archivo`); el backend guarda el fichero y devuelve el perfil con `fotoPerfilUrl` pública.
+4. **Domain:** `SincronizarFotoPerfilUseCase` delega en `UsuarioRepository.subirFotoPerfil`.
+5. **Presentation:** `MenuLateralPerfilViewModel` actualiza `fotoPerfilUrl` (y nombre) en el estado del menú; la barra superior del grafo paciente lee ese mismo estado.
+
+Archivos de referencia: `UsuarioRepositoryImpl`, `SincronizarFotoPerfilUseCase`, `MenuLateralPerfilViewModel`, `GrafoPacienteNavegacion`, `UsuarioApi`.
+
+---
+
+## Qué configurar en Firebase
+
+- Activar **Cloud Storage** en el proyecto y definir **reglas** que permitan a usuarios autenticados escribir (y leer según política) en la ruta acordada, p. ej. bajo `perfiles/{userId}/`. Sin reglas adecuadas la subida fallará en tiempo de ejecución aunque Auth funcione.
+
+---
+
+## Firebase App Check y subida a Storage (debug / release)
+
+**Contexto:** Si en Logcat aparece `No AppCheckProvider installed` y un token placeholder, o errores de `StorageException` con **404** durante `beginResumableUpload` (“Object does not exist”, “The server has terminated the upload session”), suele estar relacionado con **App Check**: el SDK de Storage intenta adjuntar un token de integridad y, si en la consola tienes **App Check aplicado a Cloud Storage** sin un proveedor válido en la app, las peticiones pueden fallar.
+
+**En el código:** La clase `PsicologiaApp` instala App Check al arrancar:
+
+- Builds **debug** (`BuildConfig.DEBUG == true`): `DebugAppCheckProviderFactory` (desarrollo desde Android Studio / APK de depuración).
+- Builds **release**: `PlayIntegrityAppCheckProviderFactory` (dispositivos reales; exige configuración coherente con Play Integrity si publicas en Play).
+
+Dependencias: `firebase-appcheck-debug` y `firebase-appcheck-playintegrity` (versiones alineadas con el BOM de Firebase en `libs.versions.toml` / `app/build.gradle.kts`).
+
+### Registrar el token de depuración (obligatorio para debug si App Check está activo)
+
+1. En **Firebase Console** → **Build** → **App Check**, selecciona la app Android del proyecto.
+2. Instala y ejecuta un build **debug** de esta app en un dispositivo o emulador.
+3. Abre **Logcat** y filtra por `DebugAppCheckProvider` o `AppCheck` (o busca texto tipo “debug secret” / token que imprime Firebase la primera vez).
+4. En App Check → **Manage debug tokens** (gestionar tokens de depuración) → **Add debug token** y pega el token que muestra el log.
+5. Vuelve a probar la subida de foto de perfil.
+
+Sin ese token registrado, un modo **Enforced** sobre Storage seguirá rechazando peticiones desde depuración aunque el código instale el proveedor de debug.
+
+### Si no quieres usar App Check todavía
+
+Puedes dejar Storage **sin aplicación estricta** de App Check en la consola (solo monitorización o sin forzar). El aviso del placeholder puede seguir apareciendo en el log, pero las subidas a veces funcionan; con **Enforced** sin proveedor ni token de debug, fallará de forma predecible.
+
+### Otros mensajes del log (referencia)
+
+- `PHASE_CLIENT_ALREADY_HIDDEN` al cerrar el selector de imágenes: suele ser ruido del ciclo de vida del photo picker, no el diagnóstico principal de Storage.
+- Líneas de **MIUI** / `ActivityManagerWrapper` / lista de tareas recientes: salen del launcher del fabricante (p. ej. Xiaomi), no indican un fallo en la lógica de la app.

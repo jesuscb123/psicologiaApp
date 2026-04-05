@@ -16,11 +16,13 @@ El sistema sigue un patrón **cliente–servidor**:
 
 ### 1.2. Arquitectura por capas — aplicación Android (`psicologiaapp`)
 
-| Capa | Responsabilidad | Tecnologías |
-|------|-----------------|-------------|
-| **presentation** | Pantallas Compose, estado de UI (`UiState`), ViewModels, navegación | Jetpack Compose, Navigation Compose, Hilt ViewModel, `StateFlow` |
-| **domain** | Modelos de negocio, contratos de repositorio, casos de uso | Kotlin puro (sin dependencias de Android/data) |
-| **data** | Fuentes remotas (Retrofit), locales (Room), mappers DTO/Entity ↔ dominio, implementaciones de repositorio | Retrofit, OkHttp, Gson, Room, módulos Dagger/Hilt |
+
+| Capa             | Responsabilidad                                                                                           | Tecnologías                                                      |
+| ---------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **presentation** | Pantallas Compose, estado de UI (`UiState`), ViewModels, navegación                                       | Jetpack Compose, Navigation Compose, Hilt ViewModel, `StateFlow` |
+| **domain**       | Modelos de negocio, contratos de repositorio, casos de uso                                                | Kotlin puro (sin dependencias de Android/data)                   |
+| **data**         | Fuentes remotas (Retrofit), locales (Room), mappers DTO/Entity ↔ dominio, implementaciones de repositorio | Retrofit, OkHttp, Gson, Room, módulos Dagger/Hilt                |
+
 
 **Dependencias entre capas:** `presentation` → `domain` ← `data` (el dominio no conoce la UI ni el detalle de Retrofit/Room).
 
@@ -39,14 +41,16 @@ Red: **Retrofit** con `BuildConfig.BASE_URL` (flavor `local`: emulador hacia `10
 
 ### 1.3. Arquitectura por capas — backend (`bdPsicologiaApp`)
 
-| Capa | Responsabilidad | Tecnologías |
-|------|-----------------|-------------|
-| **web** | Controladores REST, DTOs de entrada/salida, mappers HTTP | Spring Web, `spring-boot-starter-validation`, SpringDoc (OpenAPI en perfil `dev`) |
-| **service** | Reglas de negocio, orquestación, interfaces `IServicio*` | Spring `@Service`, transacciones |
-| **repository** | Acceso a datos | Spring Data JPA |
-| **domain** | Entidades JPA (`@Entity`) | Jakarta Persistence (Hibernate) |
-| **security** | Cadena de filtros, roles, integración Firebase | Spring Security, `firebase-admin` |
-| **config** | Firebase, OpenAPI, etc. | Spring `@Configuration` |
+
+| Capa           | Responsabilidad                                          | Tecnologías                                                                       |
+| -------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **web**        | Controladores REST, DTOs de entrada/salida, mappers HTTP | Spring Web, `spring-boot-starter-validation`, SpringDoc (OpenAPI en perfil `dev`) |
+| **service**    | Reglas de negocio, orquestación, interfaces `IServicio`* | Spring `@Service`, transacciones                                                  |
+| **repository** | Acceso a datos                                           | Spring Data JPA                                                                   |
+| **domain**     | Entidades JPA (`@Entity`)                                | Jakarta Persistence (Hibernate)                                                   |
+| **security**   | Cadena de filtros, roles, integración Firebase           | Spring Security, `firebase-admin`                                                 |
+| **config**     | Firebase, OpenAPI, etc.                                  | Spring `@Configuration`                                                           |
+
 
 Los controladores delegan en servicios; los servicios usan repositorios y entidades. Los roles `ROLE_PACIENTE` y `ROLE_PSICOLOGO` se resuelven en `ServicioRoles` consultando si existe fila en `Paciente` / `Psicologo` vinculada al `firebase_uid` del usuario.
 
@@ -85,6 +89,8 @@ flowchart TB
   UC9 --> API
   UC10 --> API
 ```
+
+
 
 ### 2.2. Diagrama de clases (modelo de dominio del servidor — simplificado)
 
@@ -128,6 +134,8 @@ classDiagram
   Psicologo "1" *-- "*" Tarea
 ```
 
+
+
 ### 2.3. Diagrama de secuencia — petición autenticada (ejemplo)
 
 Flujo típico: el cliente envía `Authorization: Bearer <idToken>`; el servidor valida y autoriza.
@@ -158,6 +166,8 @@ sequenceDiagram
   API-->>App: JSON + HTTP
 ```
 
+
+
 ### 2.4. Diagrama de secuencia — paciente crea una nota
 
 ```mermaid
@@ -181,25 +191,29 @@ sequenceDiagram
   UC-->>VM: actualizar UiState
 ```
 
+
+
 ---
 
 ## 3. Diseño de la base de datos
 
 ### 3.1. Modelo lógico relacional (servidor)
 
-Motor principal: **PostgreSQL** (variables `SPRING_DATASOURCE_*`). En desarrollo, perfil **`dev`**: **H2 en memoria** con modo compatible PostgreSQL.
+Motor principal: **PostgreSQL** (variables `SPRING_DATASOURCE_*`). En desarrollo, perfil `**dev`**: **H2 en memoria** con modo compatible PostgreSQL.
 
 Hibernate `ddl-auto: update` genera/ajusta el esquema a partir de las entidades.
 
 **Tablas (entidades JPA):**
 
-| Tabla (nombre físico) | Descripción |
-|------------------------|-------------|
-| `USUARIOS` | Usuario base: `firebase_uid` único, email, `nombreUsuario`, `foto_perfil` (URL o referencia servida por `/api/archivos/perfiles/...`) |
-| `PSICOLOGOS` | 1:1 con usuario (`usuario_id`), `numero_colegiado`, `especialidad` |
-| `PACIENTES_v2` | 1:1 con usuario (`user_id`), N:1 opcional con psicólogo (`psicologo_id`) |
-| `NOTAS` | N:1 `paciente_id`, N:1 `psicologo_id`; `asunto`, `descripcion` |
-| `TAREAS` | N:1 `paciente_id`, N:1 `psicologo_id`; título, descripción, `hora_envio`, `realizada` |
+
+| Tabla (nombre físico) | Descripción                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `USUARIOS`            | Usuario base: `firebase_uid` único, email, `nombreUsuario`, `foto_perfil` (URL o referencia servida por `/api/archivos/perfiles/...`) |
+| `PSICOLOGOS`          | 1:1 con usuario (`usuario_id`), `numero_colegiado`, `especialidad`                                                                    |
+| `PACIENTES_v2`        | 1:1 con usuario (`user_id`), N:1 opcional con psicólogo (`psicologo_id`)                                                              |
+| `NOTAS`               | N:1 `paciente_id`, N:1 `psicologo_id`; `asunto`, `descripcion`                                                                        |
+| `TAREAS`              | N:1 `paciente_id`, N:1 `psicologo_id`; título, descripción, `hora_envio`, `realizada`                                                 |
+
 
 **Cardinalidades clave:**
 
@@ -216,6 +230,8 @@ erDiagram
   PACIENTES_v2 ||--o{ TAREAS : "paciente_id"
   PSICOLOGOS ||--o{ TAREAS : "psicologo_id"
 ```
+
+
 
 ### 3.2. Base de datos local en el cliente (Room)
 
@@ -240,23 +256,23 @@ Capturas de la aplicación Android (Jetpack Compose). Las imágenes están en la
 
 ### 4.1. Inicio de sesión
 
-<img src="diseño-interfaz-app/LoginScreen.jpeg" alt="Pantalla de inicio de sesión" width="480" />
+
 
 ### 4.2. Registro
 
-<img src="diseño-interfaz-app/RegistrationScreen.jpeg" alt="Pantalla de registro" width="480" />
+
 
 ### 4.3. Inicio del paciente
 
-<img src="diseño-interfaz-app/PatientHome.jpeg" alt="Pantalla principal del paciente" width="480" />
+
 
 ### 4.4. Tareas asignadas
 
-<img src="diseño-interfaz-app/AssignedTasks.jpeg" alt="Listado de tareas asignadas" width="480" />
+
 
 ### 4.5. Perfil de usuario
 
-<img src="diseño-interfaz-app/UserProfile.jpeg" alt="Pantalla de perfil de usuario" width="480" />
+
 
 ---
 
@@ -268,7 +284,7 @@ Capturas de la aplicación Android (Jetpack Compose). Las imágenes están en la
 - `FirebaseTokenFilter` valida el token con **Firebase Admin SDK** y rellena el `SecurityContext` con `FirebaseUserData`.
 - `ServicioRoles` asigna `ROLE_PACIENTE` y/o `ROLE_PSICOLOGO` según existencia en BD.
 - Endpoints sensibles usan `@PreAuthorize("hasRole('PACIENTE')")` o `hasRole('PSICOLOGO')`.
-- Rutas públicas: documentación OpenAPI (en `dev`), y `GET /api/archivos/perfiles/**` para servir imágenes.
+- Rutas públicas: documentación OpenAPI (en `dev`), y `GET /api/archivos/perfiles/`** para servir imágenes.
 
 ### 5.2. Resumen de recursos REST
 
@@ -276,66 +292,78 @@ Prefijos indicados respecto a la raíz del servidor (p. ej. `https://host/`).
 
 **Usuarios — `/api/usuarios`**
 
-| Método | Ruta | Descripción (resumida) |
-|--------|------|-------------------------|
-| GET | `/api/usuarios` | Listar usuarios |
-| GET | `/api/usuarios/me` | Perfil del usuario autenticado |
-| PATCH | `/api/usuarios/me/email` | Actualizar email |
-| POST | `/api/usuarios/me/foto` | Subir foto (multipart `archivo`) |
-| DELETE | `/api/usuarios/me` | Eliminar mi usuario |
-| GET | `/api/usuarios/{fireBaseUid}` | Usuario por UID Firebase |
-| POST | `/api/usuarios` | Crear usuario (token debe coincidir con UID) |
+
+| Método | Ruta                          | Descripción (resumida)                       |
+| ------ | ----------------------------- | -------------------------------------------- |
+| GET    | `/api/usuarios`               | Listar usuarios                              |
+| GET    | `/api/usuarios/me`            | Perfil del usuario autenticado               |
+| PATCH  | `/api/usuarios/me/email`      | Actualizar email                             |
+| POST   | `/api/usuarios/me/foto`       | Subir foto (multipart `archivo`)             |
+| DELETE | `/api/usuarios/me`            | Eliminar mi usuario                          |
+| GET    | `/api/usuarios/{fireBaseUid}` | Usuario por UID Firebase                     |
+| POST   | `/api/usuarios`               | Crear usuario (token debe coincidir con UID) |
+
 
 **Psicólogos — `/api/psicologos`**
 
-| Método | Ruta | Notas |
-|--------|------|--------|
-| GET | `/api/psicologos` | Listado |
-| POST | `/api/psicologos/me` | Alta psicólogo ligado al usuario |
-| GET | `/api/psicologos/me` | **Rol PSICOLOGO** |
-| GET | `/api/psicologos/buscar?nombreUsuario=` | **Rol PACIENTE** |
-| GET | `/api/psicologos/firebaseId/{firebaseId}` | Por Firebase |
-| GET | `/api/psicologos/id/{id}` | Por id numérico |
-| GET | `/api/psicologos/me/pacientes` | **Rol PSICOLOGO** — pacientes asociados |
+
+| Método | Ruta                                      | Notas                                   |
+| ------ | ----------------------------------------- | --------------------------------------- |
+| GET    | `/api/psicologos`                         | Listado                                 |
+| POST   | `/api/psicologos/me`                      | Alta psicólogo ligado al usuario        |
+| GET    | `/api/psicologos/me`                      | **Rol PSICOLOGO**                       |
+| GET    | `/api/psicologos/buscar?nombreUsuario=`   | **Rol PACIENTE**                        |
+| GET    | `/api/psicologos/firebaseId/{firebaseId}` | Por Firebase                            |
+| GET    | `/api/psicologos/id/{id}`                 | Por id numérico                         |
+| GET    | `/api/psicologos/me/pacientes`            | **Rol PSICOLOGO** — pacientes asociados |
+
 
 **Pacientes — `/api/pacientes`**
 
-| Método | Ruta | Notas |
-|--------|------|--------|
-| GET | `/api/pacientes` | Listado |
-| POST | `/api/pacientes/me` | Alta paciente |
-| GET | `/api/pacientes/me` | **Rol PACIENTE** |
-| GET | `/api/pacientes/buscar?nombreUsuario=` | **Rol PSICOLOGO** |
-| GET | `/api/pacientes/firebaseId/{firebaseId}` | Por Firebase |
-| GET | `/api/pacientes/id/{id}` | Por id |
-| PATCH | `/api/pacientes/me/psicologo` | **Rol PACIENTE** — asignar psicólogo |
+
+| Método | Ruta                                     | Notas                                |
+| ------ | ---------------------------------------- | ------------------------------------ |
+| GET    | `/api/pacientes`                         | Listado                              |
+| POST   | `/api/pacientes/me`                      | Alta paciente                        |
+| GET    | `/api/pacientes/me`                      | **Rol PACIENTE**                     |
+| GET    | `/api/pacientes/buscar?nombreUsuario=`   | **Rol PSICOLOGO**                    |
+| GET    | `/api/pacientes/firebaseId/{firebaseId}` | Por Firebase                         |
+| GET    | `/api/pacientes/id/{id}`                 | Por id                               |
+| PATCH  | `/api/pacientes/me/psicologo`            | **Rol PACIENTE** — asignar psicólogo |
+
 
 **Notas — `/api/notas`**
 
-| Método | Ruta | Notas |
-|--------|------|--------|
-| GET | `/api/notas/pacientes/{pacienteId}` | **Rol PSICOLOGO** |
-| GET | `/api/notas` | **Rol PACIENTE** — mis notas |
-| POST | `/api/notas` | **Rol PACIENTE** — crear |
-| PUT | `/api/notas/{notaId}` | **Rol PACIENTE** — actualizar |
-| DELETE | `/api/notas/{notaId}` | **Rol PACIENTE** — eliminar |
+
+| Método | Ruta                                | Notas                         |
+| ------ | ----------------------------------- | ----------------------------- |
+| GET    | `/api/notas/pacientes/{pacienteId}` | **Rol PSICOLOGO**             |
+| GET    | `/api/notas`                        | **Rol PACIENTE** — mis notas  |
+| POST   | `/api/notas`                        | **Rol PACIENTE** — crear      |
+| PUT    | `/api/notas/{notaId}`               | **Rol PACIENTE** — actualizar |
+| DELETE | `/api/notas/{notaId}`               | **Rol PACIENTE** — eliminar   |
+
 
 **Tareas — `/api/tareas`**
 
-| Método | Ruta | Notas |
-|--------|------|--------|
-| GET | `/api/tareas` | **Rol PACIENTE** — mis tareas |
-| GET | `/api/tareas/pacientes/{pacienteId}` | **Rol PSICOLOGO** |
-| POST | `/api/tareas/pacientes/{pacienteId}` | **Rol PSICOLOGO** — crear |
-| PATCH | `/api/tareas/{tareaId}/realizada` | **Rol PACIENTE** |
-| PUT | `/api/tareas/{tareaId}` | **Rol PSICOLOGO** |
-| DELETE | `/api/tareas/{tareaId}` | **Rol PSICOLOGO** |
+
+| Método | Ruta                                 | Notas                         |
+| ------ | ------------------------------------ | ----------------------------- |
+| GET    | `/api/tareas`                        | **Rol PACIENTE** — mis tareas |
+| GET    | `/api/tareas/pacientes/{pacienteId}` | **Rol PSICOLOGO**             |
+| POST   | `/api/tareas/pacientes/{pacienteId}` | **Rol PSICOLOGO** — crear     |
+| PATCH  | `/api/tareas/{tareaId}/realizada`    | **Rol PACIENTE**              |
+| PUT    | `/api/tareas/{tareaId}`              | **Rol PSICOLOGO**             |
+| DELETE | `/api/tareas/{tareaId}`              | **Rol PSICOLOGO**             |
+
 
 **Archivos — `/api/archivos/perfiles`**
 
-| Método | Ruta | Notas |
-|--------|------|--------|
-| GET | `/api/archivos/perfiles/{nombreFichero}` | Público; sirve fichero del directorio configurado |
+
+| Método | Ruta                                     | Notas                                             |
+| ------ | ---------------------------------------- | ------------------------------------------------- |
+| GET    | `/api/archivos/perfiles/{nombreFichero}` | Público; sirve fichero del directorio configurado |
+
 
 ### 5.3. Servicios externos
 
@@ -349,4 +377,4 @@ Interfaces principales en el módulo `app` (paquetes `*.data.remote`): `UsuarioA
 
 ---
 
-*Documento generado a partir del código de los proyectos **psicologiaapp** y **bdPsicologiaApp**.*
+*Jesús Conde Barba - DAM2 - TFG*

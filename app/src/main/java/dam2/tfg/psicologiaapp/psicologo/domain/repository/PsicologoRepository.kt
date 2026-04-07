@@ -15,4 +15,6 @@ interface PsicologoRepository {
     suspend fun getPsicologoPorFirebase(firebaseId: String): Result<Psicologo>
 
     suspend fun getPacientesDePsicologo(): Result<List<Paciente>>
+
+    suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo>
 }

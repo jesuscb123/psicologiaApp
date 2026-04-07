@@ -9,6 +9,7 @@ import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.EstablecerModoTemaUseCase
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.ObservarModoTemaUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
+import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarFotoPerfilUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -89,7 +90,7 @@ class MenuLateralPerfilViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cargandoFotoPerfil = false,
-                            nombreUsuario = perfil.nombreUsuario,
+                            nombreUsuario = perfil.nombreCompleto(),
                             fotoPerfilUrl = perfil.fotoPerfilUrl,
                             revisionCacheFoto = it.revisionCacheFoto + 1L,
                             mensajeError = null,
@@ -124,7 +125,7 @@ class MenuLateralPerfilViewModel @Inject constructor(
                                 }
                                 prev.copy(
                                     cargandoPerfil = false,
-                                    nombreUsuario = perfil.nombreUsuario,
+                                    nombreUsuario = perfil.nombreCompleto(),
                                     fotoPerfilUrl = nuevaUrl,
                                     revisionCacheFoto = revision,
                                     mensajeError = null,

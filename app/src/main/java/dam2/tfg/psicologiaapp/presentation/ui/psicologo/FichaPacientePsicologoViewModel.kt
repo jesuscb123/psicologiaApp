@@ -9,6 +9,7 @@ import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasDePacienteUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasDePacienteUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,7 +72,8 @@ class FichaPacientePsicologoViewModel @Inject constructor(
                 onSuccess = { lista -> lista.find { it.idPaciente == pacienteId } },
                 onFailure = { null },
             )
-            val nombrePaciente = pacienteEnLista?.nombreUsuario.orEmpty()
+            val nombrePaciente = pacienteEnLista?.let { listOf(it.nombre, it.apellidos).filter { p -> p.isNotBlank() }.joinToString(" ") }
+                .orEmpty()
             val fotoPaciente = pacienteEnLista?.fotoPerfilUrl
 
             val resultadoNotas = sincronizarNotasDePacienteUseCase(pacienteId)

@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.psicologo.data.repository
 
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.psicologo.data.remote.ActualizarDescripcionPsicologoRequestDto
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
 import dam2.tfg.psicologiaapp.paciente.data.mappers.toDomain as pacienteToDomain
 import dam2.tfg.psicologiaapp.psicologo.data.mappers.toDomain as psicologoToDomain
@@ -36,5 +37,11 @@ class PsicologoRepositoryImpl @Inject constructor(
         } else {
             respuesta.body()!!.map { it.pacienteToDomain() }
         }
+    }
+
+    override suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo> = runCatching {
+        psicologoApi.actualizarMiDescripcion(
+            ActualizarDescripcionPsicologoRequestDto(descripcion = descripcion)
+        ).psicologoToDomain()
     }
 }

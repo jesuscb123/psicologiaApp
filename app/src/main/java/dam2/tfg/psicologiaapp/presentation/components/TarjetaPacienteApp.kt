@@ -20,6 +20,9 @@ fun TarjetaPacienteApp(
     alPulsar: (Paciente) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val nombreCompleto = listOf(paciente.nombre, paciente.apellidos)
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = modifier.clickable { alPulsar(paciente) }
@@ -29,12 +32,12 @@ fun TarjetaPacienteApp(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AvatarPerfilCircularApp(
-                nombreUsuario = paciente.nombreUsuario,
+                nombreUsuario = nombreCompleto,
                 fotoPerfilUrl = paciente.fotoPerfilUrl,
                 tamano = 48.dp,
             )
             Text(
-                text = paciente.nombreUsuario,
+                text = nombreCompleto,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

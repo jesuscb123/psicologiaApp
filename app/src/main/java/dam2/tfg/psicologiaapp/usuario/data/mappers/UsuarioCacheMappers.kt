@@ -20,7 +20,8 @@ private fun RolUsuario.aStringRol(): String = when (this) {
 fun UsuarioEntity.toPerfilCacheado(): PerfilCacheado = PerfilCacheado(
     usuarioId = usuarioId,
     firebaseUid = firebaseUid,
-    nombreUsuario = nombreUsuario,
+    nombre = nombre,
+    apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     rol = rol.aRolUsuario(),
 )
@@ -28,7 +29,8 @@ fun UsuarioEntity.toPerfilCacheado(): PerfilCacheado = PerfilCacheado(
 fun UsuarioPerfil.toEntityCache(): UsuarioEntity = UsuarioEntity(
     usuarioId = usuarioId,
     firebaseUid = firebaseUid,
-    nombreUsuario = nombreUsuario,
+    nombre = nombre,
+    apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     rol = rol.aStringRol(),
 )

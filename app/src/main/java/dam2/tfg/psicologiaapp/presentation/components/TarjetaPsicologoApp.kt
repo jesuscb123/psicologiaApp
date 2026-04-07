@@ -18,6 +18,9 @@ fun TarjetaPsicologoApp(
     alPulsar: (Psicologo) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val nombreCompleto = listOf(psicologo.nombre, psicologo.apellidos)
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
     TarjetaApp(
         elevacion = 1.dp,
         modifier = modifier.clickable { alPulsar(psicologo) },
@@ -26,13 +29,22 @@ fun TarjetaPsicologoApp(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            AvatarInicialApp(nombre = psicologo.nombreUsuario)
+            AvatarInicialApp(nombre = nombreCompleto)
             Text(
-                text = psicologo.nombreUsuario,
+                text = nombreCompleto,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+            psicologo.descripcion?.takeIf { it.isNotBlank() }?.let { descripcion ->
+                Text(
+                    text = descripcion,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

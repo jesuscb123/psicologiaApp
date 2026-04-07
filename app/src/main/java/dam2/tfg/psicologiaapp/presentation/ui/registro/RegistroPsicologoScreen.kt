@@ -71,9 +71,17 @@ fun PantallaRegistroPsicologo(
                     )
 
                     CampoTextoApp(
-                        valor = uiState.nombreUsuario,
-                        alCambiar = viewModel::alCambiarNombreUsuario,
-                        etiqueta = "Nombre de usuario",
+                        valor = uiState.nombre,
+                        alCambiar = viewModel::alCambiarNombre,
+                        etiqueta = "Nombre",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
+
+                    CampoTextoApp(
+                        valor = uiState.apellidos,
+                        alCambiar = viewModel::alCambiarApellidos,
+                        etiqueta = "Apellidos",
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )
@@ -92,6 +100,16 @@ fun PantallaRegistroPsicologo(
                         etiqueta = "Especialidad",
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
+                    )
+
+                    CampoTextoApp(
+                        valor = uiState.descripcion,
+                        alCambiar = viewModel::alCambiarDescripcion,
+                        etiqueta = "Descripción (opcional)",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        singleLine = false,
+                        minLines = 3,
                     )
 
                     uiState.mensajeError?.let {

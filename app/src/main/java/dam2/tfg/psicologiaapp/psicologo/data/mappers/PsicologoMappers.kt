@@ -7,9 +7,11 @@ fun PsicologoResponseDto.toDomain(): Psicologo = Psicologo(
     usuarioId = id,
     idEntidadPsicologo = idEntidadPsicologo,
     firebaseUid = firebaseUid,
-    nombreUsuario = nombreUsuario,
+    nombre = nombre,
+    apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     numeroColegiado = numeroColegiado,
-    especialidad = especialidad
+    especialidad = especialidad,
+    descripcion = descripcion,
 )
 

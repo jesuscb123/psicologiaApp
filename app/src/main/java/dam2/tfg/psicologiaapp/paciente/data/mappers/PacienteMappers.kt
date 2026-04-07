@@ -6,7 +6,8 @@ import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 fun PacienteResponseDto.toDomain(): Paciente = Paciente(
     usuarioId = id,
     firebaseUid = firebaseUid,
-    nombreUsuario = nombreUsuario,
+    nombre = nombre,
+    apellidos = apellidos,
     fotoPerfilUrl = normalizarUrlFotoPerfilCliente(fotoPerfilUrl),
     psicologoId = psicologoId,
     idPaciente = idPaciente

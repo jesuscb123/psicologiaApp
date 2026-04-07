@@ -71,9 +71,17 @@ fun PantallaRegistroPaciente(
                     )
 
                     CampoTextoApp(
-                        valor = uiState.nombreUsuario,
-                        alCambiar = viewModel::alCambiarNombreUsuario,
-                        etiqueta = "Nombre de usuario",
+                        valor = uiState.nombre,
+                        alCambiar = viewModel::alCambiarNombre,
+                        etiqueta = "Nombre",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
+
+                    CampoTextoApp(
+                        valor = uiState.apellidos,
+                        alCambiar = viewModel::alCambiarApellidos,
+                        etiqueta = "Apellidos",
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )

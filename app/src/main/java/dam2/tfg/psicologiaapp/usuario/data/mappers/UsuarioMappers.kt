@@ -32,16 +32,19 @@ fun UsuarioResponseDto.toDomain(): Usuario = when (this) {
     is PsicologoResponseDto -> UsuarioPsicologo(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad
+        especialidad = especialidad,
+        descripcion = descripcion,
     )
     is PacienteResponseDto -> UsuarioPaciente(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
         psicologoId = psicologoId,
@@ -50,7 +53,8 @@ fun UsuarioResponseDto.toDomain(): Usuario = when (this) {
     else -> UsuarioSinRol(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario()
     )
@@ -60,17 +64,20 @@ fun UsuarioPerfilResponseDto.toDomain(): UsuarioPerfil = when (this) {
     is PsicologoPerfilResponseDto -> PsicologoPerfil(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         email = email,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad
+        especialidad = especialidad,
+        descripcion = descripcion,
     )
     is PacientePerfilResponseDto -> PacientePerfil(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         email = email,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
@@ -79,7 +86,8 @@ fun UsuarioPerfilResponseDto.toDomain(): UsuarioPerfil = when (this) {
     else -> UsuarioPerfilBasico(
         usuarioId = id,
         firebaseUid = firebaseUid,
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         email = email,
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario()
@@ -88,13 +96,16 @@ fun UsuarioPerfilResponseDto.toDomain(): UsuarioPerfil = when (this) {
 
 fun UsuarioRequest.toDto(): UsuarioRequestDto = when (this) {
     is PsicologoRequest -> PsicologoRequestDto(
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad
+        especialidad = especialidad,
+        descripcion = descripcion,
     )
     is PacienteRequest -> PacienteRequestDto(
-        nombreUsuario = nombreUsuario,
+        nombre = nombre,
+        apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         psicologoId = psicologoId
     )

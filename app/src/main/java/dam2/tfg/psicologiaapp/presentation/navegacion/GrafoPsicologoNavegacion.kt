@@ -26,8 +26,8 @@ import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewModel
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAjustesPaciente
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAnadirTareaPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAjustesPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaFichaPacientePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaHomePsicologo
 import kotlinx.coroutines.launch
@@ -170,7 +170,7 @@ fun GrafoPsicologoNavegacion(
             }
 
             composable(RutasGrafoPsicologo.AJUSTES) {
-                PantallaAjustesPaciente(
+                PantallaAjustesPsicologo(
                     alVolver = { navPsicologo.popBackStack() },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

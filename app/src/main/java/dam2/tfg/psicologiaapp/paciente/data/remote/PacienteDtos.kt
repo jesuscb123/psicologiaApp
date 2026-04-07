@@ -5,7 +5,8 @@ import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioRequestDto
 import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioResponseDto
 
 data class PacienteRequestDto(
-    override val nombreUsuario: String,
+    override val nombre: String,
+    override val apellidos: String,
     override val fotoPerfilUrl: String? = null,
     val psicologoId: Long?,
     override val rol: String = "PACIENTE"
@@ -14,7 +15,8 @@ data class PacienteRequestDto(
 data class PacienteResponseDto(
     override val id: Long,
     override val firebaseUid: String,
-    override val nombreUsuario: String,
+    override val nombre: String,
+    override val apellidos: String,
     override val fotoPerfilUrl: String?,
     override val rol: String,
     val psicologoId: Long?,
@@ -24,7 +26,8 @@ data class PacienteResponseDto(
 data class PacientePerfilResponseDto(
     override val id: Long,
     override val firebaseUid: String,
-    override val nombreUsuario: String,
+    override val nombre: String,
+    override val apellidos: String,
     override val email: String,
     override val fotoPerfilUrl: String?,
     override val rol: String,

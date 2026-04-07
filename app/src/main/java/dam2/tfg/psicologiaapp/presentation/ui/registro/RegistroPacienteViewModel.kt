@@ -31,8 +31,12 @@ class RegistroPacienteViewModel @Inject constructor(
         _uiState.update { it.copy(contrasena = nuevaContrasena, mensajeError = null) }
     }
 
-    fun alCambiarNombreUsuario(nuevoNombreUsuario: String) {
-        _uiState.update { it.copy(nombreUsuario = nuevoNombreUsuario, mensajeError = null) }
+    fun alCambiarNombre(nuevoNombre: String) {
+        _uiState.update { it.copy(nombre = nuevoNombre, mensajeError = null) }
+    }
+
+    fun alCambiarApellidos(nuevosApellidos: String) {
+        _uiState.update { it.copy(apellidos = nuevosApellidos, mensajeError = null) }
     }
 
     fun alConsumirRegistroCompletado() {
@@ -42,9 +46,10 @@ class RegistroPacienteViewModel @Inject constructor(
     fun registrarPaciente() {
         val correo = uiState.value.correo.trim()
         val contrasena = uiState.value.contrasena
-        val nombreUsuario = uiState.value.nombreUsuario.trim()
+        val nombre = uiState.value.nombre.trim()
+        val apellidos = uiState.value.apellidos.trim()
 
-        if (correo.isBlank() || contrasena.isBlank() || nombreUsuario.isBlank()) {
+        if (correo.isBlank() || contrasena.isBlank() || nombre.isBlank() || apellidos.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Rellena todos los campos") }
             return
         }
@@ -56,7 +61,8 @@ class RegistroPacienteViewModel @Inject constructor(
             resultadoCrearCuenta.fold(
                 onSuccess = {
                     val request = PacienteRequest(
-                        nombreUsuario = nombreUsuario,
+                        nombre = nombre,
+                        apellidos = apellidos,
                         fotoPerfilUrl = null,
                         psicologoId = null
                     )

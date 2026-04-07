@@ -31,8 +31,12 @@ class RegistroPsicologoViewModel @Inject constructor(
         _uiState.update { it.copy(contrasena = nuevaContrasena, mensajeError = null) }
     }
 
-    fun alCambiarNombreUsuario(nuevoNombreUsuario: String) {
-        _uiState.update { it.copy(nombreUsuario = nuevoNombreUsuario, mensajeError = null) }
+    fun alCambiarNombre(nuevoNombre: String) {
+        _uiState.update { it.copy(nombre = nuevoNombre, mensajeError = null) }
+    }
+
+    fun alCambiarApellidos(nuevosApellidos: String) {
+        _uiState.update { it.copy(apellidos = nuevosApellidos, mensajeError = null) }
     }
 
     fun alCambiarNumeroColegiado(nuevoNumeroColegiado: String) {
@@ -43,6 +47,10 @@ class RegistroPsicologoViewModel @Inject constructor(
         _uiState.update { it.copy(especialidad = nuevaEspecialidad, mensajeError = null) }
     }
 
+    fun alCambiarDescripcion(nuevaDescripcion: String) {
+        _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+    }
+
     fun alConsumirRegistroCompletado() {
         _uiState.update { it.copy(registroCompletado = false) }
     }
@@ -50,14 +58,17 @@ class RegistroPsicologoViewModel @Inject constructor(
     fun registrarPsicologo() {
         val correo = uiState.value.correo.trim()
         val contrasena = uiState.value.contrasena
-        val nombreUsuario = uiState.value.nombreUsuario.trim()
+        val nombre = uiState.value.nombre.trim()
+        val apellidos = uiState.value.apellidos.trim()
         val numeroColegiado = uiState.value.numeroColegiado.trim()
         val especialidad = uiState.value.especialidad.trim()
+        val descripcion = uiState.value.descripcion.trim().ifBlank { null }
 
         if (
             correo.isBlank() ||
             contrasena.isBlank() ||
-            nombreUsuario.isBlank() ||
+            nombre.isBlank() ||
+            apellidos.isBlank() ||
             numeroColegiado.isBlank() ||
             especialidad.isBlank()
         ) {
@@ -72,10 +83,12 @@ class RegistroPsicologoViewModel @Inject constructor(
             resultadoCrearCuenta.fold(
                 onSuccess = {
                     val request = PsicologoRequest(
-                        nombreUsuario = nombreUsuario,
+                        nombre = nombre,
+                        apellidos = apellidos,
                         fotoPerfilUrl = null,
                         numeroColegiado = numeroColegiado,
-                        especialidad = especialidad
+                        especialidad = especialidad,
+                        descripcion = descripcion,
                     )
 
                     val resultadoCrearUsuario = crearUsuarioUseCase(request)

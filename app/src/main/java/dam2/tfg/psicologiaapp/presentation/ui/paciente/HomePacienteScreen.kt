@@ -141,9 +141,12 @@ fun PantallaHomePaciente(
     Scaffold(
         topBar = {
             val titulo = uiState.psicologoAsignado?.let { "Tu psicólogo" } ?: "Home paciente"
+            val subtitulo = uiState.psicologoAsignado?.let { psi ->
+                listOf(psi.nombre, psi.apellidos).filter { it.isNotBlank() }.joinToString(" ")
+            }
             BarraSuperiorApp(
                 titulo = titulo,
-                subtitulo = uiState.psicologoAsignado?.nombreUsuario,
+                subtitulo = subtitulo,
                 acciones = {
                     AccionesBarraMenuPerfilPaciente(
                         nombreUsuario = nombreUsuarioBarra,

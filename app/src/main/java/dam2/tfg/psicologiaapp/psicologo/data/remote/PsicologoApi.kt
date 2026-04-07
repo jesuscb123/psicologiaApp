@@ -4,8 +4,10 @@ import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteResponseDto
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Body
 
 /**
  * API Retrofit para endpoints de psicólogos del backend.
@@ -24,4 +26,9 @@ interface PsicologoApi {
 
     @GET("api/psicologos/me/pacientes")
     suspend fun getPacientesDePsicologo(): Response<List<PacienteResponseDto>>
+
+    @PATCH("api/psicologos/me/descripcion")
+    suspend fun actualizarMiDescripcion(
+        @Body body: ActualizarDescripcionPsicologoRequestDto
+    ): PsicologoResponseDto
 }

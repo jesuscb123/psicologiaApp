@@ -11,7 +11,8 @@ package dam2.tfg.psicologiaapp.usuario.domain.model
 interface Usuario {
     val usuarioId: Long
     val firebaseUid: String
-    val nombreUsuario: String
+    val nombre: String
+    val apellidos: String
     val fotoPerfilUrl: String?
     val rol: RolUsuario
 }
@@ -23,6 +24,11 @@ interface Usuario {
  * residen en los paquetes de dominio de sus agregados.
  */
 interface UsuarioRequest {
-    val nombreUsuario: String
+    val nombre: String
+    val apellidos: String
     val fotoPerfilUrl: String?
 }
+
+fun Usuario.nombreCompleto(): String =
+    listOf(nombre, apellidos).filter { it.isNotBlank() }.joinToString(" ")
+

@@ -90,15 +90,19 @@ fun PantallaPerfilPsicologo(
                 return@Column
             }
 
+            val nombreCompleto = listOf(psicologo.nombre, psicologo.apellidos)
+                .filter { it.isNotBlank() }
+                .joinToString(" ")
+
             TarjetaApp(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    AvatarInicialApp(nombre = psicologo.nombreUsuario, tamano = 56.dp)
+                    AvatarInicialApp(nombre = nombreCompleto, tamano = 56.dp)
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = psicologo.nombreUsuario,
+                            text = nombreCompleto,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -106,6 +110,13 @@ fun PantallaPerfilPsicologo(
                             text = psicologo.especialidad,
                             style = MaterialTheme.typography.bodyMedium
                         )
+                        psicologo.descripcion?.takeIf { it.isNotBlank() }?.let { descripcion ->
+                            Text(
+                                text = descripcion,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         Text(
                             text = "Nº colegiado: ${psicologo.numeroColegiado}",
                             style = MaterialTheme.typography.bodySmall,

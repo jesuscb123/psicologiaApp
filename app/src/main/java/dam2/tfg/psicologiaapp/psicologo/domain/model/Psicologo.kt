@@ -5,9 +5,11 @@ data class Psicologo(
     /** ID de la entidad Psicólogo; [usuarioId] es el ID de usuario. */
     val idEntidadPsicologo: Long,
     val firebaseUid: String,
-    val nombreUsuario: String,
+    val nombre: String,
+    val apellidos: String,
     val fotoPerfilUrl: String?,
     val numeroColegiado: String,
-    val especialidad: String
+    val especialidad: String,
+    val descripcion: String? = null,
 )
 

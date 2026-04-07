@@ -49,6 +49,34 @@ object BaseDeDatosModulo {
         }
     }
 
+    private val migracion_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS usuarios_nuevo (
+                    usuarioId INTEGER NOT NULL PRIMARY KEY,
+                    firebaseUid TEXT NOT NULL,
+                    nombre TEXT NOT NULL,
+                    apellidos TEXT NOT NULL,
+                    fotoPerfilUrl TEXT,
+                    rol TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+                INSERT INTO usuarios_nuevo (usuarioId, firebaseUid, nombre, apellidos, fotoPerfilUrl, rol)
+                SELECT usuarioId, firebaseUid, nombreUsuario, '', fotoPerfilUrl, rol
+                FROM usuarios
+                """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE usuarios")
+            db.execSQL("ALTER TABLE usuarios_nuevo RENAME TO usuarios")
+        }
+    }
+
     @Provides
     @Singleton
     fun proporcionarBaseDeDatos(
@@ -59,7 +87,7 @@ object BaseDeDatosModulo {
             PsicologiaAppDatabase::class.java,
             "psicologia_app.db"
         )
-            .addMigrations(migracion_1_2)
+            .addMigrations(migracion_1_2, migracion_2_3)
             .build()
 
     @Provides

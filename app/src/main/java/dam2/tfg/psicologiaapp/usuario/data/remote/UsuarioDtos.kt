@@ -6,7 +6,8 @@ package dam2.tfg.psicologiaapp.usuario.data.remote
  */
 
 interface UsuarioRequestDto {
-    val nombreUsuario: String
+    val nombre: String
+    val apellidos: String
     val fotoPerfilUrl: String?
     val rol: String
 }
@@ -14,7 +15,8 @@ interface UsuarioRequestDto {
 interface UsuarioResponseDto {
     val id: Long
     val firebaseUid: String
-    val nombreUsuario: String
+    val nombre: String
+    val apellidos: String
     val fotoPerfilUrl: String?
     val rol: String
 }
@@ -22,7 +24,8 @@ interface UsuarioResponseDto {
 data class UsuarioBasicoResponseDto(
     override val id: Long,
     override val firebaseUid: String,
-    override val nombreUsuario: String,
+    override val nombre: String,
+    override val apellidos: String,
     override val fotoPerfilUrl: String?,
     override val rol: String
 ) : UsuarioResponseDto
@@ -30,7 +33,8 @@ data class UsuarioBasicoResponseDto(
 interface UsuarioPerfilResponseDto {
     val id: Long
     val firebaseUid: String
-    val nombreUsuario: String
+    val nombre: String
+    val apellidos: String
     val email: String
     val fotoPerfilUrl: String?
     val rol: String
@@ -39,7 +43,8 @@ interface UsuarioPerfilResponseDto {
 data class UsuarioPerfilBasicoResponseDto(
     override val id: Long,
     override val firebaseUid: String,
-    override val nombreUsuario: String,
+    override val nombre: String,
+    override val apellidos: String,
     override val email: String,
     override val fotoPerfilUrl: String?,
     override val rol: String

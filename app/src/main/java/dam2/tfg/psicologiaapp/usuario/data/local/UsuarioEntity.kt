@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class UsuarioEntity(
     @PrimaryKey val usuarioId: Long,
     val firebaseUid: String,
-    val nombreUsuario: String,
+    val nombre: String,
+    val apellidos: String,
     val fotoPerfilUrl: String?,
     val rol: String
 )

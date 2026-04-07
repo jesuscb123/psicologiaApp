@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.psicologo.domain.model.PsicologoPerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
+import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -57,7 +58,7 @@ class HomePsicologoViewModel @Inject constructor(
                     }
 
                     _uiState.update {
-                        it.copy(nombreUsuarioPsicologo = perfilPsi.nombreUsuario)
+                        it.copy(nombreUsuarioPsicologo = perfilPsi.nombreCompleto())
                     }
 
                     val resultadoPacientes = getPacientesDePsicologoUseCase()

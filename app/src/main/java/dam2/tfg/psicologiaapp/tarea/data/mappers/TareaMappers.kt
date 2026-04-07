@@ -11,6 +11,7 @@ fun TareaResponseDto.toDomain(): Tarea = Tarea(
     descripcion = descripcion,
     horaEnvio = horaEnvio,
     realizada = realizada,
+    aceptadaPorPaciente = aceptadaPorPaciente ?: false,
     psicologo = psicologo.psicologoToDomain(),
     paciente = paciente.pacienteToDomain()
 )

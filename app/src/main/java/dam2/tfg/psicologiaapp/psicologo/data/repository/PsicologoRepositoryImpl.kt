@@ -27,6 +27,14 @@ class PsicologoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPacientesDePsicologo(): Result<List<Paciente>> = runCatching {
-        psicologoApi.getPacientesDePsicologo().map { it.pacienteToDomain() }
+        val respuesta = psicologoApi.getPacientesDePsicologo()
+        if (!respuesta.isSuccessful) {
+            throw IllegalStateException("Error al obtener pacientes: HTTP ${respuesta.code()}")
+        }
+        if (respuesta.code() == 204 || respuesta.body() == null) {
+            emptyList()
+        } else {
+            respuesta.body()!!.map { it.pacienteToDomain() }
+        }
     }
 }

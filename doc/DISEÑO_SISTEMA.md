@@ -199,7 +199,7 @@ sequenceDiagram
 
 ### 3.1. Modelo lógico relacional (servidor)
 
-Motor principal: **PostgreSQL** (variables `SPRING_DATASOURCE_*`). En desarrollo, perfil `**dev`**: **H2 en memoria** con modo compatible PostgreSQL.
+Motor principal: **PostgreSQL** (variables `SPRING_DATASOURCE_`*). En desarrollo, perfil `**dev`**: **H2 en memoria** con modo compatible PostgreSQL.
 
 Hibernate `ddl-auto: update` genera/ajusta el esquema a partir de las entidades.
 
@@ -256,23 +256,13 @@ Capturas de la aplicación Android (Jetpack Compose). Las imágenes están en la
 
 ### 4.1. Inicio de sesión
 
-
-
 ### 4.2. Registro
-
-
 
 ### 4.3. Inicio del paciente
 
-
-
 ### 4.4. Tareas asignadas
 
-
-
 ### 4.5. Perfil de usuario
-
-
 
 ---
 

@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dam2.tfg.psicologiaapp.presentation.ui.inicio.PantallaIniciarSesion
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaPsicologoPlaceholder
 import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPaciente
 import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaSeleccionRolRegistro
@@ -27,7 +26,7 @@ fun AppNavHost() {
                     }
                 },
                 alEntrarComoPsicologo = {
-                    navController.navigate(RutasApp.PLACEHOLDER_PSICOLOGO) {
+                    navController.navigate(RutasApp.GRAFO_PSICOLOGO) {
                         popUpTo(RutasApp.INICIAR_SESION) { inclusive = true }
                     }
                 },
@@ -71,13 +70,10 @@ fun AppNavHost() {
             )
         }
 
-        composable(RutasApp.PLACEHOLDER_PSICOLOGO) {
-            PantallaPsicologoPlaceholder(
-                alCerrarSesion = {
-                    navController.navigate(RutasApp.INICIAR_SESION) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+        composable(RutasApp.GRAFO_PSICOLOGO) { entradaGrafo ->
+            GrafoPsicologoNavegacion(
+                navControllerRaiz = navController,
+                entradaGrafo = entradaGrafo,
             )
         }
     }

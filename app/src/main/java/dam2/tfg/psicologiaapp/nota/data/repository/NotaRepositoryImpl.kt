@@ -38,7 +38,21 @@ class NotaRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getNotasDePaciente(pacienteId: Long): Result<List<Nota>> = runCatching {
-        notaApi.getNotasDePaciente(pacienteId).map { it.toDomain() }
+        val respuesta = notaApi.getNotasDePaciente(pacienteId)
+        if (!respuesta.isSuccessful) {
+            val codigo = respuesta.code()
+            val detalle = when (codigo) {
+                401 -> "HTTP 401: el servidor no aceptó el token (revisa logs del API y FIREBASE_CREDENTIALS / proyecto)"
+                403 -> "HTTP 403: no autorizado para ver notas de este paciente"
+                else -> "HTTP $codigo"
+            }
+            throw IllegalStateException("Error al obtener notas: $detalle")
+        }
+        if (respuesta.code() == 204 || respuesta.body() == null) {
+            emptyList()
+        } else {
+            respuesta.body()!!.map { it.toDomain() }
+        }
     }
 
     override suspend fun crearNota(

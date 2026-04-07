@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.psicologo.data.remote
 
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteResponseDto
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoResponseDto
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -22,5 +23,5 @@ interface PsicologoApi {
     suspend fun getPsicologoPorFirebase(@Path("firebaseId") firebaseId: String): PsicologoResponseDto
 
     @GET("api/psicologos/me/pacientes")
-    suspend fun getPacientesDePsicologo(): List<PacienteResponseDto>
+    suspend fun getPacientesDePsicologo(): Response<List<PacienteResponseDto>>
 }

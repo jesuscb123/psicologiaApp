@@ -3,9 +3,13 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -33,6 +37,7 @@ import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
+import dam2.tfg.psicologiaapp.presentation.components.ListaTareasPacienteApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaPsicologoApp
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
@@ -53,6 +58,55 @@ fun PantallaHomePaciente(
 
     val uiState by viewModel.uiState.collectAsState()
     var notaPendienteEliminar by remember { mutableStateOf<Nota?>(null) }
+    var tareaIdDialogo by remember { mutableStateOf<Long?>(null) }
+
+    val tareaParaDialogo = tareaIdDialogo?.let { id ->
+        uiState.tareas.find { it.id == id }
+    }
+
+    tareaParaDialogo?.let { tarea ->
+        AlertDialog(
+            onDismissRequest = { tareaIdDialogo = null },
+            title = { Text(tarea.titulo) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(tarea.descripcion)
+                    if (!tarea.aceptadaPorPaciente) {
+                        Text(
+                            text = "Al aceptarla podrás marcarla como completada cuando la hayas hecho.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                when {
+                    !tarea.aceptadaPorPaciente ->
+                        TextButton(
+                            onClick = {
+                                viewModel.aceptarTarea(tarea.id)
+                                tareaIdDialogo = null
+                            }
+                        ) { Text("Aceptar") }
+                    tarea.aceptadaPorPaciente && !tarea.realizada ->
+                        TextButton(
+                            onClick = {
+                                viewModel.marcarTareaRealizada(tarea.id, true)
+                                tareaIdDialogo = null
+                            }
+                        ) { Text("Marcar como completada") }
+                    else ->
+                        TextButton(onClick = { tareaIdDialogo = null }) { Text("Cerrar") }
+                }
+            },
+            dismissButton = {
+                if (!tarea.realizada) {
+                    TextButton(onClick = { tareaIdDialogo = null }) { Text("Cerrar") }
+                }
+            },
+        )
+    }
 
     notaPendienteEliminar?.let { nota ->
         AlertDialog(
@@ -105,47 +159,89 @@ fun PantallaHomePaciente(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        val psicologoIdAsignado = uiState.perfilPaciente?.psicologoId
+        val paddingContenido = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(bottom = 72.dp)
 
-            if (uiState.cargando) {
-                Text("Cargando...")
-                return@Column
+        when {
+            uiState.cargando -> {
+                Column(
+                    modifier = paddingContenido,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Text("Cargando...")
+                }
             }
 
-            val psicologoIdAsignado = uiState.perfilPaciente?.psicologoId
-            if (psicologoIdAsignado == null) {
-                Text(
-                    text = "Elige tu psicólogo",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                GridPsicologos(
-                    psicologos = uiState.listaPsicologos,
-                    alPulsarPsicologo = { psicologo ->
-                        alIrAPerfilPsicologo(psicologo.usuarioId.toString())
-                    }
-                )
-            } else {
-                Text(
-                    text = "Tus notas",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                if (uiState.notas.isEmpty()) {
-                    Text("Todavía no hay notas existentes")
-                } else {
-                    ListaNotasApp(
-                        notas = uiState.notas,
-                        alSolicitarEliminar = { notaPendienteEliminar = it }
+            psicologoIdAsignado == null -> {
+                // Sin scroll vertical: LazyVerticalGrid no puede ir dentro de Column(verticalScroll).
+                Column(
+                    modifier = paddingContenido,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Text(
+                        text = "Elige tu psicólogo",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
+                    GridPsicologos(
+                        psicologos = uiState.listaPsicologos,
+                        alPulsarPsicologo = { psicologo ->
+                            alIrAPerfilPsicologo(psicologo.usuarioId.toString())
+                        }
+                    )
+                }
+            }
+
+            else -> {
+                Column(
+                    modifier = paddingContenido.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
+                    Text(
+                        text = "Tus notas",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    if (uiState.notas.isEmpty()) {
+                        Text("Todavía no hay notas existentes")
+                    } else {
+                        ListaNotasApp(
+                            notas = uiState.notas,
+                            alSolicitarEliminar = { notaPendienteEliminar = it },
+                            listaPlana = true,
+                            paddingContenido = PaddingValues(bottom = 8.dp),
+                        )
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = "Tus tareas",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    if (uiState.tareas.isEmpty()) {
+                        Text(
+                            text = "No tienes tareas asignadas",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    } else {
+                        ListaTareasPacienteApp(
+                            tareas = uiState.tareas,
+                            alPulsar = { t -> tareaIdDialogo = t.id },
+                        )
+                    }
                 }
             }
         }

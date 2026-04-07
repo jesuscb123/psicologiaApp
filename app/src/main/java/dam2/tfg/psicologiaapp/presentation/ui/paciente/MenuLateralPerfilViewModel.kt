@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.CerrarSesionUseCase
-import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.EstablecerModoTemaUseCase
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.ObservarModoTemaUseCase
@@ -114,39 +113,32 @@ class MenuLateralPerfilViewModel @Inject constructor(
             _uiState.update { it.copy(cargandoPerfil = true, mensajeError = null) }
             getPerfilActualUseCase().fold(
                 onSuccess = { perfil ->
-                    if (perfil.rol != RolUsuario.PACIENTE) {
-                        _uiState.update {
-                            it.copy(
-                                cargandoPerfil = false,
-                                mensajeError = "Perfil no válido",
-                            )
+                    when (perfil.rol) {
+                        RolUsuario.PACIENTE, RolUsuario.PSICOLOGO -> {
+                            _uiState.update { prev ->
+                                val nuevaUrl = perfil.fotoPerfilUrl
+                                val revision = if (nuevaUrl != prev.fotoPerfilUrl) {
+                                    prev.revisionCacheFoto + 1L
+                                } else {
+                                    prev.revisionCacheFoto
+                                }
+                                prev.copy(
+                                    cargandoPerfil = false,
+                                    nombreUsuario = perfil.nombreUsuario,
+                                    fotoPerfilUrl = nuevaUrl,
+                                    revisionCacheFoto = revision,
+                                    mensajeError = null,
+                                )
+                            }
                         }
-                        return@launch
-                    }
-                    val paciente = perfil as? PacientePerfil
-                    if (paciente == null) {
-                        _uiState.update {
-                            it.copy(
-                                cargandoPerfil = false,
-                                mensajeError = "No se pudo cargar el perfil",
-                            )
+                        else -> {
+                            _uiState.update {
+                                it.copy(
+                                    cargandoPerfil = false,
+                                    mensajeError = "Perfil no válido",
+                                )
+                            }
                         }
-                        return@launch
-                    }
-                    _uiState.update { prev ->
-                        val nuevaUrl = paciente.fotoPerfilUrl
-                        val revision = if (nuevaUrl != prev.fotoPerfilUrl) {
-                            prev.revisionCacheFoto + 1L
-                        } else {
-                            prev.revisionCacheFoto
-                        }
-                        prev.copy(
-                            cargandoPerfil = false,
-                            nombreUsuario = paciente.nombreUsuario,
-                            fotoPerfilUrl = nuevaUrl,
-                            revisionCacheFoto = revision,
-                            mensajeError = null,
-                        )
                     }
                 },
                 onFailure = { error ->

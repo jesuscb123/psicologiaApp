@@ -34,66 +34,107 @@ fun ListaNotasApp(
     notas: List<Nota>,
     modifier: Modifier = Modifier,
     paddingContenido: PaddingValues = PaddingValues(bottom = 80.dp),
+    permitirEliminar: Boolean = true,
     alSolicitarEliminar: (Nota) -> Unit = {},
+    /** Si es true, usa [Column] en lugar de [LazyColumn] (p. ej. dentro de un scroll padre). */
+    listaPlana: Boolean = false,
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = paddingContenido,
-        modifier = modifier.fillMaxSize()
+    if (listaPlana) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = modifier.padding(paddingContenido),
+        ) {
+            notas.forEach { nota ->
+                ContenidoItemNota(
+                    nota = nota,
+                    permitirEliminar = permitirEliminar,
+                    alSolicitarEliminar = alSolicitarEliminar,
+                )
+            }
+        }
+    } else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = paddingContenido,
+            modifier = modifier.fillMaxSize()
+        ) {
+            items(notas, key = { it.id }) { nota ->
+                ContenidoItemNota(
+                    nota = nota,
+                    permitirEliminar = permitirEliminar,
+                    alSolicitarEliminar = alSolicitarEliminar,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ContenidoItemNota(
+    nota: Nota,
+    permitirEliminar: Boolean,
+    alSolicitarEliminar: (Nota) -> Unit,
+) {
+    if (permitirEliminar) {
+        val dismissState = rememberSwipeToDismissBoxState(
+            confirmValueChange = { valor ->
+                if (valor == SwipeToDismissBoxValue.StartToEnd) {
+                    alSolicitarEliminar(nota)
+                    false
+                } else {
+                    true
+                }
+            }
+        )
+        SwipeToDismissBox(
+            state = dismissState,
+            enableDismissFromStartToEnd = true,
+            enableDismissFromEndToStart = false,
+            backgroundContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.errorContainer),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "Eliminar",
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            },
+            content = {
+                TarjetaContenidoNota(nota = nota)
+            }
+        )
+    } else {
+        TarjetaContenidoNota(nota = nota)
+    }
+}
+
+@Composable
+private fun TarjetaContenidoNota(nota: Nota) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        items(notas, key = { it.id }) { nota ->
-            val dismissState = rememberSwipeToDismissBoxState(
-                confirmValueChange = { valor ->
-                    if (valor == SwipeToDismissBoxValue.StartToEnd) {
-                        alSolicitarEliminar(nota)
-                        false
-                    } else {
-                        true
-                    }
-                }
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = nota.asunto,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            SwipeToDismissBox(
-                state = dismissState,
-                enableDismissFromStartToEnd = true,
-                enableDismissFromEndToStart = false,
-                backgroundContent = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.errorContainer),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = "Eliminar",
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                },
-                content = {
-                    Card(
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = nota.asunto,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(Modifier.height(6.dp))
-                            Text(
-                                text = nota.descripcion,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 4,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = nota.descripcion,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

@@ -15,6 +15,8 @@ interface TareaRepository {
 
     suspend fun marcarRealizada(tareaId: Long, realizada: Boolean): Result<Tarea>
 
+    suspend fun aceptarTarea(tareaId: Long): Result<Tarea>
+
     suspend fun actualizarTarea(
         tareaId: Long,
         titulo: String,

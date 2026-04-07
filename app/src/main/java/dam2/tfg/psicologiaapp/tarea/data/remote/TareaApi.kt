@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.tarea.data.remote
 
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -15,10 +16,10 @@ import retrofit2.http.PUT
 interface TareaApi {
 
     @GET("api/tareas")
-    suspend fun getTareasPacienteActual(): List<TareaResponseDto>
+    suspend fun getTareasPacienteActual(): Response<List<TareaResponseDto>>
 
     @GET("api/tareas/pacientes/{pacienteId}")
-    suspend fun getTareasDePaciente(@Path("pacienteId") pacienteId: Long): List<TareaResponseDto>
+    suspend fun getTareasDePaciente(@Path("pacienteId") pacienteId: Long): Response<List<TareaResponseDto>>
 
     @POST("api/tareas/pacientes/{pacienteId}")
     suspend fun crearTarea(
@@ -31,6 +32,9 @@ interface TareaApi {
         @Path("tareaId") tareaId: Long,
         @Body body: TareaActualizarRealizadaRequestDto
     ): TareaResponseDto
+
+    @PATCH("api/tareas/{tareaId}/aceptada")
+    suspend fun aceptarTarea(@Path("tareaId") tareaId: Long): TareaResponseDto
 
     @PUT("api/tareas/{tareaId}")
     suspend fun actualizarTarea(

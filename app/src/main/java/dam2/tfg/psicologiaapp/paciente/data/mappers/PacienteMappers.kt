@@ -7,7 +7,7 @@ fun PacienteResponseDto.toDomain(): Paciente = Paciente(
     usuarioId = id,
     firebaseUid = firebaseUid,
     nombreUsuario = nombreUsuario,
-    fotoPerfilUrl = fotoPerfilUrl,
+    fotoPerfilUrl = normalizarUrlFotoPerfilCliente(fotoPerfilUrl),
     psicologoId = psicologoId,
     idPaciente = idPaciente
 )

@@ -17,7 +17,7 @@ interface NotaApi {
     suspend fun getNotasPacienteActual(): Response<List<NotaResponseDto>>
 
     @GET("api/notas/pacientes/{pacienteId}")
-    suspend fun getNotasDePaciente(@Path("pacienteId") pacienteId: Long): List<NotaResponseDto>
+    suspend fun getNotasDePaciente(@Path("pacienteId") pacienteId: Long): Response<List<NotaResponseDto>>
 
     @POST("api/notas")
     suspend fun crearNota(@Body body: NotaRequestDto): NotaResponseDto

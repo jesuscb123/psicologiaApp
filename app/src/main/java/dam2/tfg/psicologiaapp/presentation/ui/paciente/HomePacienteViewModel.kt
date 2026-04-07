@@ -7,6 +7,9 @@ import dam2.tfg.psicologiaapp.nota.domain.usecase.GetNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ListarPsicologosUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.AceptarTareaUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.GetTareasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.MarcarTareaRealizadaUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +26,9 @@ class HomePacienteViewModel @Inject constructor(
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
     private val listarPsicologosUseCase: ListarPsicologosUseCase,
     private val getNotasPacienteActualUseCase: GetNotasPacienteActualUseCase,
+    private val getTareasPacienteActualUseCase: GetTareasPacienteActualUseCase,
+    private val aceptarTareaUseCase: AceptarTareaUseCase,
+    private val marcarTareaRealizadaUseCase: MarcarTareaRealizadaUseCase,
     private val borrarNotaUseCase: BorrarNotaUseCase,
 ) : ViewModel() {
 
@@ -93,28 +99,79 @@ class HomePacienteViewModel @Inject constructor(
             if (perfilPaciente?.psicologoId != null) {
                 val resultadoNotas = getNotasPacienteActualUseCase()
                 ensureActive()
-                resultadoNotas.fold(
-                    onSuccess = { notas ->
-                        _uiState.update {
-                            it.copy(
-                                cargando = false,
-                                notas = notas,
-                                mensajeError = it.mensajeError
-                            )
-                        }
-                    },
-                    onFailure = { error ->
-                        _uiState.update {
-                            it.copy(
-                                cargando = false,
-                                mensajeError = error.message ?: "No se pudieron cargar las notas"
-                            )
-                        }
-                    }
-                )
+                val resultadoTareas = getTareasPacienteActualUseCase()
+                ensureActive()
+                val notas = resultadoNotas.getOrElse { emptyList() }
+                val tareas = resultadoTareas.getOrElse { emptyList() }
+                val errNotas = resultadoNotas.exceptionOrNull()
+                val errTareas = resultadoTareas.exceptionOrNull()
+                val textoErrorCarga = when {
+                    errNotas != null && errTareas != null ->
+                        listOfNotNull(errNotas.message, errTareas.message).joinToString(" · ")
+                    errNotas != null -> errNotas.message ?: "No se pudieron cargar las notas"
+                    errTareas != null -> errTareas.message ?: "No se pudieron cargar las tareas"
+                    else -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        cargando = false,
+                        notas = notas,
+                        tareas = tareas,
+                        mensajeError = textoErrorCarga ?: it.mensajeError,
+                    )
+                }
             } else {
-                _uiState.update { it.copy(cargando = false, notas = emptyList()) }
+                _uiState.update { it.copy(cargando = false, notas = emptyList(), tareas = emptyList()) }
             }
+        }
+    }
+
+    fun aceptarTarea(tareaId: Long) {
+        viewModelScope.launch {
+            aceptarTareaUseCase(tareaId).fold(
+                onSuccess = { actualizada ->
+                    _uiState.update { estado ->
+                        estado.copy(
+                            tareas = estado.tareas.map { t ->
+                                if (t.id == actualizada.id) actualizada else t
+                            },
+                            mensajeError = null,
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            mensajeError = error.message ?: "No se pudo aceptar la tarea"
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun marcarTareaRealizada(tareaId: Long, realizada: Boolean) {
+        viewModelScope.launch {
+            marcarTareaRealizadaUseCase(tareaId, realizada).fold(
+                onSuccess = { actualizada ->
+                    _uiState.update { estado ->
+                        estado.copy(
+                            tareas = estado.tareas.map { t ->
+                                if (t.id == actualizada.id) actualizada else t
+                            },
+                            mensajeError = null,
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            mensajeError = error.message
+                                ?: "No se pudo actualizar el estado de la tarea"
+                        )
+                    }
+                }
+            )
         }
     }
 

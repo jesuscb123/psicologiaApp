@@ -13,6 +13,7 @@ data class Tarea(
     val descripcion: String,
     val horaEnvio: String,
     val realizada: Boolean,
+    val aceptadaPorPaciente: Boolean,
     val psicologo: Psicologo,
     val paciente: Paciente
 )

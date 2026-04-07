@@ -16,11 +16,27 @@ class TareaRepositoryImpl @Inject constructor(
 ) : TareaRepository {
 
     override suspend fun getTareasPacienteActual(): Result<List<Tarea>> = runCatching {
-        tareaApi.getTareasPacienteActual().map { it.toDomain() }
+        val respuesta = tareaApi.getTareasPacienteActual()
+        if (!respuesta.isSuccessful) {
+            throw IllegalStateException("Error al obtener tareas: HTTP ${respuesta.code()}")
+        }
+        if (respuesta.code() == 204 || respuesta.body() == null) {
+            emptyList()
+        } else {
+            respuesta.body()!!.map { it.toDomain() }
+        }
     }
 
     override suspend fun getTareasDePaciente(pacienteId: Long): Result<List<Tarea>> = runCatching {
-        tareaApi.getTareasDePaciente(pacienteId).map { it.toDomain() }
+        val respuesta = tareaApi.getTareasDePaciente(pacienteId)
+        if (!respuesta.isSuccessful) {
+            throw IllegalStateException("Error al obtener tareas: HTTP ${respuesta.code()}")
+        }
+        if (respuesta.code() == 204 || respuesta.body() == null) {
+            emptyList()
+        } else {
+            respuesta.body()!!.map { it.toDomain() }
+        }
     }
 
     override suspend fun crearTarea(
@@ -36,6 +52,10 @@ class TareaRepositoryImpl @Inject constructor(
 
     override suspend fun marcarRealizada(tareaId: Long, realizada: Boolean): Result<Tarea> = runCatching {
         tareaApi.marcarRealizada(tareaId, TareaActualizarRealizadaRequestDto(realizada = realizada)).toDomain()
+    }
+
+    override suspend fun aceptarTarea(tareaId: Long): Result<Tarea> = runCatching {
+        tareaApi.aceptarTarea(tareaId).toDomain()
     }
 
     override suspend fun actualizarTarea(

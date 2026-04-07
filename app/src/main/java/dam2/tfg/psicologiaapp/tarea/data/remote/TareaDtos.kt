@@ -28,6 +28,7 @@ data class TareaResponseDto(
     val descripcion: String,
     val horaEnvio: String,
     val realizada: Boolean,
+    val aceptadaPorPaciente: Boolean? = null,
     val psicologo: PsicologoResponseDto,
     val paciente: PacienteResponseDto
 )

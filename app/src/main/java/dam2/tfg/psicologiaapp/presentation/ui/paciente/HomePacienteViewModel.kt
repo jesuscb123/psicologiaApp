@@ -3,13 +3,15 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.nota.domain.usecase.BorrarNotaUseCase
-import dam2.tfg.psicologiaapp.nota.domain.usecase.GetNotasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ListarPsicologosUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.AceptarTareaUseCase
-import dam2.tfg.psicologiaapp.tarea.domain.usecase.GetTareasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.MarcarTareaRealizadaUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,8 +28,10 @@ import javax.inject.Inject
 class HomePacienteViewModel @Inject constructor(
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
     private val listarPsicologosUseCase: ListarPsicologosUseCase,
-    private val getNotasPacienteActualUseCase: GetNotasPacienteActualUseCase,
-    private val getTareasPacienteActualUseCase: GetTareasPacienteActualUseCase,
+    private val observarNotasPacienteActualUseCase: ObservarNotasPacienteActualUseCase,
+    private val observarTareasPacienteActualUseCase: ObservarTareasPacienteActualUseCase,
+    private val sincronizarNotasPacienteActualUseCase: SincronizarNotasPacienteActualUseCase,
+    private val sincronizarTareasPacienteActualUseCase: SincronizarTareasPacienteActualUseCase,
     private val aceptarTareaUseCase: AceptarTareaUseCase,
     private val marcarTareaRealizadaUseCase: MarcarTareaRealizadaUseCase,
     private val borrarNotaUseCase: BorrarNotaUseCase,
@@ -36,6 +41,21 @@ class HomePacienteViewModel @Inject constructor(
     val uiState: StateFlow<HomePacienteUiState> = _uiState
 
     private var trabajoRecarga: Job? = null
+
+    init {
+        viewModelScope.launch {
+            observarNotasPacienteActualUseCase()
+                .collectLatest { notas ->
+                    _uiState.update { it.copy(notas = notas) }
+                }
+        }
+        viewModelScope.launch {
+            observarTareasPacienteActualUseCase()
+                .collectLatest { tareas ->
+                    _uiState.update { it.copy(tareas = tareas) }
+                }
+        }
+    }
 
     fun recargar() {
         trabajoRecarga?.cancel()
@@ -97,12 +117,10 @@ class HomePacienteViewModel @Inject constructor(
             }
 
             if (perfilPaciente?.psicologoId != null) {
-                val resultadoNotas = getNotasPacienteActualUseCase()
+                val resultadoNotas = sincronizarNotasPacienteActualUseCase()
                 ensureActive()
-                val resultadoTareas = getTareasPacienteActualUseCase()
+                val resultadoTareas = sincronizarTareasPacienteActualUseCase()
                 ensureActive()
-                val notas = resultadoNotas.getOrElse { emptyList() }
-                val tareas = resultadoTareas.getOrElse { emptyList() }
                 val errNotas = resultadoNotas.exceptionOrNull()
                 val errTareas = resultadoTareas.exceptionOrNull()
                 val textoErrorCarga = when {
@@ -115,8 +133,6 @@ class HomePacienteViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        notas = notas,
-                        tareas = tareas,
                         mensajeError = textoErrorCarga ?: it.mensajeError,
                     )
                 }
@@ -129,16 +145,7 @@ class HomePacienteViewModel @Inject constructor(
     fun aceptarTarea(tareaId: Long) {
         viewModelScope.launch {
             aceptarTareaUseCase(tareaId).fold(
-                onSuccess = { actualizada ->
-                    _uiState.update { estado ->
-                        estado.copy(
-                            tareas = estado.tareas.map { t ->
-                                if (t.id == actualizada.id) actualizada else t
-                            },
-                            mensajeError = null,
-                        )
-                    }
-                },
+                onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(
@@ -153,16 +160,7 @@ class HomePacienteViewModel @Inject constructor(
     fun marcarTareaRealizada(tareaId: Long, realizada: Boolean) {
         viewModelScope.launch {
             marcarTareaRealizadaUseCase(tareaId, realizada).fold(
-                onSuccess = { actualizada ->
-                    _uiState.update { estado ->
-                        estado.copy(
-                            tareas = estado.tareas.map { t ->
-                                if (t.id == actualizada.id) actualizada else t
-                            },
-                            mensajeError = null,
-                        )
-                    }
-                },
+                onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(
@@ -178,14 +176,7 @@ class HomePacienteViewModel @Inject constructor(
     fun eliminarNota(notaId: Long) {
         viewModelScope.launch {
             borrarNotaUseCase(notaId).fold(
-                onSuccess = {
-                    _uiState.update { estado ->
-                        estado.copy(
-                            notas = estado.notas.filter { nota -> nota.id != notaId },
-                            mensajeError = null,
-                        )
-                    }
-                },
+                onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(

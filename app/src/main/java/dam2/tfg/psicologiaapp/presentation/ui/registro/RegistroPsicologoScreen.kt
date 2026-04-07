@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +20,8 @@ import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoContrasenaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoCorreoApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
+import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,52 +54,62 @@ fun PantallaRegistroPsicologo(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CampoCorreoApp(
-                valor = uiState.correo,
-                alCambiar = viewModel::alCambiarCorreo,
-                modifier = Modifier.fillMaxWidth(),
-                habilitado = !uiState.cargando,
-            )
+            TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    CampoCorreoApp(
+                        valor = uiState.correo,
+                        alCambiar = viewModel::alCambiarCorreo,
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
 
-            CampoContrasenaApp(
-                valor = uiState.contrasena,
-                alCambiar = viewModel::alCambiarContrasena,
-                modifier = Modifier.fillMaxWidth(),
-                habilitado = !uiState.cargando,
-            )
+                    CampoContrasenaApp(
+                        valor = uiState.contrasena,
+                        alCambiar = viewModel::alCambiarContrasena,
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
 
-            CampoTextoApp(
-                valor = uiState.nombreUsuario,
-                alCambiar = viewModel::alCambiarNombreUsuario,
-                etiqueta = "Nombre de usuario",
-                modifier = Modifier.fillMaxWidth(),
-                habilitado = !uiState.cargando,
-            )
+                    CampoTextoApp(
+                        valor = uiState.nombreUsuario,
+                        alCambiar = viewModel::alCambiarNombreUsuario,
+                        etiqueta = "Nombre de usuario",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
 
-            CampoTextoApp(
-                valor = uiState.numeroColegiado,
-                alCambiar = viewModel::alCambiarNumeroColegiado,
-                etiqueta = "Número de colegiado",
-                modifier = Modifier.fillMaxWidth(),
-                habilitado = !uiState.cargando,
-            )
+                    CampoTextoApp(
+                        valor = uiState.numeroColegiado,
+                        alCambiar = viewModel::alCambiarNumeroColegiado,
+                        etiqueta = "Número de colegiado",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
 
-            CampoTextoApp(
-                valor = uiState.especialidad,
-                alCambiar = viewModel::alCambiarEspecialidad,
-                etiqueta = "Especialidad",
-                modifier = Modifier.fillMaxWidth(),
-                habilitado = !uiState.cargando,
-            )
+                    CampoTextoApp(
+                        valor = uiState.especialidad,
+                        alCambiar = viewModel::alCambiarEspecialidad,
+                        etiqueta = "Especialidad",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                    )
 
-            uiState.mensajeError?.let { Text(it) }
+                    uiState.mensajeError?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
 
-            Button(
-                onClick = viewModel::registrarPsicologo,
-                enabled = !uiState.cargando,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (uiState.cargando) "Registrando..." else "Completar registro")
+                    BotonPrimarioApp(
+                        texto = if (uiState.cargando) "Registrando..." else "Completar registro",
+                        alPulsar = viewModel::registrarPsicologo,
+                        habilitado = !uiState.cargando,
+                        cargando = uiState.cargando,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }

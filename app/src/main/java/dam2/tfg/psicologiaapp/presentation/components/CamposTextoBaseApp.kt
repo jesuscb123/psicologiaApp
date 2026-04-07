@@ -1,0 +1,173 @@
+package dam2.tfg.psicologiaapp.presentation.components
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun CampoTextoBaseApp(
+    valor: String,
+    alCambiar: (String) -> Unit,
+    etiqueta: String,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    habilitado: Boolean = true,
+    soloLectura: Boolean = false,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    iconoInicio: ImageVector? = null,
+    contenidoDescripcionIconoInicio: String? = null,
+    iconoFin: ImageVector? = null,
+    contenidoDescripcionIconoFin: String? = null,
+    alPulsarIconoFin: (() -> Unit)? = null,
+    textoError: String? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    paddingInterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+) {
+    val esError = !textoError.isNullOrBlank()
+    val colorContenedorHabilitado = MaterialTheme.colorScheme.surface
+    val colorContenedorDeshabilitado = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+
+    OutlinedTextField(
+        value = valor,
+        onValueChange = alCambiar,
+        modifier = modifier
+            .defaultMinSize(minHeight = 52.dp)
+            .padding(paddingInterno),
+        enabled = habilitado,
+        readOnly = soloLectura,
+        singleLine = singleLine,
+        minLines = minLines,
+        label = { Text(etiqueta) },
+        placeholder = if (placeholder.isNullOrBlank()) null else {
+            { Text(text = placeholder, style = MaterialTheme.typography.bodyMedium) }
+        },
+        isError = esError,
+        shape = MaterialTheme.shapes.large,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        visualTransformation = visualTransformation,
+        leadingIcon = if (iconoInicio == null) null else {
+            {
+                Icon(
+                    imageVector = iconoInicio,
+                    contentDescription = contenidoDescripcionIconoInicio,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        trailingIcon = if (iconoFin == null) null else {
+            {
+                if (alPulsarIconoFin == null) {
+                    Icon(
+                        imageVector = iconoFin,
+                        contentDescription = contenidoDescripcionIconoFin,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    IconButton(onClick = alPulsarIconoFin) {
+                        Icon(
+                            imageVector = iconoFin,
+                            contentDescription = contenidoDescripcionIconoFin,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        },
+        supportingText = if (!esError) null else {
+            {
+                Row(modifier = Modifier.padding(top = 2.dp)) {
+                    Text(
+                        text = textoError.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = colorContenedorHabilitado,
+            unfocusedContainerColor = colorContenedorHabilitado,
+            disabledContainerColor = colorContenedorDeshabilitado,
+            errorContainerColor = colorContenedorHabilitado,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error
+        )
+    )
+}
+
+@Composable
+fun CampoCorreoBaseApp(
+    valor: String,
+    alCambiar: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    etiqueta: String = "Correo",
+    placeholder: String? = null,
+    habilitado: Boolean = true,
+    textoError: String? = null,
+) {
+    CampoTextoBaseApp(
+        valor = valor,
+        alCambiar = alCambiar,
+        etiqueta = etiqueta,
+        placeholder = placeholder,
+        habilitado = habilitado,
+        textoError = textoError,
+        keyboardType = KeyboardType.Email,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun CampoContrasenaBaseApp(
+    valor: String,
+    alCambiar: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    etiqueta: String = "Contraseña",
+    placeholder: String? = null,
+    habilitado: Boolean = true,
+    textoError: String? = null,
+) {
+    CampoTextoBaseApp(
+        valor = valor,
+        alCambiar = alCambiar,
+        etiqueta = etiqueta,
+        placeholder = placeholder,
+        habilitado = habilitado,
+        textoError = textoError,
+        keyboardType = KeyboardType.Password,
+        visualTransformation = PasswordVisualTransformation(),
+        modifier = modifier
+    )
+}
+

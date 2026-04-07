@@ -3,13 +3,16 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dam2.tfg.psicologiaapp.nota.domain.usecase.GetNotasDePacienteUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasDePacienteUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
-import dam2.tfg.psicologiaapp.tarea.domain.usecase.GetTareasDePacienteUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasDePacienteUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasDePacienteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,14 +21,33 @@ import javax.inject.Inject
 class FichaPacientePsicologoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getPacientesDePsicologoUseCase: GetPacientesDePsicologoUseCase,
-    private val getNotasDePacienteUseCase: GetNotasDePacienteUseCase,
-    private val getTareasDePacienteUseCase: GetTareasDePacienteUseCase,
+    private val observarNotasDePacienteUseCase: ObservarNotasDePacienteUseCase,
+    private val observarTareasDePacienteUseCase: ObservarTareasDePacienteUseCase,
+    private val sincronizarNotasDePacienteUseCase: SincronizarNotasDePacienteUseCase,
+    private val sincronizarTareasDePacienteUseCase: SincronizarTareasDePacienteUseCase,
 ) : ViewModel() {
 
     private val pacienteId: Long = savedStateHandle.get<Long>(RutasApp.ARG_PACIENTE_ID) ?: 0L
 
     private val _uiState = MutableStateFlow(FichaPacientePsicologoUiState())
     val uiState: StateFlow<FichaPacientePsicologoUiState> = _uiState
+
+    init {
+        if (pacienteId != 0L) {
+            viewModelScope.launch {
+                observarNotasDePacienteUseCase(pacienteId)
+                    .collectLatest { notas ->
+                        _uiState.update { it.copy(notas = notas) }
+                    }
+            }
+            viewModelScope.launch {
+                observarTareasDePacienteUseCase(pacienteId)
+                    .collectLatest { tareas ->
+                        _uiState.update { it.copy(tareas = tareas) }
+                    }
+            }
+        }
+    }
 
     fun cambiarPestana(pestana: PestanaFichaPacientePsi) {
         _uiState.update { it.copy(pestanaActual = pestana) }
@@ -52,40 +74,25 @@ class FichaPacientePsicologoViewModel @Inject constructor(
             val nombrePaciente = pacienteEnLista?.nombreUsuario.orEmpty()
             val fotoPaciente = pacienteEnLista?.fotoPerfilUrl
 
-            val notas = getNotasDePacienteUseCase(pacienteId).fold(
-                onSuccess = { it },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            cargando = false,
-                            mensajeError = error.message ?: "No se pudieron cargar las notas",
-                        )
-                    }
-                    return@launch
-                },
-            )
+            val resultadoNotas = sincronizarNotasDePacienteUseCase(pacienteId)
+            val resultadoTareas = sincronizarTareasDePacienteUseCase(pacienteId)
 
-            val tareas = getTareasDePacienteUseCase(pacienteId).fold(
-                onSuccess = { it },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            cargando = false,
-                            mensajeError = error.message ?: "No se pudieron cargar las tareas",
-                        )
-                    }
-                    return@launch
-                },
-            )
+            val errNotas = resultadoNotas.exceptionOrNull()
+            val errTareas = resultadoTareas.exceptionOrNull()
+            val mensajeError = when {
+                errNotas != null && errTareas != null ->
+                    listOfNotNull(errNotas.message, errTareas.message).joinToString(" · ")
+                errNotas != null -> errNotas.message ?: "No se pudieron cargar las notas"
+                errTareas != null -> errTareas.message ?: "No se pudieron cargar las tareas"
+                else -> null
+            }
 
             _uiState.update {
                 it.copy(
                     cargando = false,
                     nombreUsuarioPaciente = nombrePaciente,
                     fotoPerfilUrlPaciente = fotoPaciente,
-                    notas = notas,
-                    tareas = tareas,
-                    mensajeError = null,
+                    mensajeError = mensajeError,
                 )
             }
         }

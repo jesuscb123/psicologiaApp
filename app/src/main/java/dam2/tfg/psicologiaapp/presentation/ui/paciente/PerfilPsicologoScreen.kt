@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,6 +23,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.AvatarInicialApp
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
+import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,38 +90,40 @@ fun PantallaPerfilPsicologo(
                 return@Column
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AvatarInicialApp(nombre = psicologo.nombreUsuario, tamano = 56.dp)
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        text = psicologo.nombreUsuario,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = psicologo.especialidad,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = "Nº colegiado: ${psicologo.numeroColegiado}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+            TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    AvatarInicialApp(nombre = psicologo.nombreUsuario, tamano = 56.dp)
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = psicologo.nombreUsuario,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = psicologo.especialidad,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "Nº colegiado: ${psicologo.numeroColegiado}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
             Spacer(Modifier.height(8.dp))
 
-            Button(
-                onClick = viewModel::asignarPsicologo,
-                enabled = !uiState.asignando,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (uiState.asignando) "Asignando..." else "Asignar psicólogo")
-            }
+            BotonPrimarioApp(
+                texto = if (uiState.asignando) "Asignando..." else "Asignar psicólogo",
+                alPulsar = viewModel::asignarPsicologo,
+                habilitado = !uiState.asignando,
+                cargando = uiState.asignando,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

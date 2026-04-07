@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,11 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaTareasPacienteApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaPsicologoApp
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
@@ -153,8 +156,14 @@ fun PantallaHomePaciente(
         },
         floatingActionButton = {
             if (uiState.perfilPaciente?.psicologoId != null) {
-                FloatingActionButton(onClick = alIrAAnadirNota) {
-                    Text("+")
+                FloatingActionButton(
+                    onClick = alIrAAnadirNota,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Añadir nota")
                 }
             }
         }
@@ -184,17 +193,21 @@ fun PantallaHomePaciente(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                    Text(
-                        text = "Elige tu psicólogo",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    GridPsicologos(
-                        psicologos = uiState.listaPsicologos,
-                        alPulsarPsicologo = { psicologo ->
-                            alIrAPerfilPsicologo(psicologo.usuarioId.toString())
+                    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = "Elige tu psicólogo",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            GridPsicologos(
+                                psicologos = uiState.listaPsicologos,
+                                alPulsarPsicologo = { psicologo ->
+                                    alIrAPerfilPsicologo(psicologo.usuarioId.toString())
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
 
@@ -205,42 +218,54 @@ fun PantallaHomePaciente(
                 ) {
                     uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
-                    Text(
-                        text = "Tus notas",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = "Tus notas",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
 
-                    if (uiState.notas.isEmpty()) {
-                        Text("Todavía no hay notas existentes")
-                    } else {
-                        ListaNotasApp(
-                            notas = uiState.notas,
-                            alSolicitarEliminar = { notaPendienteEliminar = it },
-                            listaPlana = true,
-                            paddingContenido = PaddingValues(bottom = 8.dp),
-                        )
+                            if (uiState.notas.isEmpty()) {
+                                Text(
+                                    text = "Todavía no hay notas existentes",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            } else {
+                                ListaNotasApp(
+                                    notas = uiState.notas,
+                                    alSolicitarEliminar = { notaPendienteEliminar = it },
+                                    listaPlana = true,
+                                    paddingContenido = PaddingValues(bottom = 8.dp),
+                                )
+                            }
+                        }
                     }
 
                     Spacer(Modifier.height(8.dp))
 
-                    Text(
-                        text = "Tus tareas",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = "Tus tareas",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
 
-                    if (uiState.tareas.isEmpty()) {
-                        Text(
-                            text = "No tienes tareas asignadas",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    } else {
-                        ListaTareasPacienteApp(
-                            tareas = uiState.tareas,
-                            alPulsar = { t -> tareaIdDialogo = t.id },
-                        )
+                            if (uiState.tareas.isEmpty()) {
+                                Text(
+                                    text = "No tienes tareas asignadas",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            } else {
+                                ListaTareasPacienteApp(
+                                    tareas = uiState.tareas,
+                                    alPulsar = { t -> tareaIdDialogo = t.id },
+                                )
+                            }
+                        }
                     }
                 }
             }

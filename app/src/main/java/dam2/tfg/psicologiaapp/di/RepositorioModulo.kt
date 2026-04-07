@@ -13,6 +13,8 @@ import dam2.tfg.psicologiaapp.tarea.domain.repository.TareaRepository
 import dam2.tfg.psicologiaapp.preferencias.data.repository.TemaPreferenciasRepositoryImpl
 import dam2.tfg.psicologiaapp.preferencias.domain.repository.TemaPreferenciasRepository
 import dam2.tfg.psicologiaapp.usuario.data.repository.UsuarioRepositoryImpl
+import dam2.tfg.psicologiaapp.usuario.data.repository.UsuarioCacheRepositoryImpl
+import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioCacheRepository
 import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import dagger.Binds
 import dagger.Module
@@ -31,6 +33,10 @@ abstract class RepositorioModulo {
     @Binds
     @Singleton
     abstract fun bindUsuarioRepository(impl: UsuarioRepositoryImpl): UsuarioRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUsuarioCacheRepository(impl: UsuarioCacheRepositoryImpl): UsuarioCacheRepository
 
     @Binds
     @Singleton

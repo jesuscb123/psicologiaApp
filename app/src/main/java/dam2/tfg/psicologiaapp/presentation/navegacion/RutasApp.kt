@@ -1,6 +1,7 @@
 package dam2.tfg.psicologiaapp.presentation.navegacion
 
 object RutasApp {
+    const val SPLASH = "splash"
     const val INICIAR_SESION = "iniciar_sesion"
 
     const val REGISTRO_SELECCION_ROL = "registro/seleccion_rol"

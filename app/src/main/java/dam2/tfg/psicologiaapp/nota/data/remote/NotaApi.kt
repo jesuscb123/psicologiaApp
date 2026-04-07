@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.nota.data.remote
 
+import dam2.tfg.psicologiaapp.data.remote.EstadoSyncResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -16,8 +17,14 @@ interface NotaApi {
     @GET("api/notas")
     suspend fun getNotasPacienteActual(): Response<List<NotaResponseDto>>
 
+    @GET("api/notas/estado")
+    suspend fun getEstadoNotasPacienteActual(): Response<EstadoSyncResponseDto>
+
     @GET("api/notas/pacientes/{pacienteId}")
     suspend fun getNotasDePaciente(@Path("pacienteId") pacienteId: Long): Response<List<NotaResponseDto>>
+
+    @GET("api/notas/pacientes/{pacienteId}/estado")
+    suspend fun getEstadoNotasDePaciente(@Path("pacienteId") pacienteId: Long): Response<EstadoSyncResponseDto>
 
     @POST("api/notas")
     suspend fun crearNota(@Body body: NotaRequestDto): NotaResponseDto

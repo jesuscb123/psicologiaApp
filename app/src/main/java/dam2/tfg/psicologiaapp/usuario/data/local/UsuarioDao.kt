@@ -11,6 +11,9 @@ interface UsuarioDao {
     @Query("SELECT * FROM usuarios WHERE usuarioId = :id")
     suspend fun obtenerPorId(id: Long): UsuarioEntity?
 
+    @Query("SELECT * FROM usuarios WHERE firebaseUid = :firebaseUid LIMIT 1")
+    suspend fun obtenerPorFirebaseUid(firebaseUid: String): UsuarioEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardar(usuario: UsuarioEntity)
 

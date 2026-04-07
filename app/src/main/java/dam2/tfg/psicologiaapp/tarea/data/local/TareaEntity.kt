@@ -1,11 +1,11 @@
-package dam2.tfg.psicologiaapp.tarea.domain.model
+package dam2.tfg.psicologiaapp.tarea.data.local
 
-/**
- * Modelo de dominio de tarea, alineado con el backend.
- */
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Tarea(
-    val id: Long,
+@Entity(tableName = "tareas")
+data class TareaEntity(
+    @PrimaryKey val id: Long,
     val titulo: String,
     val descripcion: String,
     val horaEnvio: String,
@@ -14,3 +14,4 @@ data class Tarea(
     val psicologoId: Long,
     val pacienteId: Long,
 )
+

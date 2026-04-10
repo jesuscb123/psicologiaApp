@@ -12,12 +12,18 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+
+enum class EstiloCampoTextoApp {
+    Normal,
+    Minimal,
+}
 
 @Composable
 fun CampoTextoBaseApp(
@@ -38,18 +44,67 @@ fun CampoTextoBaseApp(
     textoError: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    paddingInterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     val esError = !textoError.isNullOrBlank()
     val colorContenedorHabilitado = MaterialTheme.colorScheme.surface
     val colorContenedorDeshabilitado = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+    val colores = when (estilo) {
+        EstiloCampoTextoApp.Normal -> OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = colorContenedorHabilitado,
+            unfocusedContainerColor = colorContenedorHabilitado,
+            disabledContainerColor = colorContenedorDeshabilitado,
+            errorContainerColor = colorContenedorHabilitado,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error
+        )
+
+        EstiloCampoTextoApp.Minimal -> OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            disabledBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error
+        )
+    }
 
     OutlinedTextField(
         value = valor,
         onValueChange = alCambiar,
         modifier = modifier
             .defaultMinSize(minHeight = 52.dp)
-            .padding(paddingInterno),
+            .padding(paddingExterno),
         enabled = habilitado,
         readOnly = soloLectura,
         singleLine = singleLine,
@@ -101,28 +156,7 @@ fun CampoTextoBaseApp(
                 }
             }
         },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = colorContenedorHabilitado,
-            unfocusedContainerColor = colorContenedorHabilitado,
-            disabledContainerColor = colorContenedorDeshabilitado,
-            errorContainerColor = colorContenedorHabilitado,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
-            focusedLabelColor = MaterialTheme.colorScheme.primary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            errorBorderColor = MaterialTheme.colorScheme.error,
-            errorCursorColor = MaterialTheme.colorScheme.error,
-            errorLabelColor = MaterialTheme.colorScheme.error,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            errorLeadingIconColor = MaterialTheme.colorScheme.error,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            errorTrailingIconColor = MaterialTheme.colorScheme.error
-        )
+        colors = colores,
     )
 }
 
@@ -135,6 +169,8 @@ fun CampoCorreoBaseApp(
     placeholder: String? = null,
     habilitado: Boolean = true,
     textoError: String? = null,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -144,7 +180,9 @@ fun CampoCorreoBaseApp(
         habilitado = habilitado,
         textoError = textoError,
         keyboardType = KeyboardType.Email,
-        modifier = modifier
+        paddingExterno = paddingExterno,
+        estilo = estilo,
+        modifier = modifier,
     )
 }
 
@@ -157,6 +195,8 @@ fun CampoContrasenaBaseApp(
     placeholder: String? = null,
     habilitado: Boolean = true,
     textoError: String? = null,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -167,7 +207,9 @@ fun CampoContrasenaBaseApp(
         textoError = textoError,
         keyboardType = KeyboardType.Password,
         visualTransformation = PasswordVisualTransformation(),
-        modifier = modifier
+        paddingExterno = paddingExterno,
+        estilo = estilo,
+        modifier = modifier,
     )
 }
 

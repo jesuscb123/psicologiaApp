@@ -1,9 +1,11 @@
 package dam2.tfg.psicologiaapp.presentation.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun CampoCorreoApp(
@@ -12,6 +14,8 @@ fun CampoCorreoApp(
     modifier: Modifier = Modifier,
     etiqueta: String = "Correo",
     habilitado: Boolean = true,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     CampoCorreoBaseApp(
         valor = valor,
@@ -19,6 +23,8 @@ fun CampoCorreoApp(
         modifier = modifier,
         etiqueta = etiqueta,
         habilitado = habilitado,
+        paddingExterno = paddingExterno,
+        estilo = estilo,
     )
 }
 
@@ -29,6 +35,8 @@ fun CampoContrasenaApp(
     modifier: Modifier = Modifier,
     etiqueta: String = "Contraseña",
     habilitado: Boolean = true,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     CampoContrasenaBaseApp(
         valor = valor,
@@ -36,6 +44,8 @@ fun CampoContrasenaApp(
         modifier = modifier,
         etiqueta = etiqueta,
         habilitado = habilitado,
+        paddingExterno = paddingExterno,
+        estilo = estilo,
     )
 }
 
@@ -50,6 +60,8 @@ fun CampoTextoApp(
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -61,6 +73,8 @@ fun CampoTextoApp(
         minLines = minLines,
         keyboardType = keyboardType,
         visualTransformation = visualTransformation,
+        paddingExterno = paddingExterno,
+        estilo = estilo,
     )
 }
 

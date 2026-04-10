@@ -14,7 +14,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+
+enum class EstiloBotonTextoApp {
+    Normal,
+    Enlace,
+}
 
 @Composable
 fun BotonPrimarioApp(
@@ -95,15 +102,33 @@ fun BotonTextoApp(
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier,
     habilitado: Boolean = true,
+    estilo: EstiloBotonTextoApp = EstiloBotonTextoApp.Normal,
 ) {
+    val padding = when (estilo) {
+        EstiloBotonTextoApp.Normal -> PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+        EstiloBotonTextoApp.Enlace -> PaddingValues(horizontal = 0.dp, vertical = 0.dp)
+    }
+    val estiloTexto: TextStyle = when (estilo) {
+        EstiloBotonTextoApp.Normal -> MaterialTheme.typography.titleSmall
+        EstiloBotonTextoApp.Enlace -> MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
+    }
+
     TextButton(
         onClick = alPulsar,
         enabled = habilitado,
         shape = MaterialTheme.shapes.extraLarge,
-        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+        contentPadding = padding,
         modifier = modifier
     ) {
-        Text(text = texto, style = MaterialTheme.typography.titleSmall)
+        Text(
+            text = texto,
+            style = estiloTexto,
+            color = if (estilo == EstiloBotonTextoApp.Enlace) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                Color.Unspecified
+            },
+        )
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
@@ -23,6 +24,11 @@ fun TarjetaPacienteApp(
     val nombreCompleto = listOf(paciente.nombre, paciente.apellidos)
         .filter { it.isNotBlank() }
         .joinToString(" ")
+    val primerApellido = paciente.apellidos
+        .trim()
+        .split(Regex("\\s+"))
+        .firstOrNull()
+        .orEmpty()
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = modifier.clickable { alPulsar(paciente) }
@@ -37,9 +43,17 @@ fun TarjetaPacienteApp(
                 tamano = 48.dp,
             )
             Text(
-                text = nombreCompleto,
+                text = paciente.nombre,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = primerApellido,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }

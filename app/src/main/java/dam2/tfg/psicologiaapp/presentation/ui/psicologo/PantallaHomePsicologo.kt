@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,11 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
-import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
-import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
+import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaPacienteApp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaHomePsicologo(
     alIrAFichaPaciente: (Long) -> Unit,
@@ -45,69 +42,68 @@ fun PantallaHomePsicologo(
         "Psicólogo"
     }
 
-    Scaffold(
-        topBar = {
-            BarraSuperiorApp(
-                titulo = tituloBarra,
-                subtitulo = "Pacientes",
-                acciones = {
-                    AccionesBarraMenuPerfilPaciente(
-                        nombreUsuario = nombreUsuarioBarra,
-                        fotoPerfilUrl = fotoPerfilUrlBarra,
-                        revisionCacheFoto = revisionCacheFotoBarra,
-                        alAbrirMenu = alAbrirMenuPerfil,
-                    )
-                },
+    PantallaConCabeceraOndaApp(
+        encabezado = {
+            EncabezadoUsuarioApp(
+                nombreParaSaludo = tituloBarra,
+                mostrarFlechaAtras = true,
+                alVolver = null,
+                nombreUsuario = nombreUsuarioBarra,
+                fotoPerfilUrl = fotoPerfilUrlBarra,
+                revisionCacheFoto = revisionCacheFotoBarra,
+                alAbrirMenuPerfil = alAbrirMenuPerfil,
             )
         },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        contenido = {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
-            if (uiState.cargando) {
-                Text("Cargando...")
-                return@Column
-            }
+                if (uiState.cargando) {
+                    Text("Cargando...")
+                    return@Column
+                }
 
-            if (uiState.listaPacientes.isEmpty()) {
-                Text(
-                    text = "No tienes pacientes asignados",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            } else {
-                Text(
-                    text = "Tus pacientes",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                GridPacientes(
-                    pacientes = uiState.listaPacientes,
-                    alPulsarPaciente = { paciente ->
-                        alIrAFichaPaciente(paciente.idPaciente)
-                    },
-                )
+                if (uiState.listaPacientes.isEmpty()) {
+                    Text(
+                        text = "No tienes pacientes asignados",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                } else {
+                    Text(
+                        text = "Tus pacientes",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    GridPacientes(
+                        pacientes = uiState.listaPacientes,
+                        alPulsarPaciente = { paciente ->
+                            alIrAFichaPaciente(paciente.idPaciente)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    )
+                }
             }
-        }
-    }
+        },
+    )
 }
 
 @Composable
 private fun GridPacientes(
     pacientes: List<Paciente>,
     alPulsarPaciente: (Paciente) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(bottom = 12.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         items(pacientes) { paciente ->
             TarjetaPacienteApp(

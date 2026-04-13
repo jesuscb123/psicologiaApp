@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,11 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
-import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
+import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaAnadirNota(
     alNotaGuardada: () -> Unit,
@@ -45,29 +41,28 @@ fun PantallaAnadirNota(
         }
     }
 
-    Scaffold(
-        topBar = {
-            BarraSuperiorApp(
-                titulo = "Añadir nota",
+    PantallaConCabeceraOndaApp(
+        encabezado = {
+            EncabezadoUsuarioApp(
+                mostrarFlechaAtras = true,
                 alVolver = alVolver,
-                acciones = {
-                    AccionesBarraMenuPerfilPaciente(
-                        nombreUsuario = nombreUsuarioBarra,
-                        fotoPerfilUrl = fotoPerfilUrlBarra,
-                        revisionCacheFoto = revisionCacheFotoBarra,
-                        alAbrirMenu = alAbrirMenuPerfil,
-                    )
-                },
+                nombreUsuario = nombreUsuarioBarra,
+                fotoPerfilUrl = fotoPerfilUrlBarra,
+                revisionCacheFoto = revisionCacheFotoBarra,
+                alAbrirMenuPerfil = alAbrirMenuPerfil,
             )
-        }
-    ) { padding ->
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Text(
+                text = "Nueva nota",
+                style = MaterialTheme.typography.titleMedium,
+            )
+
             CampoTextoApp(
                 valor = uiState.asunto,
                 alCambiar = viewModel::alCambiarAsunto,

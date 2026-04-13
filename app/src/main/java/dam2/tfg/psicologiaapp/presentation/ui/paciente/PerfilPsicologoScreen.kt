@@ -7,24 +7,32 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import dam2.tfg.psicologiaapp.presentation.components.AccionesBarraMenuPerfilPaciente
 import dam2.tfg.psicologiaapp.presentation.components.AvatarInicialApp
-import dam2.tfg.psicologiaapp.presentation.components.BarraSuperiorApp
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
+
+private enum class PestanaPerfilPsicologoPaciente {
+    DESCRIPCION,
+    RESENAS,
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,29 +62,20 @@ fun PantallaPerfilPsicologo(
         }
     }
 
-    Scaffold(
-        topBar = {
-            BarraSuperiorApp(
-                titulo = "Perfil psicólogo",
+    PantallaConCabeceraOndaApp(
+        encabezado = {
+            EncabezadoUsuarioApp(
+                mostrarFlechaAtras = true,
                 alVolver = alVolver,
-                acciones = {
-                    AccionesBarraMenuPerfilPaciente(
-                        nombreUsuario = nombreUsuarioBarra,
-                        fotoPerfilUrl = fotoPerfilUrlBarra,
-                        revisionCacheFoto = revisionCacheFotoBarra,
-                        alAbrirMenu = alAbrirMenuPerfil,
-                    )
-                },
+                nombreUsuario = nombreUsuarioBarra,
+                fotoPerfilUrl = fotoPerfilUrlBarra,
+                revisionCacheFoto = revisionCacheFotoBarra,
+                alAbrirMenuPerfil = alAbrirMenuPerfil,
             )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
             if (uiState.cargando) {
@@ -89,6 +88,8 @@ fun PantallaPerfilPsicologo(
                 Text("No se encontró el psicólogo")
                 return@Column
             }
+
+            var pestanaActual by rememberSaveable { mutableStateOf(PestanaPerfilPsicologoPaciente.DESCRIPCION) }
 
             val nombreCompleto = listOf(psicologo.nombre, psicologo.apellidos)
                 .filter { it.isNotBlank() }
@@ -110,18 +111,70 @@ fun PantallaPerfilPsicologo(
                             text = psicologo.especialidad,
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        psicologo.descripcion?.takeIf { it.isNotBlank() }?.let { descripcion ->
-                            Text(
-                                text = descripcion,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
                         Text(
                             text = "Nº colegiado: ${psicologo.numeroColegiado}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FilterChip(
+                    selected = pestanaActual == PestanaPerfilPsicologoPaciente.DESCRIPCION,
+                    onClick = { pestanaActual = PestanaPerfilPsicologoPaciente.DESCRIPCION },
+                    label = { Text("Descripción") },
+                )
+                FilterChip(
+                    selected = pestanaActual == PestanaPerfilPsicologoPaciente.RESENAS,
+                    onClick = { pestanaActual = PestanaPerfilPsicologoPaciente.RESENAS },
+                    label = { Text("Reseñas") },
+                )
+            }
+
+            when (pestanaActual) {
+                PestanaPerfilPsicologoPaciente.DESCRIPCION -> {
+                    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(
+                                text = "Descripción",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                text = psicologo.descripcion?.takeIf { it.isNotBlank() } ?: "Este psicólogo todavía no ha añadido una descripción.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+
+                PestanaPerfilPsicologoPaciente.RESENAS -> {
+                    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Text(
+                                text = "Reseñas",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Button(
+                                onClick = { },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text("Ver reseñas (próximamente)")
+                            }
+                        }
                     }
                 }
             }

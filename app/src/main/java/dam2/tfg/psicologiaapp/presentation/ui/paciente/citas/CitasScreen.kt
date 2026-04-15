@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -33,6 +34,7 @@ import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -55,6 +57,9 @@ fun CitasScreen(
     var mostrarSelectorFecha by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
+    var mostrarDialogConfirmarHora by remember { mutableStateOf(false) }
+    var horaPendienteConfirmacion by remember { mutableStateOf<LocalTime?>(null) }
+
     LaunchedEffect(uiState.eventoNavegacion) {
         when (uiState.eventoNavegacion) {
             EventoNavegacionCitas.CitaReservada -> {
@@ -62,6 +67,38 @@ fun CitasScreen(
             }
             null -> Unit
         }
+    }
+
+    if (mostrarDialogConfirmarHora && horaPendienteConfirmacion != null) {
+        val hora = horaPendienteConfirmacion!!
+        val textoFecha = uiState.fechaSeleccionada.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        AlertDialog(
+            onDismissRequest = {
+                mostrarDialogConfirmarHora = false
+                horaPendienteConfirmacion = null
+            },
+            title = { Text("Confirmar cita") },
+            text = { Text("¿Reservar la cita el $textoFecha a las ${hora}?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.seleccionarHora(hora)
+                        viewModel.reservar()
+                        mostrarDialogConfirmarHora = false
+                        horaPendienteConfirmacion = null
+                    },
+                    enabled = !uiState.cargando,
+                ) { Text("Confirmar") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogConfirmarHora = false
+                        horaPendienteConfirmacion = null
+                    },
+                ) { Text("Cancelar") }
+            },
+        )
     }
 
     if (mostrarSelectorFecha) {
@@ -151,7 +188,10 @@ fun CitasScreen(
                                 items(uiState.disponibilidad?.horasDisponibles.orEmpty()) { hora ->
                                     FilterChip(
                                         selected = uiState.horaSeleccionada == hora,
-                                        onClick = { viewModel.seleccionarHora(hora) },
+                                        onClick = {
+                                            horaPendienteConfirmacion = hora
+                                            mostrarDialogConfirmarHora = true
+                                        },
                                         label = { Text(hora.toString()) },
                                     )
                                 }

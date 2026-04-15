@@ -43,7 +43,7 @@ class CitaRepositoryImpl @Inject constructor(
         zonaHoraria: String,
     ): Result<Cita> = runCatching {
         val respuesta = citaApi.reservarCita(
-            CitaCrearRequestDto(inicioIsoOffset = inicioIsoOffset, zonaHoraria = zonaHoraria)
+            CitaCrearRequestDto(inicio = inicioIsoOffset, zonaHoraria = zonaHoraria)
         )
         if (respuesta.code() == 409) {
             throw IllegalStateException("Ese horario ya está reservado")

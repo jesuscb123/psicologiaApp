@@ -5,7 +5,7 @@ import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoResponseDto
 
 data class CitaCrearRequestDto(
     /** Instante de inicio en formato ISO-8601 con offset (p. ej. "2026-04-15T09:00:00+02:00"). */
-    val inicioIsoOffset: String,
+    val inicio: String,
     /** Zona horaria local IANA del usuario (p. ej. "Europe/Madrid"). */
     val zonaHoraria: String,
 )

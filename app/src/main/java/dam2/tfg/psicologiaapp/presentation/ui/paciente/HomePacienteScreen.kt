@@ -57,6 +57,7 @@ private enum class PestanaHomePaciente {
 fun PantallaHomePaciente(
     alIrAPerfilPsicologo: (String) -> Unit,
     alIrAAnadirNota: () -> Unit,
+    alIrACitas: () -> Unit,
     alAbrirMenuPerfil: () -> Unit,
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
@@ -228,6 +229,11 @@ fun PantallaHomePaciente(
                                 selected = pestanaActual == PestanaHomePaciente.TAREAS,
                                 onClick = { pestanaActual = PestanaHomePaciente.TAREAS },
                                 label = { Text("Tareas") },
+                            )
+                            FilterChip(
+                                selected = false,
+                                onClick = alIrACitas,
+                                label = { Text("Citas") },
                             )
                         }
 

@@ -2,6 +2,8 @@ package dam2.tfg.psicologiaapp.di
 
 import dam2.tfg.psicologiaapp.auth.data.repository.AuthRepositoryImpl
 import dam2.tfg.psicologiaapp.auth.domain.repository.AuthRepository
+import dam2.tfg.psicologiaapp.cita.data.repository.CitaRepositoryImpl
+import dam2.tfg.psicologiaapp.cita.domain.repository.CitaRepository
 import dam2.tfg.psicologiaapp.nota.data.repository.NotaRepositoryImpl
 import dam2.tfg.psicologiaapp.nota.domain.repository.NotaRepository
 import dam2.tfg.psicologiaapp.paciente.data.repository.PacienteRepositoryImpl
@@ -53,6 +55,10 @@ abstract class RepositorioModulo {
     @Binds
     @Singleton
     abstract fun bindTareaRepository(impl: TareaRepositoryImpl): TareaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCitaRepository(impl: CitaRepositoryImpl): CitaRepository
 
     @Binds
     @Singleton

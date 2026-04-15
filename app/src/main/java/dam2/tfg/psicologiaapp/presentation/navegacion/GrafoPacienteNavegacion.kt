@@ -28,6 +28,9 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewMode
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAjustesPaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAnadirNota
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasScreen
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasMenuScreen
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.MisCitasPacienteScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaHomePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaPerfilPsicologo
 import kotlinx.coroutines.launch
@@ -97,6 +100,18 @@ fun GrafoPacienteNavegacion(
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
                 alFijarModoTema = menuViewModel::fijarModoTema,
+                alIrAgendarCita = {
+                    scope.launch {
+                        drawerState.close()
+                        navPaciente.navigate(RutasGrafoPaciente.AGENDAR_CITA)
+                    }
+                },
+                alIrMisCitas = {
+                    scope.launch {
+                        drawerState.close()
+                        navPaciente.navigate(RutasGrafoPaciente.MIS_CITAS)
+                    }
+                },
                 alIrAjustes = {
                     scope.launch {
                         drawerState.close()
@@ -128,6 +143,7 @@ fun GrafoPacienteNavegacion(
                         navPaciente.navigate(RutasGrafoPaciente.crearRutaPerfilPsicologo(id))
                     },
                     alIrAAnadirNota = { navPaciente.navigate(RutasGrafoPaciente.ANADIR_NOTA) },
+                    alIrACitas = { navPaciente.navigate(RutasGrafoPaciente.CITAS_MENU) },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -160,6 +176,38 @@ fun GrafoPacienteNavegacion(
             composable(RutasGrafoPaciente.ANADIR_NOTA) {
                 PantallaAnadirNota(
                     alNotaGuardada = { navPaciente.popBackStack() },
+                    alVolver = { navPaciente.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPaciente.CITAS_MENU) {
+                CitasMenuScreen(
+                    alVolver = { navPaciente.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    alIrAgendar = { navPaciente.navigate(RutasGrafoPaciente.AGENDAR_CITA) },
+                    alIrMisCitas = { navPaciente.navigate(RutasGrafoPaciente.MIS_CITAS) },
+                )
+            }
+
+            composable(RutasGrafoPaciente.AGENDAR_CITA) {
+                CitasScreen(
+                    alVolver = { navPaciente.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPaciente.MIS_CITAS) {
+                MisCitasPacienteScreen(
                     alVolver = { navPaciente.popBackStack() },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

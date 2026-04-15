@@ -7,6 +7,7 @@ import dam2.tfg.psicologiaapp.data.remote.AuthTokenInterceptor
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenRefrescoAuthenticator
 import dam2.tfg.psicologiaapp.data.remote.FirebaseProveedorToken
 import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
+import dam2.tfg.psicologiaapp.cita.data.remote.CitaApi
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
@@ -100,5 +101,10 @@ abstract class RedModulo {
         @Singleton
         fun proporcionarNotaApi(retrofit: Retrofit): NotaApi =
             retrofit.create(NotaApi::class.java)
+
+        @Provides
+        @Singleton
+        fun proporcionarCitaApi(retrofit: Retrofit): CitaApi =
+            retrofit.create(CitaApi::class.java)
     }
 }

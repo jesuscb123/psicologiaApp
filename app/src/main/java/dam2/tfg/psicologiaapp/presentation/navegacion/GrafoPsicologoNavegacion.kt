@@ -30,6 +30,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAnadirTareaPsico
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAjustesPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaFichaPacientePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaHomePsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.citas.MisCitasPsicologoScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,6 +98,12 @@ fun GrafoPsicologoNavegacion(
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
                 alFijarModoTema = menuViewModel::fijarModoTema,
+                alIrMisCitas = {
+                    scope.launch {
+                        drawerState.close()
+                        navPsicologo.navigate(RutasGrafoPsicologo.MIS_CITAS)
+                    }
+                },
                 alIrAjustes = {
                     scope.launch {
                         drawerState.close()
@@ -171,6 +178,16 @@ fun GrafoPsicologoNavegacion(
 
             composable(RutasGrafoPsicologo.AJUSTES) {
                 PantallaAjustesPsicologo(
+                    alVolver = { navPsicologo.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPsicologo.MIS_CITAS) {
+                MisCitasPsicologoScreen(
                     alVolver = { navPsicologo.popBackStack() },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

@@ -24,6 +24,9 @@ object RutasApp {
 object RutasGrafoPaciente {
     const val HOME = "home"
     const val ANADIR_NOTA = "nota/anadir"
+    const val CITAS_MENU = "citas"
+    const val AGENDAR_CITA = "citas/agendar"
+    const val MIS_CITAS = "citas/mis_citas"
     const val PERFIL_PSICOLOGO = "psicologo/{psicologoId}"
     const val AJUSTES = "ajustes"
     const val ACERCA = "acerca"
@@ -36,6 +39,7 @@ object RutasGrafoPsicologo {
     const val HOME = "home"
     const val FICHA_PACIENTE = "ficha_paciente/{pacienteId}"
     const val ANADIR_TAREA = "tarea/anadir/{pacienteId}"
+    const val MIS_CITAS = "citas/mis_citas"
     const val AJUSTES = "ajustes"
     const val ACERCA = "acerca"
 

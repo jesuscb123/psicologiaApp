@@ -37,6 +37,9 @@ fun HojaMenuLateralPerfil(
     cargandoFotoPerfil: Boolean = false,
     alPulsarFotoPerfil: () -> Unit = {},
     alFijarModoTema: (ModoTemaApp) -> Unit,
+    alIrCitas: (() -> Unit)? = null,
+    alIrAgendarCita: (() -> Unit)? = null,
+    alIrMisCitas: (() -> Unit)? = null,
     alIrAjustes: () -> Unit,
     alAcercaDe: () -> Unit,
     alCerrarSesion: () -> Unit,
@@ -100,6 +103,30 @@ fun HojaMenuLateralPerfil(
                 selected = false,
                 onClick = alIrAjustes,
             )
+
+            val hayAccesosDirectosCitas = alIrAgendarCita != null || alIrMisCitas != null
+            if (hayAccesosDirectosCitas) {
+                if (alIrAgendarCita != null) {
+                    NavigationDrawerItem(
+                        label = { Text("Agendar cita") },
+                        selected = false,
+                        onClick = alIrAgendarCita,
+                    )
+                }
+                if (alIrMisCitas != null) {
+                    NavigationDrawerItem(
+                        label = { Text("Mis citas") },
+                        selected = false,
+                        onClick = alIrMisCitas,
+                    )
+                }
+            } else if (alIrCitas != null) {
+                NavigationDrawerItem(
+                    label = { Text("Citas") },
+                    selected = false,
+                    onClick = alIrCitas,
+                )
+            }
 
             FilaModoOscuroMenuLateral(
                 temaOscuroResuelto = temaOscuroResuelto,

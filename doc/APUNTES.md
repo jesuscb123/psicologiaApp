@@ -40,3 +40,27 @@
 - Paciente: `paciente/data/mappers/UrlFotoPerfilCliente.kt`, `PacienteMappers`.
 
 > Nota: el backend debe exponer los nuevos campos y endpoints de tareas (`aceptadaPorPaciente`, `PATCH /aceptada`) para que el flujo completo funcione en producción.
+
+## 2026-04-15 — Frontend: navegación/menú para Citas (psicologiaapp)
+
+### Rutas y grafos
+- **Rutas** (en `presentation/navegacion/RutasApp.kt`):
+  - Paciente: `RutasGrafoPaciente.AGENDAR_CITA` y `RutasGrafoPaciente.MIS_CITAS` (dentro de `citas/*`).
+  - Psicólogo: `RutasGrafoPsicologo.MIS_CITAS`.
+- **Grafo paciente** (`GrafoPacienteNavegacion.kt`):
+  - `composable(...)` para `AGENDAR_CITA` → `CitasScreen`.
+  - `composable(...)` para `MIS_CITAS` → `MisCitasPacienteScreen`.
+- **Grafo psicólogo** (`GrafoPsicologoNavegacion.kt`):
+  - `composable(...)` para `MIS_CITAS` → `MisCitasPsicologoScreen`.
+
+### Menú lateral (drawer)
+- `HojaMenuLateralPerfil` ahora permite mostrar **entradas directas**:
+  - **Paciente**: “Agendar cita” y “Mis citas”.
+  - **Psicólogo**: “Mis citas”.
+- **Compatibilidad**: si no se pasan estos callbacks, se mantiene el item anterior “Citas”.
+
+### Archivos tocados (referencia rápida)
+- `presentation/components/HojaMenuLateralPerfil.kt`
+- `presentation/navegacion/GrafoPacienteNavegacion.kt`
+- `presentation/navegacion/GrafoPsicologoNavegacion.kt`
+

@@ -35,7 +35,7 @@ fun EncabezadoUsuarioApp(
     alAbrirMenu: (() -> Unit)? = null,
     mostrarFlechaAtras: Boolean = false,
     alVolver: (() -> Unit)? = null,
-    sobreGradiente: Boolean = true,
+    sobreGradiente: Boolean = false,
 ) {
     val dispatcher =
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher

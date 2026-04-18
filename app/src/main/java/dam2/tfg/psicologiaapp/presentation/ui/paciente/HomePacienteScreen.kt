@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
-import dam2.tfg.psicologiaapp.presentation.components.AvatarInicialApp
+import dam2.tfg.psicologiaapp.presentation.components.AvatarPerfilCircularApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaTareasPacienteApp
@@ -182,7 +181,7 @@ fun PantallaHomePaciente(
                 )
             },
             modifier = Modifier.fillMaxSize(),
-            paddingContenido = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+            paddingContenido = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         ) {
             when {
                 uiState.cargando -> {
@@ -333,103 +332,84 @@ private fun HomePacienteSeleccionPsicologo(
         }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(bottom = 24.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         mensajeError?.let { msg ->
-            item {
-                Text(
-                    text = msg,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "Encuentra tu",
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = "espacio seguro.",
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.primaryContainer,
-                            ),
-                        ),
-                    ),
-                )
-                Text(
-                    text = "Explora nuestra red de profesionales. Elige a la persona que te acompañe en tu proceso, a tu ritmo.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-
-        item {
-            OutlinedTextField(
-                value = textoBusqueda,
-                onValueChange = { textoBusqueda = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(
-                        text = "Buscar por especialidad o nombre…",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
-                    )
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                ),
+            Text(
+                text = msg,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
 
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Profesionales disponibles",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                )
-                TextButton(
-                    onClick = { /* Filtros avanzados: pendiente de backend */ },
-                    modifier = Modifier.wrapContentWidth(Alignment.End),
-                ) {
-                    Text(
-                        text = "Filtros",
-                        style = MaterialTheme.typography.labelLarge,
-                        maxLines = 1,
-                    )
-                }
-            }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = "Encuentra tu",
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = "espacio seguro.",
+                style = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primaryContainer,
+                        ),
+                    ),
+                ),
+            )
+            Text(
+                text = "Explora nuestra red de profesionales. Elige a la persona que te acompañe en tu proceso, a tu ritmo.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
-        if (psicologosFiltrados.isEmpty()) {
-            item {
+        OutlinedTextField(
+            value = textoBusqueda,
+            onValueChange = { textoBusqueda = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    text = "Buscar por especialidad o nombre…",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline,
+                )
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ),
+        )
+
+        Text(
+            text = "Profesionales disponibles",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 2,
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            if (psicologosFiltrados.isEmpty()) {
                 Text(
                     text = if (textoBusqueda.isNotBlank()) {
                         "No hay profesionales que coincidan con tu búsqueda."
@@ -439,13 +419,24 @@ private fun HomePacienteSeleccionPsicologo(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }
-        } else {
-            items(items = psicologosFiltrados, key = { it.usuarioId }) { psicologo ->
-                FilaPsicologoApp(
-                    psicologo = psicologo,
-                    alPulsar = { alIrAPerfilPsicologo(it.usuarioId.toString()) },
-                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    contentPadding = PaddingValues(bottom = 24.dp),
+                ) {
+                    items(
+                        items = psicologosFiltrados,
+                        key = { it.idEntidadPsicologo },
+                    ) { psicologo ->
+                        FilaPsicologoApp(
+                            psicologo = psicologo,
+                            alPulsar = { alIrAPerfilPsicologo(it.usuarioId.toString()) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -628,7 +619,11 @@ private fun FilaPsicologoApp(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AvatarInicialApp(nombre = nombreCompleto, tamano = 56.dp)
+            AvatarPerfilCircularApp(
+                nombreUsuario = nombreCompleto,
+                fotoPerfilUrl = psicologo.fotoPerfilUrl,
+                tamano = 56.dp,
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp),

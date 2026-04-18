@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,10 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,8 +40,11 @@ fun PantallaConCabeceraOndaApp(
     contenido: @Composable ColumnScope.() -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val alturaCabecera = maxHeight * proporcionAlturaCabecera
+        // Mantener la cabecera estable aunque aparezca el teclado (evita "aplastar" el top).
+        val alturaPantallaBase = LocalConfiguration.current.screenHeightDp.dp
+        val alturaCabecera = alturaPantallaBase * proporcionAlturaCabecera
         val colorContenidoBajoOnda = MaterialTheme.colorScheme.background
+        val colorCabecera = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surface else Color.White
         val formaHoja = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         val contenidoCabecera = cabecera ?: encabezado
 
@@ -49,15 +53,7 @@ fun PantallaConCabeceraOndaApp(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(alturaCabecera)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary,
-                                MaterialTheme.colorScheme.tertiary,
-                            ),
-                        ),
-                    ),
+                    .background(colorCabecera),
             ) {
                 Box(
                     modifier = Modifier
@@ -112,9 +108,8 @@ fun PantallaConCabeceraOndaApp(
 
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .offset(y = alturaCabecera + alturaOnda - 24.dp),
+                    .fillMaxSize()
+                    .padding(top = alturaCabecera + alturaOnda - 24.dp),
                 color = colorContenidoBajoOnda,
                 shape = formaHoja,
                 tonalElevation = elevacionHoja,

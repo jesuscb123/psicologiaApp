@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -96,7 +95,6 @@ fun PantallaIniciarSesion(
                 .verticalScroll(rememberScrollState())
                 .widthIn(max = 400.dp)
                 .padding(horizontal = 24.dp, vertical = 28.dp)
-                .navigationBarsPadding()
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(0.dp),

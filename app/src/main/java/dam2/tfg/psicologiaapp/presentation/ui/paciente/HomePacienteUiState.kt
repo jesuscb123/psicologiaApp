@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente
 
+import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
@@ -12,6 +13,7 @@ data class HomePacienteUiState(
     val psicologoAsignado: Psicologo? = null,
     val notas: List<Nota> = emptyList(),
     val tareas: List<Tarea> = emptyList(),
+    val proximaCita: Cita? = null,
     val mensajeError: String? = null
 )
 

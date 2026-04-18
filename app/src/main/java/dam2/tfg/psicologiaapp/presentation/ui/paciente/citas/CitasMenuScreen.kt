@@ -4,15 +4,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.BotonSecundarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
-import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
 
 @Composable
 fun CitasMenuScreen(
@@ -27,6 +31,7 @@ fun CitasMenuScreen(
     PantallaConCabeceraOndaApp(
         encabezado = {
             EncabezadoUsuarioApp(
+                tituloCentro = "Citas",
                 mostrarFlechaAtras = true,
                 alVolver = alVolver,
                 nombreUsuario = nombreUsuarioBarra,
@@ -37,27 +42,50 @@ fun CitasMenuScreen(
         },
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        Text(
+            text = "Citas",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = "Elige si quieres reservar una nueva sesión o consultar las que ya tienes.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
-            TarjetaApp(modifier = Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        text = "Citas",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Button(
-                        onClick = alIrAgendar,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Agendar cita") }
-                    Button(
-                        onClick = alIrMisCitas,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Mis citas") }
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                BotonPrimarioApp(
+                    texto = "Agendar cita",
+                    alPulsar = alIrAgendar,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = "Busca hueco con tu psicólogo asignado y confirma en un solo paso.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                BotonSecundarioApp(
+                    texto = "Mis citas",
+                    alPulsar = alIrMisCitas,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = "Activa o finalizadas; puedes cancelar las que aún estén pendientes.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }
 }
-

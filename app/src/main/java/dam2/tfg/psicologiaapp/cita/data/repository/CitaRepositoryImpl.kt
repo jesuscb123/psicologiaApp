@@ -45,11 +45,13 @@ class CitaRepositoryImpl @Inject constructor(
         val respuesta = citaApi.reservarCita(
             CitaCrearRequestDto(inicio = inicioIsoOffset, zonaHoraria = zonaHoraria)
         )
-        if (respuesta.code() == 409) {
-            throw IllegalStateException("Ese horario ya está reservado")
-        }
         if (!respuesta.isSuccessful) {
-            throw IllegalStateException("Error al reservar cita: HTTP ${respuesta.code()}")
+            val detalle = respuesta.errorBody()?.use { it.string() }?.trim()?.takeIf { it.isNotEmpty() }
+            val mensaje = when (respuesta.code()) {
+                409 -> detalle ?: "Ese horario ya está reservado"
+                else -> detalle ?: "Error al reservar cita: HTTP ${respuesta.code()}"
+            }
+            throw IllegalStateException(mensaje)
         }
         val cuerpo = respuesta.body() ?: throw IllegalStateException("Respuesta vacía del servidor")
         cuerpo.toDomain()

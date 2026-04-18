@@ -2,6 +2,9 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam2.tfg.psicologiaapp.cita.domain.model.Cita
+import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
+import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.BorrarNotaUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
@@ -22,6 +25,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.OffsetDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +40,7 @@ class HomePacienteViewModel @Inject constructor(
     private val aceptarTareaUseCase: AceptarTareaUseCase,
     private val marcarTareaRealizadaUseCase: MarcarTareaRealizadaUseCase,
     private val borrarNotaUseCase: BorrarNotaUseCase,
+    private val obtenerMisCitasPacienteUseCase: ObtenerMisCitasPacienteUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomePacienteUiState())
@@ -112,6 +118,7 @@ class HomePacienteViewModel @Inject constructor(
                     perfilPaciente = perfilPaciente,
                     listaPsicologos = listaPsicologos,
                     psicologoAsignado = psicologoAsignado,
+                    proximaCita = null,
                     mensajeError = resultadoPsicologos.exceptionOrNull()?.message,
                 )
             }
@@ -121,23 +128,33 @@ class HomePacienteViewModel @Inject constructor(
                 ensureActive()
                 val resultadoTareas = sincronizarTareasPacienteActualUseCase()
                 ensureActive()
+                val resultadoCitas = obtenerMisCitasPacienteUseCase()
+                ensureActive()
+                val proximaCita = resultadoCitas.getOrNull()?.let { calcularProximaCitaActiva(it) }
                 val errNotas = resultadoNotas.exceptionOrNull()
                 val errTareas = resultadoTareas.exceptionOrNull()
-                val textoErrorCarga = when {
-                    errNotas != null && errTareas != null ->
-                        listOfNotNull(errNotas.message, errTareas.message).joinToString(" · ")
-                    errNotas != null -> errNotas.message ?: "No se pudieron cargar las notas"
-                    errTareas != null -> errTareas.message ?: "No se pudieron cargar las tareas"
-                    else -> null
-                }
+                val errCitas = resultadoCitas.exceptionOrNull()
+                val textoErrorCarga = buildList {
+                    errNotas?.let { add(it.message ?: "No se pudieron cargar las notas") }
+                    errTareas?.let { add(it.message ?: "No se pudieron cargar las tareas") }
+                    errCitas?.let { add(it.message ?: "No se pudieron cargar las citas") }
+                }.takeIf { it.isNotEmpty() }?.joinToString(" · ")
                 _uiState.update {
                     it.copy(
                         cargando = false,
+                        proximaCita = proximaCita,
                         mensajeError = textoErrorCarga ?: it.mensajeError,
                     )
                 }
             } else {
-                _uiState.update { it.copy(cargando = false, notas = emptyList(), tareas = emptyList()) }
+                _uiState.update {
+                    it.copy(
+                        cargando = false,
+                        notas = emptyList(),
+                        tareas = emptyList(),
+                        proximaCita = null,
+                    )
+                }
             }
         }
     }
@@ -194,6 +211,21 @@ class HomePacienteViewModel @Inject constructor(
     ): Psicologo? {
         if (psicologoId == null) return null
         return listaPsicologos.firstOrNull { it.idEntidadPsicologo == psicologoId }
+    }
+
+    private fun calcularProximaCitaActiva(citas: List<Cita>): Cita? {
+        val ahora = Instant.now()
+        return citas
+            .asSequence()
+            .filter { it.estadoCalculado == EstadoCitaCalculado.ACTIVA }
+            .mapNotNull { cita ->
+                val inicio = runCatching { OffsetDateTime.parse(cita.inicio).toInstant() }
+                    .getOrNull() ?: return@mapNotNull null
+                if (inicio.isBefore(ahora)) return@mapNotNull null
+                cita to inicio
+            }
+            .minByOrNull { it.second }
+            ?.first
     }
 }
 

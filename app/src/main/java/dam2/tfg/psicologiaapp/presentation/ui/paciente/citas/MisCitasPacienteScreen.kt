@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente.citas
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,15 +21,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
+import dam2.tfg.psicologiaapp.presentation.components.BotonSecundarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
+import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
+import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -64,13 +71,22 @@ fun MisCitasPacienteScreen(
         )
     }
 
-    val activas = uiState.citas.filter { it.estadoCalculado == EstadoCitaCalculado.ACTIVA }
-    val finalizadas = uiState.citas.filter { it.estadoCalculado == EstadoCitaCalculado.FINALIZADA }
-    val canceladas = uiState.citas.filter { it.estadoCalculado == EstadoCitaCalculado.CANCELADA }
+    val citasVisibles =
+        uiState.citas
+            .asSequence()
+            .filter { it.estadoCalculado != EstadoCitaCalculado.CANCELADA }
+            .filter { cita ->
+                when (uiState.filtroSeleccionado) {
+                    FiltroMisCitas.ACTIVAS -> cita.estadoCalculado == EstadoCitaCalculado.ACTIVA
+                    FiltroMisCitas.FINALIZADAS -> cita.estadoCalculado == EstadoCitaCalculado.FINALIZADA
+                }
+            }
+            .toList()
 
     PantallaConCabeceraOndaApp(
         encabezado = {
             EncabezadoUsuarioApp(
+                tituloCentro = "Mis citas",
                 mostrarFlechaAtras = true,
                 alVolver = alVolver,
                 nombreUsuario = nombreUsuarioBarra,
@@ -87,50 +103,60 @@ fun MisCitasPacienteScreen(
         ) {
             uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
-            Button(
-                onClick = { viewModel.recargar() },
-                enabled = !uiState.cargando,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text(if (uiState.cargando) "Cargando..." else "Refrescar") }
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FilterChip(
+                    selected = uiState.filtroSeleccionado == FiltroMisCitas.ACTIVAS,
+                    onClick = { viewModel.cambiarFiltro(FiltroMisCitas.ACTIVAS) },
+                    label = { Text("Activas") },
+                )
+                FilterChip(
+                    selected = uiState.filtroSeleccionado == FiltroMisCitas.FINALIZADAS,
+                    onClick = { viewModel.cambiarFiltro(FiltroMisCitas.FINALIZADAS) },
+                    label = { Text("Finalizadas") },
+                )
+            }
+
+            BotonSecundarioApp(
+                texto = if (uiState.cargando) "Actualizando…" else "Actualizar lista",
+                alPulsar = { viewModel.recargar() },
+                habilitado = !uiState.cargando,
+                cargando = uiState.cargando,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item {
-                    Text("Activas", style = MaterialTheme.typography.titleMedium)
+                    val titulo =
+                        when (uiState.filtroSeleccionado) {
+                            FiltroMisCitas.ACTIVAS -> "Activas"
+                            FiltroMisCitas.FINALIZADAS -> "Finalizadas"
+                        }
+                    Text(titulo, style = MaterialTheme.typography.titleMedium)
                 }
-                if (activas.isEmpty()) {
-                    item { Text("No tienes citas activas", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                if (citasVisibles.isEmpty() && !uiState.cargando) {
+                    val textoVacio =
+                        when (uiState.filtroSeleccionado) {
+                            FiltroMisCitas.ACTIVAS -> "No tienes citas activas"
+                            FiltroMisCitas.FINALIZADAS -> "No hay citas finalizadas"
+                        }
+                    item { Text(textoVacio, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 } else {
-                    items(activas) { cita ->
+                    items(
+                        items = citasVisibles,
+                        key = { it.id },
+                    ) { cita ->
                         TarjetaCitaPaciente(
                             cita = cita,
-                            mostrarCancelar = true,
+                            mostrarCancelar = viewModel.puedeCancelar(cita.estadoCalculado),
                             alCancelar = { citaPendienteCancelar = cita },
                         )
-                    }
-                }
-
-                item {
-                    Text("Finalizadas", style = MaterialTheme.typography.titleMedium)
-                }
-                if (finalizadas.isEmpty()) {
-                    item { Text("No hay citas finalizadas", color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                } else {
-                    items(finalizadas) { cita ->
-                        TarjetaCitaPaciente(cita = cita, mostrarCancelar = false, alCancelar = {})
-                    }
-                }
-
-                item {
-                    Text("Canceladas", style = MaterialTheme.typography.titleMedium)
-                }
-                if (canceladas.isEmpty()) {
-                    item { Text("No hay citas canceladas", color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                } else {
-                    items(canceladas) { cita ->
-                        TarjetaCitaPaciente(cita = cita, mostrarCancelar = false, alCancelar = {})
                     }
                 }
             }
@@ -144,7 +170,7 @@ private fun TarjetaCitaPaciente(
     mostrarCancelar: Boolean,
     alCancelar: () -> Unit,
 ) {
-    TarjetaApp(modifier = Modifier.fillMaxWidth()) {
+    TarjetaApp(modifier = Modifier.fillMaxWidth(), mostrarBorde = false) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -176,6 +202,8 @@ private fun TarjetaCitaPaciente(
 
 private fun formatearIso(isoOffset: String): String =
     runCatching {
-        OffsetDateTime.parse(isoOffset).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+        // El backend devuelve inicio/fin en UTC; mostramos siempre en hora local del dispositivo.
+        val instant = OffsetDateTime.parse(isoOffset).toInstant()
+        instant.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
     }.getOrElse { isoOffset }
 

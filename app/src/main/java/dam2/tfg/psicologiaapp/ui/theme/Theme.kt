@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
 private val esquemaColoresOscuro = darkColorScheme(
     primary = primarioOscuro,
@@ -29,15 +30,22 @@ private val esquemaColoresOscuro = darkColorScheme(
     onSurface = enSuperficieOscuro,
     surfaceVariant = varianteSuperficieOscuro,
     onSurfaceVariant = enVarianteSuperficieOscuro,
+    surfaceDim = superficieDimOscuro,
+    surfaceBright = superficieBrillanteOscuro,
+    surfaceContainerLowest = superficieContenedorMinimaOscuro,
+    surfaceContainerLow = superficieContenedorBajaOscuro,
+    surfaceContainer = superficieContenedorOscuro,
+    surfaceContainerHigh = superficieContenedorAltaOscuro,
+    surfaceContainerHighest = superficieContenedorMaximaOscuro,
     outline = contornoOscuro,
     outlineVariant = contornoVarianteOscuro,
     error = errorOscuro,
     onError = enErrorOscuro,
     errorContainer = contenedorErrorOscuro,
     onErrorContainer = enContenedorErrorOscuro,
-    inverseSurface = enSuperficieOscuro,
-    inverseOnSurface = superficieOscuro,
-    inversePrimary = primarioClaro,
+    inverseSurface = superficieInversaOscuro,
+    inverseOnSurface = enSuperficieInversaOscuro,
+    inversePrimary = primarioInversoOscuro,
     surfaceTint = primarioOscuro,
     scrim = fondoOscuro
 )
@@ -61,17 +69,24 @@ private val esquemaColoresClaro = lightColorScheme(
     onSurface = enSuperficieClaro,
     surfaceVariant = varianteSuperficieClaro,
     onSurfaceVariant = enVarianteSuperficieClaro,
+    surfaceDim = superficieDimClaro,
+    surfaceBright = superficieBrillanteClaro,
+    surfaceContainerLowest = superficieContenedorMinimaClaro,
+    surfaceContainerLow = superficieContenedorBajaClaro,
+    surfaceContainer = superficieContenedorClaro,
+    surfaceContainerHigh = superficieContenedorAltaClaro,
+    surfaceContainerHighest = superficieContenedorMaximaClaro,
     outline = contornoClaro,
     outlineVariant = contornoVarianteClaro,
     error = errorClaro,
     onError = enErrorClaro,
     errorContainer = contenedorErrorClaro,
     onErrorContainer = enContenedorErrorClaro,
-    inverseSurface = enSuperficieClaro,
-    inverseOnSurface = superficieClaro,
-    inversePrimary = primarioOscuro,
+    inverseSurface = superficieInversaClaro,
+    inverseOnSurface = enSuperficieInversaClaro,
+    inversePrimary = primarioInversoClaro,
     surfaceTint = primarioClaro,
-    scrim = enFondoClaro
+    scrim = Color(0xFF000000)
 )
 
 @Composable

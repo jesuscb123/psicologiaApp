@@ -96,6 +96,7 @@ class CitasViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cargando = false,
+                            horaSeleccionada = null,
                             eventoNavegacion = EventoNavegacionCitas.CitaReservada,
                         )
                     }
@@ -106,6 +107,7 @@ class CitasViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cargando = false,
+                            horaSeleccionada = null,
                             mensajeError = error.message ?: "No se pudo reservar la cita",
                         )
                     }

@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo.citas
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPsicologoUseCase
+import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +37,10 @@ class MisCitasPsicologoViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun cambiarFiltro(filtro: FiltroMisCitas) {
+        _uiState.update { it.copy(filtroSeleccionado = filtro) }
     }
 }
 

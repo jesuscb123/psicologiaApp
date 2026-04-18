@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
 import dam2.tfg.psicologiaapp.cita.domain.usecase.CancelarCitaUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -60,6 +61,10 @@ class MisCitasPacienteViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun cambiarFiltro(filtro: FiltroMisCitas) {
+        _uiState.update { it.copy(filtroSeleccionado = filtro) }
     }
 
     fun puedeCancelar(estado: EstadoCitaCalculado): Boolean =

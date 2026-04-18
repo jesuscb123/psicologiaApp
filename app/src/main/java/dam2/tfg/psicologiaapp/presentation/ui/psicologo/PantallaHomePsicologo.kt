@@ -1,22 +1,31 @@
 package dam2.tfg.psicologiaapp.presentation.ui.psicologo
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
@@ -38,16 +47,14 @@ fun PantallaHomePsicologo(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    val tituloBarra = uiState.nombreUsuarioPsicologo.ifBlank { nombreUsuarioBarra }.ifBlank {
-        "Psicólogo"
-    }
 
     PantallaConCabeceraOndaApp(
+        modifier = Modifier.fillMaxSize(),
+        paddingContenido = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
         encabezado = {
             EncabezadoUsuarioApp(
-                nombreParaSaludo = tituloBarra,
-                mostrarFlechaAtras = true,
-                alVolver = null,
+                mostrarIconoMenu = true,
+                alAbrirMenu = alAbrirMenuPerfil,
                 nombreUsuario = nombreUsuarioBarra,
                 fotoPerfilUrl = fotoPerfilUrlBarra,
                 revisionCacheFoto = revisionCacheFotoBarra,
@@ -55,41 +62,133 @@ fun PantallaHomePsicologo(
             )
         },
         contenido = {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-
-                if (uiState.cargando) {
-                    Text("Cargando...")
-                    return@Column
+            when {
+                uiState.cargando -> {
+                    HomePsicologoContenidoCargando(mensajeError = uiState.mensajeError)
                 }
 
-                if (uiState.listaPacientes.isEmpty()) {
-                    Text(
-                        text = "No tienes pacientes asignados",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                } else {
-                    Text(
-                        text = "Tus pacientes",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    GridPacientes(
+                uiState.listaPacientes.isEmpty() -> {
+                    HomePsicologoEstadoVacio(mensajeError = uiState.mensajeError)
+                }
+
+                else -> {
+                    HomePsicologoListaPacientes(
+                        mensajeError = uiState.mensajeError,
                         pacientes = uiState.listaPacientes,
-                        alPulsarPaciente = { paciente ->
-                            alIrAFichaPaciente(paciente.idPaciente)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        alIrAFichaPaciente = alIrAFichaPaciente,
                     )
                 }
             }
         },
     )
+}
+
+@Composable
+private fun HomePsicologoContenidoCargando(mensajeError: String?) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(vertical = 32.dp),
+        ) {
+            mensajeError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            Text(
+                text = "Cargando…",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomePsicologoEstadoVacio(mensajeError: String?) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        mensajeError?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "No tienes pacientes asignados. Cuando te asignen pacientes, aparecerán aquí.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(24.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomePsicologoListaPacientes(
+    mensajeError: String?,
+    pacientes: List<Paciente>,
+    alIrAFichaPaciente: (Long) -> Unit,
+) {
+    val cantidad = pacientes.size
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        mensajeError?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Tus pacientes",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = when (cantidad) {
+                    1 -> "1 paciente en seguimiento"
+                    else -> "$cantidad pacientes en seguimiento"
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        GridPacientes(
+            pacientes = pacientes,
+            alPulsarPaciente = { paciente ->
+                alIrAFichaPaciente(paciente.idPaciente)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        )
+    }
 }
 
 @Composable

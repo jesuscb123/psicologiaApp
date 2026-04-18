@@ -40,7 +40,7 @@ fun PantallaConCabeceraOndaApp(
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val alturaCabecera = maxHeight * proporcionAlturaCabecera
-        val colorSuperficie = MaterialTheme.colorScheme.surface
+        val colorContenidoBajoOnda = MaterialTheme.colorScheme.background
         val formaHoja = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         val contenidoCabecera = cabecera ?: encabezado
 
@@ -99,11 +99,11 @@ fun PantallaConCabeceraOndaApp(
 
                 drawPath(
                     path = ruta,
-                    color = colorSuperficie,
+                    color = colorContenidoBajoOnda,
                 )
 
                 drawLine(
-                    color = colorSuperficie,
+                    color = colorContenidoBajoOnda,
                     start = Offset(0f, alto),
                     end = Offset(ancho, alto),
                     strokeWidth = 2f,
@@ -115,7 +115,7 @@ fun PantallaConCabeceraOndaApp(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .offset(y = alturaCabecera + alturaOnda - 24.dp),
-                color = colorSuperficie,
+                color = colorContenidoBajoOnda,
                 shape = formaHoja,
                 tonalElevation = elevacionHoja,
             ) {

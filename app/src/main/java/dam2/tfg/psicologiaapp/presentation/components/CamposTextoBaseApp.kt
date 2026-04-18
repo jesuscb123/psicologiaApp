@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 enum class EstiloCampoTextoApp {
     Normal,
     Minimal,
+    /** Fondo `surfaceContainerHigh`, borde invisible hasta foco (inputs tipo Stitch). */
+    ContenedorAlta,
 }
 
 @Composable
@@ -50,6 +52,10 @@ fun CampoTextoBaseApp(
     val esError = !textoError.isNullOrBlank()
     val colorContenedorHabilitado = MaterialTheme.colorScheme.surface
     val colorContenedorDeshabilitado = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+    val formaCampo = when (estilo) {
+        EstiloCampoTextoApp.ContenedorAlta -> MaterialTheme.shapes.medium
+        else -> MaterialTheme.shapes.large
+    }
     val colores = when (estilo) {
         EstiloCampoTextoApp.Normal -> OutlinedTextFieldDefaults.colors(
             focusedContainerColor = colorContenedorHabilitado,
@@ -97,6 +103,30 @@ fun CampoTextoBaseApp(
             disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             errorTrailingIconColor = MaterialTheme.colorScheme.error
         )
+
+        EstiloCampoTextoApp.ContenedorAlta -> OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f),
+            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.outlineVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.outlineVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error
+        )
     }
 
     OutlinedTextField(
@@ -114,7 +144,7 @@ fun CampoTextoBaseApp(
             { Text(text = placeholder, style = MaterialTheme.typography.bodyMedium) }
         },
         isError = esError,
-        shape = MaterialTheme.shapes.large,
+        shape = formaCampo,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         visualTransformation = visualTransformation,
         leadingIcon = if (iconoInicio == null) null else {
@@ -171,6 +201,8 @@ fun CampoCorreoBaseApp(
     textoError: String? = null,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    iconoInicio: ImageVector? = null,
+    contenidoDescripcionIconoInicio: String? = null,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -182,6 +214,8 @@ fun CampoCorreoBaseApp(
         keyboardType = KeyboardType.Email,
         paddingExterno = paddingExterno,
         estilo = estilo,
+        iconoInicio = iconoInicio,
+        contenidoDescripcionIconoInicio = contenidoDescripcionIconoInicio,
         modifier = modifier,
     )
 }
@@ -197,6 +231,8 @@ fun CampoContrasenaBaseApp(
     textoError: String? = null,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    iconoInicio: ImageVector? = null,
+    contenidoDescripcionIconoInicio: String? = null,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -209,6 +245,8 @@ fun CampoContrasenaBaseApp(
         visualTransformation = PasswordVisualTransformation(),
         paddingExterno = paddingExterno,
         estilo = estilo,
+        iconoInicio = iconoInicio,
+        contenidoDescripcionIconoInicio = contenidoDescripcionIconoInicio,
         modifier = modifier,
     )
 }

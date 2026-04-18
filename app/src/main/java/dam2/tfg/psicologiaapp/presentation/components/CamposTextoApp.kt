@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.components
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -13,18 +14,24 @@ fun CampoCorreoApp(
     alCambiar: (String) -> Unit,
     modifier: Modifier = Modifier,
     etiqueta: String = "Correo",
+    placeholder: String? = null,
     habilitado: Boolean = true,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    iconoInicio: ImageVector? = null,
+    contenidoDescripcionIconoInicio: String? = null,
 ) {
     CampoCorreoBaseApp(
         valor = valor,
         alCambiar = alCambiar,
         modifier = modifier,
         etiqueta = etiqueta,
+        placeholder = placeholder,
         habilitado = habilitado,
         paddingExterno = paddingExterno,
         estilo = estilo,
+        iconoInicio = iconoInicio,
+        contenidoDescripcionIconoInicio = contenidoDescripcionIconoInicio,
     )
 }
 
@@ -34,18 +41,24 @@ fun CampoContrasenaApp(
     alCambiar: (String) -> Unit,
     modifier: Modifier = Modifier,
     etiqueta: String = "Contraseña",
+    placeholder: String? = null,
     habilitado: Boolean = true,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    iconoInicio: ImageVector? = null,
+    contenidoDescripcionIconoInicio: String? = null,
 ) {
     CampoContrasenaBaseApp(
         valor = valor,
         alCambiar = alCambiar,
         modifier = modifier,
         etiqueta = etiqueta,
+        placeholder = placeholder,
         habilitado = habilitado,
         paddingExterno = paddingExterno,
         estilo = estilo,
+        iconoInicio = iconoInicio,
+        contenidoDescripcionIconoInicio = contenidoDescripcionIconoInicio,
     )
 }
 

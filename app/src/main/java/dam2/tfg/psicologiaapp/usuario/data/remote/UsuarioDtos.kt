@@ -57,3 +57,7 @@ data class AsignarPsicologoRequestDto(
 data class ActualizarEmailRequestDto(
     val nuevoEmail: String
 )
+
+data class ExisteCorreoResponseDto(
+    val existe: Boolean
+)

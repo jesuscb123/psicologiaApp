@@ -20,6 +20,10 @@ class AuthRepositoryImpl @Inject constructor(
         firebaseAuthFuenteDatos.crearCuenta(correo = correo, contrasena = contrasena)
     }
 
+    override suspend fun solicitarRestablecerContrasena(correo: String): Result<Unit> = runCatching {
+        firebaseAuthFuenteDatos.solicitarRestablecerContrasena(correo = correo)
+    }
+
     override suspend fun eliminarUsuarioActual(): Result<Unit> = runCatching {
         firebaseAuthFuenteDatos.eliminarUsuarioActual()
     }

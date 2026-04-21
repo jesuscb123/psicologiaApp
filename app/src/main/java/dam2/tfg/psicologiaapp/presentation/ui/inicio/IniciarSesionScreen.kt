@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.ui.inicio
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,11 +26,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +66,7 @@ fun PantallaIniciarSesion(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var recordarSesion by rememberSaveable { mutableStateOf(false) }
+    val contexto = LocalContext.current
 
     LaunchedEffect(uiState.eventoNavegacion) {
         when (uiState.eventoNavegacion) {
@@ -78,6 +83,13 @@ fun PantallaIniciarSesion(
                 alEntrarComoPsicologo()
             }
             null -> Unit
+        }
+    }
+
+    LaunchedEffect(uiState.mensajeInfoRecuperacion) {
+        uiState.mensajeInfoRecuperacion?.let { mensaje ->
+            Toast.makeText(contexto, mensaje, Toast.LENGTH_LONG).show()
+            viewModel.alConsumirMensajeInfoRecuperacion()
         }
     }
 
@@ -175,8 +187,8 @@ fun PantallaIniciarSesion(
                 ) {
                     BotonTextoApp(
                         texto = "¿Olvidaste tu contraseña?",
-                        alPulsar = {},
-                        habilitado = !uiState.cargando,
+                        alPulsar = viewModel::abrirDialogoRecuperacion,
+                        habilitado = !uiState.cargando && !uiState.cargandoRecuperacion,
                         estilo = EstiloBotonTextoApp.Enlace,
                     )
                 }
@@ -272,6 +284,67 @@ fun PantallaIniciarSesion(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        if (uiState.mostrandoDialogoRecuperacion) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!uiState.cargandoRecuperacion) {
+                        viewModel.cerrarDialogoRecuperacion()
+                    }
+                },
+                title = { Text("Recuperar contraseña") },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "Introduce tu correo electrónico para recibir instrucciones de restablecimiento."
+                        )
+                        CampoCorreoApp(
+                            valor = uiState.correoRecuperacion,
+                            alCambiar = viewModel::alCambiarCorreoRecuperacion,
+                            modifier = Modifier.fillMaxWidth(),
+                            etiqueta = "Correo electrónico",
+                            placeholder = "tu@email.com",
+                            habilitado = !uiState.cargandoRecuperacion,
+                            paddingExterno = paddingCampos,
+                            estilo = EstiloCampoTextoApp.ContenedorAlta,
+                            iconoInicio = Icons.Filled.Email,
+                            contenidoDescripcionIconoInicio = null,
+                        )
+                        uiState.mensajeErrorRecuperacion?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = viewModel::solicitarRecuperacionContrasena,
+                        enabled = !uiState.cargandoRecuperacion,
+                    ) {
+                        if (uiState.cargandoRecuperacion) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .padding(end = 8.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        }
+                        Text("Enviar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = viewModel::cerrarDialogoRecuperacion,
+                        enabled = !uiState.cargandoRecuperacion,
+                    ) {
+                        Text("Cancelar")
+                    }
+                },
+            )
         }
     }
 }

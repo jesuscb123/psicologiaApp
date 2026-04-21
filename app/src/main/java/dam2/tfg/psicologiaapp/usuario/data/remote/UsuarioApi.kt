@@ -9,12 +9,16 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * API Retrofit para endpoints de usuarios del backend.
  * Base: /api/usuarios
  */
 interface UsuarioApi {
+
+    @GET("api/usuarios/existe-email")
+    suspend fun existeCorreo(@Query("email") email: String): ExisteCorreoResponseDto
 
     @GET("api/usuarios/me")
     suspend fun getPerfilActual(): UsuarioPerfilResponseDto

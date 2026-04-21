@@ -3,7 +3,6 @@ package dam2.tfg.psicologiaapp.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,7 +38,7 @@ fun PantallaConCabeceraOndaApp(
     elevacionHoja: Dp = 0.dp,
     contenido: @Composable ColumnScope.() -> Unit,
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Mantener la cabecera estable aunque aparezca el teclado (evita "aplastar" el top).
         val alturaPantallaBase = LocalConfiguration.current.screenHeightDp.dp
         val alturaCabecera = alturaPantallaBase * proporcionAlturaCabecera

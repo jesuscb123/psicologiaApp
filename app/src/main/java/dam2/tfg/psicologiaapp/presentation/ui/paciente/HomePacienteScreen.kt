@@ -241,8 +241,8 @@ fun PantallaHomePaciente(
                                         ListaNotasApp(
                                             notas = uiState.notas,
                                             alSolicitarEliminar = { notaPendienteEliminar = it },
-                                            listaPlana = true,
                                             paddingContenido = PaddingValues(bottom = 8.dp),
+                                            modifier = Modifier.fillMaxSize(),
                                         )
                                     }
                                 }

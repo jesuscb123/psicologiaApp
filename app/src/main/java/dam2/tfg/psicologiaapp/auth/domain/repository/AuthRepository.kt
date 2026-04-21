@@ -29,6 +29,12 @@ interface AuthRepository {
     suspend fun cerrarSesion(): Result<Unit>
 
     /**
+     * Solicita el envío de correo para restablecer contraseña.
+     * El resultado de éxito no debe exponer si la cuenta existe.
+     */
+    suspend fun solicitarRestablecerContrasena(correo: String): Result<Unit>
+
+    /**
      * Fuerza la renovación del idToken en Firebase (actualiza la caché local).
      * Útil antes de ráfagas HTTP tras Storage u otras operaciones que cargan el SDK.
      */

@@ -77,6 +77,17 @@ object BaseDeDatosModulo {
         }
     }
 
+    private val migracion_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                ALTER TABLE notas
+                ADD COLUMN ultimaModificacion TEXT NOT NULL DEFAULT ''
+                """.trimIndent()
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun proporcionarBaseDeDatos(
@@ -87,7 +98,7 @@ object BaseDeDatosModulo {
             PsicologiaAppDatabase::class.java,
             "psicologia_app.db"
         )
-            .addMigrations(migracion_1_2, migracion_2_3)
+            .addMigrations(migracion_1_2, migracion_2_3, migracion_3_4)
             .build()
 
     @Provides

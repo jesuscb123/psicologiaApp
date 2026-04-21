@@ -10,6 +10,8 @@ import dam2.tfg.psicologiaapp.usuario.domain.model.UsuarioRequest
  */
 interface UsuarioRepository {
 
+    suspend fun existeCorreo(email: String): Result<Boolean>
+
     suspend fun getPerfilActual(): Result<UsuarioPerfil>
 
     suspend fun crearUsuario(request: UsuarioRequest): Result<Usuario>

@@ -23,6 +23,10 @@ class UsuarioRepositoryImpl @Inject constructor(
     private val usuarioApi: UsuarioApi
 ) : UsuarioRepository {
 
+    override suspend fun existeCorreo(email: String): Result<Boolean> = runCatching {
+        usuarioApi.existeCorreo(email = email).existe
+    }
+
     override suspend fun getPerfilActual(): Result<UsuarioPerfil> = runCatching {
         usuarioApi.getPerfilActual().toDomain().conFotoUrlNormalizada()
     }

@@ -54,6 +54,22 @@ class FirebaseAuthFuenteDatos @Inject constructor(
                 }
         }
 
+    suspend fun solicitarRestablecerContrasena(correo: String): Unit =
+        suspendCancellableCoroutine { continuación ->
+            firebaseAuth
+                .sendPasswordResetEmail(correo)
+                .addOnCompleteListener { tarea ->
+                    if (tarea.isSuccessful) {
+                        continuación.resume(Unit)
+                    } else {
+                        val excepción =
+                            tarea.exception
+                                ?: Exception("Error desconocido al solicitar restablecer contraseña en Firebase")
+                        continuación.resumeWithException(excepción)
+                    }
+                }
+        }
+
     /**
      * Elimina el usuario actualmente autenticado en Firebase (compensación si falla el registro en backend).
      */

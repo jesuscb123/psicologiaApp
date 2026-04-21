@@ -5,6 +5,11 @@ data class IniciarSesionUiState(
     val contrasena: String = "",
     val cargando: Boolean = false,
     val mensajeError: String? = null,
+    val mostrandoDialogoRecuperacion: Boolean = false,
+    val correoRecuperacion: String = "",
+    val cargandoRecuperacion: Boolean = false,
+    val mensajeErrorRecuperacion: String? = null,
+    val mensajeInfoRecuperacion: String? = null,
     val eventoNavegacion: EventoNavegacionIniciarSesion? = null
 )
 

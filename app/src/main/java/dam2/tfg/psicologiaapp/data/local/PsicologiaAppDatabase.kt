@@ -24,7 +24,7 @@ import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioEntity
         NotaEntity::class,
         TareaEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class PsicologiaAppDatabase : RoomDatabase() {

@@ -8,6 +8,7 @@ data class Nota(
     val id: Long,
     val asunto: String,
     val descripcion: String,
+    val ultimaModificacion: String,
     val pacienteId: Long,
     val psicologoId: Long,
 )

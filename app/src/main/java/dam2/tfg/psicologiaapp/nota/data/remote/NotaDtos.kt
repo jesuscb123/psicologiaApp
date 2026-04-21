@@ -16,6 +16,7 @@ data class NotaResponseDto(
     val id: Long,
     val asunto: String,
     val descripcion: String,
+    val ultimaModificacion: String,
     val paciente: PacienteResponseDto,
     val psicologo: PsicologoResponseDto
 )

@@ -8,6 +8,7 @@ fun NotaResponseDto.toDomain(): Nota = Nota(
     id = id,
     asunto = asunto,
     descripcion = descripcion,
+    ultimaModificacion = ultimaModificacion,
     pacienteId = paciente.idPaciente,
     psicologoId = psicologo.idEntidadPsicologo,
 )
@@ -16,6 +17,7 @@ fun NotaResponseDto.toEntity(): NotaEntity = NotaEntity(
     id = id,
     asunto = asunto,
     descripcion = descripcion,
+    ultimaModificacion = ultimaModificacion,
     pacienteId = paciente.idPaciente,
     psicologoId = psicologo.idEntidadPsicologo,
 )
@@ -24,6 +26,7 @@ fun NotaEntity.toDomain(): Nota = Nota(
     id = id,
     asunto = asunto,
     descripcion = descripcion,
+    ultimaModificacion = ultimaModificacion,
     pacienteId = pacienteId,
     psicologoId = psicologoId,
 )

@@ -5,14 +5,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -53,7 +54,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CitasScreen(
     alVolver: () -> Unit,
@@ -316,29 +317,27 @@ fun CitasScreen(
                                 )
                             }
 
-                            Box(modifier = Modifier.weight(1f)) {
-                                LazyColumn(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxHeight(),
-                                ) {
-                                    items(
-                                        items = slotsDia,
-                                        key = { it.toString() },
-                                    ) { hora ->
-                                        val pasada = esHoy && hora.isBefore(ahora.toLocalTime())
-                                        val disponibleServidor = hora in horasDisponiblesSet
-                                        val habilitada = disponibleServidor && !pasada && !uiState.cargando
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState()),
+                            ) {
+                                slotsDia.forEach { hora ->
+                                    val pasada = esHoy && hora.isBefore(ahora.toLocalTime())
+                                    val disponibleServidor = hora in horasDisponiblesSet
+                                    val habilitada = disponibleServidor && !pasada && !uiState.cargando
 
-                                        FilterChip(
-                                            selected = uiState.horaSeleccionada == hora,
-                                            onClick = {
-                                                if (habilitada) horaParaConfirmar = hora
-                                            },
-                                            label = { Text(hora.toString()) },
-                                            enabled = habilitada,
-                                            modifier = Modifier.fillMaxWidth(),
-                                        )
-                                    }
+                                    FilterChip(
+                                        selected = uiState.horaSeleccionada == hora,
+                                        onClick = {
+                                            if (habilitada) horaParaConfirmar = hora
+                                        },
+                                        label = { Text(hora.toString()) },
+                                        enabled = habilitada,
+                                    )
                                 }
                             }
                         }

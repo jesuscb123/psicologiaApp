@@ -32,6 +32,9 @@ fun PantallaConCabeceraOndaApp(
     encabezado: @Composable () -> Unit,
     cabecera: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
+    colorCabecera: Color? = null,
+    paddingEncabezado: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+    alineacionEncabezado: Alignment = Alignment.TopCenter,
     paddingContenido: PaddingValues = PaddingValues(horizontal = 22.dp, vertical = 22.dp),
     proporcionAlturaCabecera: Float = 0.15f,
     alturaOnda: Dp = 72.dp,
@@ -43,7 +46,8 @@ fun PantallaConCabeceraOndaApp(
         val alturaPantallaBase = LocalConfiguration.current.screenHeightDp.dp
         val alturaCabecera = alturaPantallaBase * proporcionAlturaCabecera
         val colorContenidoBajoOnda = MaterialTheme.colorScheme.background
-        val colorCabecera = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surface else Color.White
+        val colorCabeceraDefecto = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surface else Color.White
+        val colorCabeceraFinal = colorCabecera ?: colorCabeceraDefecto
         val formaHoja = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         val contenidoCabecera = cabecera ?: encabezado
 
@@ -52,14 +56,14 @@ fun PantallaConCabeceraOndaApp(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(alturaCabecera)
-                    .background(colorCabecera),
+                    .background(colorCabeceraFinal),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    contentAlignment = Alignment.TopCenter,
+                        .padding(paddingEncabezado),
+                    contentAlignment = alineacionEncabezado,
                 ) {
                     contenidoCabecera()
                 }

@@ -49,6 +49,7 @@ fun ListaNotasApp(
     paddingContenido: PaddingValues = PaddingValues(bottom = 80.dp),
     permitirEliminar: Boolean = true,
     alSolicitarEliminar: (Nota) -> Unit = {},
+    alVerDetalle: (Nota) -> Unit = {},
     /** Si es true, usa [Column] en lugar de [LazyColumn] (p. ej. dentro de un scroll padre). */
     listaPlana: Boolean = false,
 ) {
@@ -62,6 +63,7 @@ fun ListaNotasApp(
                     nota = nota,
                     permitirEliminar = permitirEliminar,
                     alSolicitarEliminar = alSolicitarEliminar,
+                    alVerDetalle = alVerDetalle,
                 )
             }
         }
@@ -76,6 +78,7 @@ fun ListaNotasApp(
                     nota = nota,
                     permitirEliminar = permitirEliminar,
                     alSolicitarEliminar = alSolicitarEliminar,
+                    alVerDetalle = alVerDetalle,
                 )
             }
         }
@@ -88,6 +91,7 @@ private fun ContenidoItemNota(
     nota: Nota,
     permitirEliminar: Boolean,
     alSolicitarEliminar: (Nota) -> Unit,
+    alVerDetalle: (Nota) -> Unit,
 ) {
     if (permitirEliminar) {
         val dismissState = rememberSwipeToDismissBoxState(
@@ -120,17 +124,18 @@ private fun ContenidoItemNota(
                 }
             },
             content = {
-                TarjetaContenidoNota(nota = nota)
+                TarjetaContenidoNota(nota = nota, alVerDetalle = alVerDetalle)
             }
         )
     } else {
-        TarjetaContenidoNota(nota = nota)
+        TarjetaContenidoNota(nota = nota, alVerDetalle = alVerDetalle)
     }
 }
 
 @Composable
-private fun TarjetaContenidoNota(nota: Nota) {
+private fun TarjetaContenidoNota(nota: Nota, alVerDetalle: (Nota) -> Unit) {
     Card(
+        onClick = { alVerDetalle(nota) },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,

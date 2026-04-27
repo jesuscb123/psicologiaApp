@@ -23,6 +23,8 @@ object RutasApp {
 /** Rutas del [androidx.navigation.compose.NavHost] interno del grafo paciente. */
 object RutasGrafoPaciente {
     const val HOME = "home"
+    const val NOTAS = "notas"
+    const val TAREAS = "tareas"
     const val ANADIR_NOTA = "nota/anadir"
     const val CITAS_MENU = "citas"
     const val AGENDAR_CITA = "citas/agendar"

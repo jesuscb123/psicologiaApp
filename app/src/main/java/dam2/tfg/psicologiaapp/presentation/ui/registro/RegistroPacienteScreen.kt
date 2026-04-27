@@ -1,42 +1,41 @@
 package dam2.tfg.psicologiaapp.presentation.ui.registro
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoContrasenaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoCorreoApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
-import dam2.tfg.psicologiaapp.presentation.components.BotonTextoApp
-import dam2.tfg.psicologiaapp.presentation.components.EstiloBotonTextoApp
-import androidx.compose.foundation.shape.RoundedCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,108 +53,86 @@ fun PantallaRegistroPaciente(
         }
     }
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val alturaCabecera = maxHeight * 0.12f
-        val alturaOnda = 56.dp
-        val colorSuperficie = MaterialTheme.colorScheme.surface
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(alturaCabecera)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary,
-                                MaterialTheme.colorScheme.tertiary,
-                            ),
-                        ),
-                    ),
-            )
-
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(alturaOnda)
-                    .offset(y = alturaCabecera - 1.dp),
+    PantallaConCabeceraOndaApp(
+        encabezado = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                val ancho = size.width
-                val alto = size.height
-                val ruta = Path().apply {
-                    moveTo(0f, 0f)
-                    quadraticTo(
-                        ancho * 0.25f,
-                        alto * 0.85f,
-                        ancho * 0.5f,
-                        alto * 0.45f,
+                IconButton(
+                    onClick = alVolver,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                    enabled = !uiState.cargando,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver atrás",
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
-                    quadraticTo(
-                        ancho * 0.75f,
-                        0f,
-                        ancho,
-                        alto * 0.55f,
-                    )
-                    lineTo(ancho, alto)
-                    lineTo(0f, alto)
-                    close()
                 }
+            }
+        },
+        modifier = Modifier.fillMaxSize(),
+        colorCabecera = MaterialTheme.colorScheme.background,
+        paddingEncabezado = PaddingValues(horizontal = 24.dp, vertical = 4.dp),
+        alineacionEncabezado = Alignment.TopStart,
+        proporcionAlturaCabecera = 0.10f,
+        alturaOnda = 56.dp,
+        paddingContenido = PaddingValues(horizontal = 22.dp, vertical = 16.dp),
+        contenido = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Registro de\nPaciente",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
 
-                drawPath(path = ruta, color = colorSuperficie)
-                drawLine(
-                    color = colorSuperficie,
-                    start = Offset(0f, alto),
-                    end = Offset(ancho, alto),
-                    strokeWidth = 2f,
+                Text(
+                    text = "Crea tu cuenta para comenzar tu proceso con tranquilidad.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                 )
             }
 
-            Surface(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
-                    .offset(y = alturaCabecera + alturaOnda - 24.dp),
-                color = colorSuperficie,
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                    .weight(1f)
+                    .navigationBarsPadding(),
+                contentPadding = PaddingValues(bottom = 120.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 22.dp, vertical = 22.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    BotonTextoApp(
-                        texto = "Volver",
-                        alPulsar = alVolver,
-                        estilo = EstiloBotonTextoApp.Enlace,
-                        habilitado = !uiState.cargando,
-                    )
+                item { Spacer(modifier = Modifier.height(6.dp)) }
 
-                    Text(
-                        text = "Registro paciente",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
+                item {
                     CampoCorreoApp(
                         valor = uiState.correo,
                         alCambiar = viewModel::alCambiarCorreo,
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )
+                }
 
+                item {
                     CampoContrasenaApp(
                         valor = uiState.contrasena,
                         alCambiar = viewModel::alCambiarContrasena,
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )
+                }
 
+                item {
                     CampoTextoApp(
                         valor = uiState.nombre,
                         alCambiar = viewModel::alCambiarNombre,
@@ -163,7 +140,9 @@ fun PantallaRegistroPaciente(
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )
+                }
 
+                item {
                     CampoTextoApp(
                         valor = uiState.apellidos,
                         alCambiar = viewModel::alCambiarApellidos,
@@ -171,7 +150,9 @@ fun PantallaRegistroPaciente(
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                     )
+                }
 
+                item {
                     uiState.mensajeError?.let {
                         Text(
                             text = it,
@@ -179,7 +160,9 @@ fun PantallaRegistroPaciente(
                             color = MaterialTheme.colorScheme.error,
                         )
                     }
+                }
 
+                item {
                     BotonPrimarioApp(
                         texto = if (uiState.cargando) "Registrando..." else "Completar registro",
                         alPulsar = viewModel::registrarPaciente,
@@ -188,8 +171,10 @@ fun PantallaRegistroPaciente(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+
+                item { Spacer(modifier = Modifier.height(24.dp)) }
             }
-        }
-    }
+        },
+    )
 }
 

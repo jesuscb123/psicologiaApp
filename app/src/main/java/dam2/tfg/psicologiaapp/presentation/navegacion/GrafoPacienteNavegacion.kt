@@ -31,8 +31,10 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAnadirNota
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasMenuScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.MisCitasPacienteScreen
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.NotasPacienteScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaHomePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaPerfilPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.TareasPacienteScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -142,8 +144,10 @@ fun GrafoPacienteNavegacion(
                     alIrAPerfilPsicologo = { id ->
                         navPaciente.navigate(RutasGrafoPaciente.crearRutaPerfilPsicologo(id))
                     },
-                    alIrAAnadirNota = { navPaciente.navigate(RutasGrafoPaciente.ANADIR_NOTA) },
+                    alIrANotas = { navPaciente.navigate(RutasGrafoPaciente.NOTAS) },
+                    alIrATareas = { navPaciente.navigate(RutasGrafoPaciente.TAREAS) },
                     alIrACitas = { navPaciente.navigate(RutasGrafoPaciente.CITAS_MENU) },
+                    alIrAAjustes = { navPaciente.navigate(RutasGrafoPaciente.AJUSTES) },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -173,9 +177,30 @@ fun GrafoPacienteNavegacion(
                 )
             }
 
+            composable(RutasGrafoPaciente.NOTAS) {
+                NotasPacienteScreen(
+                    alVolver = { navPaciente.popBackStack() },
+                    alIrAAnadirNota = { navPaciente.navigate(RutasGrafoPaciente.ANADIR_NOTA) },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
             composable(RutasGrafoPaciente.ANADIR_NOTA) {
                 PantallaAnadirNota(
                     alNotaGuardada = { navPaciente.popBackStack() },
+                    alVolver = { navPaciente.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPaciente.TAREAS) {
+                TareasPacienteScreen(
                     alVolver = { navPaciente.popBackStack() },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

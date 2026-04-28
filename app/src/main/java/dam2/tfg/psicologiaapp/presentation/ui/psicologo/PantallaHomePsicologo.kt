@@ -10,24 +10,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
@@ -75,6 +84,7 @@ fun PantallaHomePsicologo(
                     HomePsicologoListaPacientes(
                         mensajeError = uiState.mensajeError,
                         pacientes = uiState.listaPacientes,
+                        mapaCitaProxima = uiState.mapaCitaProxima,
                         alIrAFichaPaciente = alIrAFichaPaciente,
                     )
                 }
@@ -144,14 +154,21 @@ private fun HomePsicologoEstadoVacio(mensajeError: String?) {
 private fun HomePsicologoListaPacientes(
     mensajeError: String?,
     pacientes: List<Paciente>,
+    mapaCitaProxima: Map<Long, Cita?>,
     alIrAFichaPaciente: (Long) -> Unit,
 ) {
-    val cantidad = pacientes.size
+    var busqueda by remember { mutableStateOf("") }
+    val pacientesFiltrados = pacientes.filter { paciente ->
+        busqueda.isBlank() ||
+            paciente.nombre.contains(busqueda, ignoreCase = true) ||
+            paciente.apellidos.contains(busqueda, ignoreCase = true)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         mensajeError?.let {
             Text(
@@ -163,53 +180,71 @@ private fun HomePsicologoListaPacientes(
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "Tus pacientes",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                text = "Mis Pacientes",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = when (cantidad) {
-                    1 -> "1 paciente en seguimiento"
-                    else -> "$cantidad pacientes en seguimiento"
-                },
-                style = MaterialTheme.typography.bodyMedium,
+                text = "Consulta y gestiona el progreso de tus pacientes.",
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        GridPacientes(
-            pacientes = pacientes,
-            alPulsarPaciente = { paciente ->
-                alIrAFichaPaciente(paciente.idPaciente)
+        TextField(
+            value = busqueda,
+            onValueChange = { busqueda = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    text = "Buscar por nombre...",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+            ),
         )
-    }
-}
 
-@Composable
-private fun GridPacientes(
-    pacientes: List<Paciente>,
-    alPulsarPaciente: (Paciente) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 12.dp),
-        modifier = modifier,
-    ) {
-        items(pacientes) { paciente ->
-            TarjetaPacienteApp(
-                paciente = paciente,
-                alPulsar = alPulsarPaciente,
-                modifier = Modifier.fillMaxWidth(),
+        if (pacientesFiltrados.isEmpty()) {
+            Text(
+                text = "Sin resultados",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
             )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 12.dp),
+            ) {
+                items(pacientesFiltrados) { paciente ->
+                    TarjetaPacienteApp(
+                        paciente = paciente,
+                        alPulsar = { alIrAFichaPaciente(paciente.idPaciente) },
+                        modifier = Modifier.fillMaxWidth(),
+                        citaProxima = mapaCitaProxima[paciente.idPaciente],
+                    )
+                }
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
+import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPsicologoUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.model.PsicologoPerfil
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
@@ -14,12 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.OffsetDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class HomePsicologoViewModel @Inject constructor(
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
     private val getPacientesDePsicologoUseCase: GetPacientesDePsicologoUseCase,
+    private val obtenerMisCitasPsicologoUseCase: ObtenerMisCitasPsicologoUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomePsicologoUiState())
@@ -71,6 +75,20 @@ class HomePsicologoViewModel @Inject constructor(
                                     listaPacientes = pacientes,
                                     mensajeError = null,
                                 )
+                            }
+
+                            val resultadoCitas = obtenerMisCitasPsicologoUseCase()
+                            ensureActive()
+                            resultadoCitas.onSuccess { citas ->
+                                val ahora = OffsetDateTime.now()
+                                val mapa = citas
+                                    .filter { it.estadoCalculado == EstadoCitaCalculado.ACTIVA }
+                                    .filter { OffsetDateTime.parse(it.inicio) >= ahora }
+                                    .groupBy { it.pacienteId }
+                                    .mapValues { (_, citasPaciente) ->
+                                        citasPaciente.minByOrNull { OffsetDateTime.parse(it.inicio) }
+                                    }
+                                _uiState.update { it.copy(mapaCitaProxima = mapa) }
                             }
                         },
                         onFailure = { error ->

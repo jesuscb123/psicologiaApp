@@ -29,7 +29,7 @@ android {
         }
         create("prod") {
             dimension = "entorno"
-            buildConfigField("String", "BASE_URL", "\"https://bdpsicologiaapp-1.onrender.com/\"")
+            buildConfigField("String", "BASE_URL", "\"https://bdpsicologiaapp.onrender.com/\"")
         }
     }
 
@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.gson)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.kotlinx.coroutines.play.services)

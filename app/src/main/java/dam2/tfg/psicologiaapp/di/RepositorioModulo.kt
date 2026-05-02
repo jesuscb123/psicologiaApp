@@ -2,6 +2,8 @@ package dam2.tfg.psicologiaapp.di
 
 import dam2.tfg.psicologiaapp.auth.data.repository.AuthRepositoryImpl
 import dam2.tfg.psicologiaapp.auth.domain.repository.AuthRepository
+import dam2.tfg.psicologiaapp.chat.data.repository.ChatRepositoryImpl
+import dam2.tfg.psicologiaapp.chat.domain.repository.ChatRepository
 import dam2.tfg.psicologiaapp.cita.data.repository.CitaRepositoryImpl
 import dam2.tfg.psicologiaapp.cita.domain.repository.CitaRepository
 import dam2.tfg.psicologiaapp.nota.data.repository.NotaRepositoryImpl
@@ -65,4 +67,8 @@ abstract class RepositorioModulo {
     abstract fun bindTemaPreferenciasRepository(
         impl: TemaPreferenciasRepositoryImpl,
     ): TemaPreferenciasRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(impl: ChatRepositoryImpl): ChatRepository
 }

@@ -32,6 +32,7 @@ object RutasGrafoPaciente {
     const val PERFIL_PSICOLOGO = "psicologo/{psicologoId}"
     const val AJUSTES = "ajustes"
     const val ACERCA = "acerca"
+    const val CHAT_PSICOLOGO = "chat/psicologo"
 
     fun crearRutaPerfilPsicologo(psicologoId: String): String = "psicologo/$psicologoId"
 }
@@ -44,9 +45,12 @@ object RutasGrafoPsicologo {
     const val MIS_CITAS = "citas/mis_citas"
     const val AJUSTES = "ajustes"
     const val ACERCA = "acerca"
+    const val CHAT_PACIENTE = "chat/paciente/{pacienteId}"
 
     fun crearRutaFichaPaciente(pacienteId: Long): String = "ficha_paciente/$pacienteId"
 
     fun crearRutaAnadirTarea(pacienteId: Long): String = "tarea/anadir/$pacienteId"
+
+    fun crearRutaChatPaciente(pacienteId: Long): String = "chat/paciente/$pacienteId"
 }
 

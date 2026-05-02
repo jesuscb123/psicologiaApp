@@ -5,7 +5,7 @@ Este proyecto usa **product flavors** (`local`, `prod`) y **build types** (`debu
 | Variante      | Backend por defecto | Uso típico |
 |---------------|---------------------|------------|
 | **localDebug**   | `http://10.0.2.2:8080/` (emulador → Spring en tu PC, puerto 8080) | Desarrollo y pruebas contra API local |
-| **prodDebug**    | `https://bdpsicologiaapp-1.onrender.com/` | Pruebas contra producción (Render) sin generar release |
+| **prodDebug**    | `https://bdpsicologiaapp.onrender.com/` | Pruebas contra producción (Render) sin generar release |
 | **prodRelease**  | Misma URL que prod | Build optimizado, listo para firmar APK/AAB o pruebas “casi finales” |
 
 > **Nota:** `10.0.2.2` solo funciona en el **emulador Android** apuntando al `localhost` de tu máquina. En **dispositivo físico** usa la IP LAN de tu PC (p. ej. `http://192.168.x.x:8080/`) o prueba solo con **prod**.

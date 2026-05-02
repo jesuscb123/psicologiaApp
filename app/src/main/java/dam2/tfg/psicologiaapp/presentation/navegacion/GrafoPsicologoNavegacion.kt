@@ -28,6 +28,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewMode
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAnadirTareaPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAjustesPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaFichaPacientePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaHomePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.citas.MisCitasPsicologoScreen
@@ -153,6 +154,9 @@ fun GrafoPsicologoNavegacion(
                     alIrAnadirTarea = {
                         navPsicologo.navigate(RutasGrafoPsicologo.crearRutaAnadirTarea(pacienteId))
                     },
+                    alIrAChat = {
+                        navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(pacienteId))
+                    },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -203,6 +207,17 @@ fun GrafoPsicologoNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(
+                route = RutasGrafoPsicologo.CHAT_PACIENTE,
+                arguments = listOf(
+                    navArgument(RutasApp.ARG_PACIENTE_ID) { type = NavType.LongType },
+                ),
+            ) {
+                PantallaChatScreen(
+                    alVolver = { navPsicologo.popBackStack() },
                 )
             }
         }

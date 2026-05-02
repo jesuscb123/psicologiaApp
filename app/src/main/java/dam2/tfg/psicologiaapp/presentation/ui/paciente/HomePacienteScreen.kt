@@ -67,6 +67,7 @@ fun PantallaHomePaciente(
     alIrATareas: () -> Unit,
     alIrACitas: () -> Unit,
     alIrAAjustes: () -> Unit,
+    alIrAChat: () -> Unit,
     alAbrirMenuPerfil: () -> Unit,
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
@@ -140,6 +141,7 @@ fun PantallaHomePaciente(
                         BannerPsicologoActualPaciente(
                             psicologo = uiState.psicologoAsignado,
                             alVerPerfil = alIrAPerfilPsicologo,
+                            alEnviarMensaje = alIrAChat,
                         )
                     }
                 }
@@ -499,6 +501,7 @@ private fun TarjetaAccesoPacienteApp(
 private fun BannerPsicologoActualPaciente(
     psicologo: Psicologo?,
     alVerPerfil: (String) -> Unit,
+    alEnviarMensaje: () -> Unit,
 ) {
     val nombreCompleto = psicologo?.let {
         listOf(it.nombre, it.apellidos).filter { p -> p.isNotBlank() }.joinToString(" ")
@@ -518,60 +521,81 @@ private fun BannerPsicologoActualPaciente(
             )
             .padding(20.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f),
             ) {
-                AvatarPerfilCircularApp(
-                    nombreUsuario = nombreCompleto ?: "",
-                    fotoPerfilUrl = psicologo?.fotoPerfilUrl,
-                    tamano = 48.dp,
-                )
-                Column {
-                    Text(
-                        text = "Psicólogo actual",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    AvatarPerfilCircularApp(
+                        nombreUsuario = nombreCompleto ?: "",
+                        fotoPerfilUrl = psicologo?.fotoPerfilUrl,
+                        tamano = 48.dp,
                     )
+                    Column {
+                        Text(
+                            text = "Psicólogo actual",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                        Text(
+                            text = nombreCompleto ?: "Sin especialista asignado",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                            maxLines = 2,
+                        )
+                    }
+                }
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clip(RoundedCornerShape(percent = 50))
+                        .then(
+                            if (psicologo != null) {
+                                Modifier.clickable { alVerPerfil(psicologo.usuarioId.toString()) }
+                            } else {
+                                Modifier
+                            },
+                        ),
+                ) {
                     Text(
-                        text = nombreCompleto ?: "Sin especialista asignado",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                        maxLines = 2,
+                        text = "Ver perfil",
+                        color = if (psicologo != null) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                     )
                 }
             }
-            Surface(
-                shape = RoundedCornerShape(percent = 50),
-                color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clip(RoundedCornerShape(percent = 50))
-                    .then(
-                        if (psicologo != null) {
-                            Modifier.clickable { alVerPerfil(psicologo.usuarioId.toString()) }
-                        } else {
-                            Modifier
-                        },
-                    ),
-            ) {
-                Text(
-                    text = "Ver perfil",
-                    color = if (psicologo != null) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                )
+
+            if (psicologo != null) {
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(percent = 50))
+                        .clickable { alEnviarMensaje() },
+                ) {
+                    Text(
+                        text = "Enviar mensaje",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    )
+                }
             }
         }
     }

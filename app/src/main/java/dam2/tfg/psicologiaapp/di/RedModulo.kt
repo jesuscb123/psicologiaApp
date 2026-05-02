@@ -1,12 +1,14 @@
 package dam2.tfg.psicologiaapp.di
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.GsonBuilder
 import dam2.tfg.psicologiaapp.BuildConfig
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenInterceptor
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenRefrescoAuthenticator
 import dam2.tfg.psicologiaapp.data.remote.FirebaseProveedorToken
 import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
+import dam2.tfg.psicologiaapp.chat.data.remote.ChatApi
 import dam2.tfg.psicologiaapp.cita.data.remote.CitaApi
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
@@ -41,6 +43,11 @@ abstract class RedModulo {
         @Provides
         @Singleton
         fun proporcionarFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+        @Provides
+        @Singleton
+        fun proporcionarFirebaseDatabase(): FirebaseDatabase =
+            FirebaseDatabase.getInstance().apply { setPersistenceEnabled(true) }
 
         @Provides
         @Singleton
@@ -106,5 +113,10 @@ abstract class RedModulo {
         @Singleton
         fun proporcionarCitaApi(retrofit: Retrofit): CitaApi =
             retrofit.create(CitaApi::class.java)
+
+        @Provides
+        @Singleton
+        fun proporcionarChatApi(retrofit: Retrofit): ChatApi =
+            retrofit.create(ChatApi::class.java)
     }
 }

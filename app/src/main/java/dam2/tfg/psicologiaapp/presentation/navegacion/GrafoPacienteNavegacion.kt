@@ -32,6 +32,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasMenuScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.MisCitasPacienteScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.NotasPacienteScreen
+import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaHomePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaPerfilPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.TareasPacienteScreen
@@ -148,6 +149,7 @@ fun GrafoPacienteNavegacion(
                     alIrATareas = { navPaciente.navigate(RutasGrafoPaciente.TAREAS) },
                     alIrACitas = { navPaciente.navigate(RutasGrafoPaciente.CITAS_MENU) },
                     alIrAAjustes = { navPaciente.navigate(RutasGrafoPaciente.AJUSTES) },
+                    alIrAChat = { navPaciente.navigate(RutasGrafoPaciente.CHAT_PSICOLOGO) },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -258,6 +260,12 @@ fun GrafoPacienteNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPaciente.CHAT_PSICOLOGO) {
+                PantallaChatScreen(
+                    alVolver = { navPaciente.popBackStack() },
                 )
             }
         }

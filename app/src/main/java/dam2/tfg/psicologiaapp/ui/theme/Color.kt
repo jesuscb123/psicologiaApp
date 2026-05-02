@@ -25,7 +25,7 @@ val enTerciarioClaro = Color(0xFFFFFFFF)
 val contenedorTerciarioClaro = Color(0xFFE8CDFD)
 val enContenedorTerciarioClaro = Color(0xFF57426A)
 
-val fondoClaro = Color(0xFFFAF9FC)
+val fondoClaro = Color(0xFFE8F0FF)
 val enFondoClaro = Color(0xFF303238)
 val superficieClaro = Color(0xFFFAF9FC)
 val enSuperficieClaro = Color(0xFF303238)

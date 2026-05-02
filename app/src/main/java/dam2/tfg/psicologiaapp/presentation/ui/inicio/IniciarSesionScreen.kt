@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -37,9 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +61,6 @@ fun PantallaIniciarSesion(
     viewModel: IniciarSesionViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var recordarSesion by rememberSaveable { mutableStateOf(false) }
     val contexto = LocalContext.current
 
     LaunchedEffect(uiState.eventoNavegacion) {
@@ -111,37 +106,22 @@ fun PantallaIniciarSesion(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
-            Surface(
-                modifier = Modifier.size(192.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                shadowElevation = 8.dp,
-                tonalElevation = 0.dp,
+        
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logoapp),
-                        contentDescription = "Logo de la aplicación",
-                        modifier = Modifier
-                            .size(160.dp)
-                            .padding(8.dp),
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.logoapp),
+                    contentDescription = "Logo de la aplicación",
+                    modifier = Modifier
+                        .size(250.dp)
+                        .padding(5.dp),
+                )
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Text(
-                text = "Psicología App",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = "Tu espacio digital seguro.",
                 style = MaterialTheme.typography.bodyLarge,
@@ -183,37 +163,15 @@ fun PantallaIniciarSesion(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    BotonTextoApp(
+                    BotonTextoApp( 
                         texto = "¿Olvidaste tu contraseña?",
                         alPulsar = viewModel::abrirDialogoRecuperacion,
                         habilitado = !uiState.cargando && !uiState.cargandoRecuperacion,
                         estilo = EstiloBotonTextoApp.Enlace,
                     )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable(enabled = !uiState.cargando) { recordarSesion = !recordarSesion },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(
-                            checked = recordarSesion,
-                            onCheckedChange = { if (!uiState.cargando) recordarSesion = it },
-                            enabled = !uiState.cargando,
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Recordarme",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
                 }
 
                 uiState.mensajeError?.let {

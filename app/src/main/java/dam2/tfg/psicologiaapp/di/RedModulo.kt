@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.di
 
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.GsonBuilder
@@ -46,8 +47,21 @@ abstract class RedModulo {
 
         @Provides
         @Singleton
-        fun proporcionarFirebaseDatabase(): FirebaseDatabase =
-            FirebaseDatabase.getInstance().apply { setPersistenceEnabled(true) }
+        fun proporcionarFirebaseDatabase(): FirebaseDatabase {
+            val urlExplicita = BuildConfig.FIREBASE_RTDB_URL.trim().takeIf { it.isNotEmpty() }
+            val urlDesdeGoogleServices = FirebaseApp.getInstance()
+                .options
+                .databaseUrl
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
+            val url = urlExplicita ?: urlDesdeGoogleServices
+            val db = if (url != null) {
+                FirebaseDatabase.getInstance(url)
+            } else {
+                FirebaseDatabase.getInstance()
+            }
+            return db.apply { setPersistenceEnabled(true) }
+        }
 
         @Provides
         @Singleton

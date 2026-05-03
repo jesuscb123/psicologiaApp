@@ -7,6 +7,7 @@ import dam2.tfg.psicologiaapp.chat.domain.model.Chat
 import dam2.tfg.psicologiaapp.chat.domain.model.MensajeChat
 import dam2.tfg.psicologiaapp.chat.domain.repository.ChatRepository
 import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -53,8 +54,14 @@ class ChatRepositoryImpl @Inject constructor(
     override fun observarMensajes(rtdbRuta: String): Flow<List<MensajeChat>> =
         chatFuenteDatosFirebase.observarMensajes(rtdbRuta)
 
-    override suspend fun enviarMensaje(rtdbRuta: String, texto: String): Result<Unit> =
-        runCatching { chatFuenteDatosFirebase.enviarMensaje(rtdbRuta, texto) }
+    override suspend fun enviarMensaje(rtdbRuta: String, texto: String): Result<Unit> = try {
+        chatFuenteDatosFirebase.enviarMensaje(rtdbRuta, texto)
+        Result.success(Unit)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
 
     private suspend fun <T> ejecutarConRefrescoTokenSi401(
         bloque: suspend () -> retrofit2.Response<T>,

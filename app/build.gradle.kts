@@ -19,6 +19,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Opcional: misma URL que en Firebase Console → Realtime Database y FIREBASE_DATABASE_URL del backend.
+        // Vacío: usa la URL del google-services.json (descárgalo de nuevo si no tienes RTDB en el JSON).
+        buildConfigField("String", "FIREBASE_RTDB_URL", "\"\"")
     }
 
     flavorDimensions += "entorno"

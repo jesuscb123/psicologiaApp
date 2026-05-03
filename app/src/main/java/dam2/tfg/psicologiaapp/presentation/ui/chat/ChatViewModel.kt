@@ -12,7 +12,8 @@ import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -79,8 +80,18 @@ class ChatViewModel @Inject constructor(
 
     private fun observarMensajes(rtdbRuta: String) {
         viewModelScope.launch {
-            observarMensajesChatUseCase(rtdbRuta).collectLatest { mensajes ->
-                _uiState.update { it.copy(mensajes = mensajes) }
+            try {
+                observarMensajesChatUseCase(rtdbRuta).collect { mensajes ->
+                    _uiState.update { it.copy(mensajes = mensajes) }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        mensajeError = e.message ?: "Error al sincronizar mensajes (Firebase)",
+                    )
+                }
             }
         }
     }

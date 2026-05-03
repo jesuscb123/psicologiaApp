@@ -45,6 +45,7 @@ import dam2.tfg.psicologiaapp.presentation.components.TarjetaPacienteApp
 @Composable
 fun PantallaHomePsicologo(
     alIrAFichaPaciente: (Long) -> Unit,
+    alIrAChatConPaciente: (Long) -> Unit,
     alAbrirMenuPerfil: () -> Unit,
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
@@ -86,6 +87,7 @@ fun PantallaHomePsicologo(
                         pacientes = uiState.listaPacientes,
                         mapaCitaProxima = uiState.mapaCitaProxima,
                         alIrAFichaPaciente = alIrAFichaPaciente,
+                        alIrAChatConPaciente = alIrAChatConPaciente,
                     )
                 }
             }
@@ -156,6 +158,7 @@ private fun HomePsicologoListaPacientes(
     pacientes: List<Paciente>,
     mapaCitaProxima: Map<Long, Cita?>,
     alIrAFichaPaciente: (Long) -> Unit,
+    alIrAChatConPaciente: (Long) -> Unit,
 ) {
     var busqueda by remember { mutableStateOf("") }
     val pacientesFiltrados = pacientes.filter { paciente ->
@@ -242,6 +245,7 @@ private fun HomePsicologoListaPacientes(
                         alPulsar = { alIrAFichaPaciente(paciente.idPaciente) },
                         modifier = Modifier.fillMaxWidth(),
                         citaProxima = mapaCitaProxima[paciente.idPaciente],
+                        alPulsarChat = { alIrAChatConPaciente(it.idPaciente) },
                     )
                 }
             }

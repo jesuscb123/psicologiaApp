@@ -135,6 +135,9 @@ fun GrafoPsicologoNavegacion(
                     alIrAFichaPaciente = { idPaciente ->
                         navPsicologo.navigate(RutasGrafoPsicologo.crearRutaFichaPaciente(idPaciente))
                     },
+                    alIrAChatConPaciente = { idPaciente ->
+                        navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(idPaciente))
+                    },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -153,9 +156,6 @@ fun GrafoPsicologoNavegacion(
                     alVolver = { navPsicologo.popBackStack() },
                     alIrAnadirTarea = {
                         navPsicologo.navigate(RutasGrafoPsicologo.crearRutaAnadirTarea(pacienteId))
-                    },
-                    alIrAChat = {
-                        navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(pacienteId))
                     },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

@@ -24,7 +24,18 @@ class RegistroPacienteViewModel @Inject constructor(
     val uiState: StateFlow<RegistroPacienteUiState> = _uiState
 
     fun alCambiarCorreo(nuevoCorreo: String) {
-        _uiState.update { it.copy(correo = nuevoCorreo, mensajeError = null) }
+        val max = LimiteCaracteresRegistroPaciente.CORREO
+        if (nuevoCorreo.length > max) {
+            _uiState.update {
+                it.copy(
+                    correo = nuevoCorreo.take(max),
+                    errorLongitudCorreo = LimiteCaracteresRegistroPaciente.mensajeMaximoCaracteres(max),
+                    mensajeError = null
+                )
+            }
+        } else {
+            _uiState.update { it.copy(correo = nuevoCorreo, errorLongitudCorreo = null, mensajeError = null) }
+        }
     }
 
     fun alCambiarContrasena(nuevaContrasena: String) {
@@ -32,11 +43,35 @@ class RegistroPacienteViewModel @Inject constructor(
     }
 
     fun alCambiarNombre(nuevoNombre: String) {
-        _uiState.update { it.copy(nombre = nuevoNombre, mensajeError = null) }
+        val max = LimiteCaracteresRegistroPaciente.NOMBRE
+        if (nuevoNombre.length > max) {
+            _uiState.update {
+                it.copy(
+                    nombre = nuevoNombre.take(max),
+                    errorLongitudNombre = LimiteCaracteresRegistroPaciente.mensajeMaximoCaracteres(max),
+                    mensajeError = null
+                )
+            }
+        } else {
+            _uiState.update { it.copy(nombre = nuevoNombre, errorLongitudNombre = null, mensajeError = null) }
+        }
     }
 
     fun alCambiarApellidos(nuevosApellidos: String) {
-        _uiState.update { it.copy(apellidos = nuevosApellidos, mensajeError = null) }
+        val max = LimiteCaracteresRegistroPaciente.APELLIDOS
+        if (nuevosApellidos.length > max) {
+            _uiState.update {
+                it.copy(
+                    apellidos = nuevosApellidos.take(max),
+                    errorLongitudApellidos = LimiteCaracteresRegistroPaciente.mensajeMaximoCaracteres(max),
+                    mensajeError = null
+                )
+            }
+        } else {
+            _uiState.update {
+                it.copy(apellidos = nuevosApellidos, errorLongitudApellidos = null, mensajeError = null)
+            }
+        }
     }
 
     fun alConsumirRegistroCompletado() {

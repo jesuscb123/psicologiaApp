@@ -120,6 +120,7 @@ fun PantallaRegistroPaciente(
                         alCambiar = viewModel::alCambiarCorreo,
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudCorreo,
                     )
                 }
 
@@ -139,6 +140,7 @@ fun PantallaRegistroPaciente(
                         etiqueta = "Nombre",
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudNombre,
                     )
                 }
 
@@ -149,6 +151,7 @@ fun PantallaRegistroPaciente(
                         etiqueta = "Apellidos",
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudApellidos,
                     )
                 }
 

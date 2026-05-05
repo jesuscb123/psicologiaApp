@@ -116,6 +116,7 @@ fun PantallaRegistroPsicologo(
                     alCambiar = viewModel::alCambiarCorreo,
                     modifier = Modifier.fillMaxWidth(),
                     habilitado = !uiState.cargando,
+                    textoError = uiState.errorLongitudCorreo,
                 )
             }
 
@@ -135,6 +136,7 @@ fun PantallaRegistroPsicologo(
                     etiqueta = "Nombre",
                     modifier = Modifier.fillMaxWidth(),
                     habilitado = !uiState.cargando,
+                    textoError = uiState.errorLongitudNombre,
                 )
             }
 
@@ -145,6 +147,7 @@ fun PantallaRegistroPsicologo(
                     etiqueta = "Apellidos",
                     modifier = Modifier.fillMaxWidth(),
                     habilitado = !uiState.cargando,
+                    textoError = uiState.errorLongitudApellidos,
                 )
             }
 
@@ -155,6 +158,7 @@ fun PantallaRegistroPsicologo(
                     etiqueta = "Número de colegiado",
                     modifier = Modifier.fillMaxWidth(),
                     habilitado = !uiState.cargando,
+                    textoError = uiState.errorLongitudNumeroColegiado,
                 )
             }
 
@@ -177,6 +181,7 @@ fun PantallaRegistroPsicologo(
                     habilitado = !uiState.cargando,
                     singleLine = false,
                     minLines = 3,
+                    textoError = uiState.errorLongitudDescripcion,
                 )
             }
 

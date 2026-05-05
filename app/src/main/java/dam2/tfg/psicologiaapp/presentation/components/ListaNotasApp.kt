@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,9 +28,11 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -104,6 +107,17 @@ private fun ContenidoItemNota(
                 }
             }
         )
+        val mostrandoRojo =
+            dismissState.currentValue != SwipeToDismissBoxValue.Settled ||
+                dismissState.targetValue != SwipeToDismissBoxValue.Settled
+        val colorFondo by animateColorAsState(
+            targetValue = if (mostrandoRojo) {
+                MaterialTheme.colorScheme.errorContainer
+            } else {
+                Color.Transparent
+            },
+            label = "notaSwipeBackgroundColor"
+        )
         SwipeToDismissBox(
             state = dismissState,
             enableDismissFromStartToEnd = true,
@@ -112,14 +126,18 @@ private fun ContenidoItemNota(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.errorContainer),
+                        .background(colorFondo),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         text = "Eliminar",
                         modifier = Modifier.padding(horizontal = 20.dp),
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onErrorContainer
+                        color = if (mostrandoRojo) {
+                            MaterialTheme.colorScheme.onErrorContainer
+                        } else {
+                            Color.Transparent
+                        }
                     )
                 }
             },

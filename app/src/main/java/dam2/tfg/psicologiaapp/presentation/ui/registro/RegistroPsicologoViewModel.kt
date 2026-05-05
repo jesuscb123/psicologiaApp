@@ -24,7 +24,14 @@ class RegistroPsicologoViewModel @Inject constructor(
     val uiState: StateFlow<RegistroPsicologoUiState> = _uiState
 
     fun alCambiarCorreo(nuevoCorreo: String) {
-        _uiState.update { it.copy(correo = nuevoCorreo, mensajeError = null) }
+        val limitado = limitarTexto(nuevoCorreo, LimiteCaracteresRegistroPsicologo.CORREO)
+        _uiState.update {
+            it.copy(
+                correo = limitado.texto,
+                errorLongitudCorreo = limitado.error,
+                mensajeError = null
+            )
+        }
     }
 
     fun alCambiarContrasena(nuevaContrasena: String) {
@@ -32,15 +39,36 @@ class RegistroPsicologoViewModel @Inject constructor(
     }
 
     fun alCambiarNombre(nuevoNombre: String) {
-        _uiState.update { it.copy(nombre = nuevoNombre, mensajeError = null) }
+        val limitado = limitarTexto(nuevoNombre, LimiteCaracteresRegistroPsicologo.NOMBRE)
+        _uiState.update {
+            it.copy(
+                nombre = limitado.texto,
+                errorLongitudNombre = limitado.error,
+                mensajeError = null
+            )
+        }
     }
 
     fun alCambiarApellidos(nuevosApellidos: String) {
-        _uiState.update { it.copy(apellidos = nuevosApellidos, mensajeError = null) }
+        val limitado = limitarTexto(nuevosApellidos, LimiteCaracteresRegistroPsicologo.APELLIDOS)
+        _uiState.update {
+            it.copy(
+                apellidos = limitado.texto,
+                errorLongitudApellidos = limitado.error,
+                mensajeError = null
+            )
+        }
     }
 
     fun alCambiarNumeroColegiado(nuevoNumeroColegiado: String) {
-        _uiState.update { it.copy(numeroColegiado = nuevoNumeroColegiado, mensajeError = null) }
+        val limitado = limitarTexto(nuevoNumeroColegiado, LimiteCaracteresRegistroPsicologo.NUMERO_COLEGIADO)
+        _uiState.update {
+            it.copy(
+                numeroColegiado = limitado.texto,
+                errorLongitudNumeroColegiado = limitado.error,
+                mensajeError = null
+            )
+        }
     }
 
     fun alCambiarEspecialidad(nuevaEspecialidad: String) {
@@ -48,7 +76,14 @@ class RegistroPsicologoViewModel @Inject constructor(
     }
 
     fun alCambiarDescripcion(nuevaDescripcion: String) {
-        _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+        val limitado = limitarTexto(nuevaDescripcion, LimiteCaracteresRegistroPsicologo.DESCRIPCION)
+        _uiState.update {
+            it.copy(
+                descripcion = limitado.texto,
+                errorLongitudDescripcion = limitado.error,
+                mensajeError = null
+            )
+        }
     }
 
     fun alConsumirRegistroCompletado() {
@@ -123,6 +158,19 @@ class RegistroPsicologoViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private data class TextoLimitado(
+        val texto: String,
+        val error: String?
+    )
+
+    private fun limitarTexto(nuevo: String, max: Int): TextoLimitado {
+        if (nuevo.length <= max) return TextoLimitado(texto = nuevo, error = null)
+        return TextoLimitado(
+            texto = nuevo.take(max),
+            error = LimiteCaracteresRegistroPsicologo.mensajeMaximoCaracteres(max)
+        )
     }
 }
 

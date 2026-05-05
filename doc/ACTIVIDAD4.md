@@ -13,9 +13,9 @@
    - [2.4. Migraciones Room en cliente](#24-migraciones-room-en-cliente)
    - [2.5. Datos iniciales](#25-datos-iniciales)
    - [2.6. Reglas de Firebase Realtime Database](#26-reglas-de-firebase-realtime-database-chats)
-3. [Pendiente](#3-pendiente)
-4. [Pendiente](#4-pendiente)
-5. [Pendiente](#5-pendiente)
+3. [Conexión con la base de datos](#3-conexión-con-la-base-de-datos)
+4. [Capturas de pantalla](#4-capturas-de-pantalla)
+5. [Conclusión](#5-conclusión)
 
 ---
 
@@ -263,20 +263,32 @@ flowchart LR
 
 ---
 
-## 2. Configuración de la base de datos
+## 2. Primeras pantallas o interfaz inicial.
+  - Pantalla iniciar sesión:
+  
+  - Pantalla home de paciente:
 
-El backend persiste el dominio principal en una base **relacional** (PostgreSQL en despliegue, H2 en desarrollo); el cliente Android mantiene una **réplica local** con Room y delega el **chat en tiempo real** a Firebase Realtime Database. Lo que sigue enlaza rutas de configuración reales y el esquema evolutivo: scripts SQL manuales en el servidor y migraciones versionadas en Room.
+  - Pantalla elegir el rol: 
 
-### 2.1. Sistemas usados
+  - Pantalla agendar una cita: 
 
-- **PostgreSQL** en producción (por ejemplo instancia enlazada desde Render).
-- **H2 en memoria**, modo compatibilidad PostgreSQL (`MODE=PostgreSQL`), en el perfil `dev` para desarrollo sin Docker ni Postgres local.
+  - Pantalla cita agendada: 
+
+
+## 3. Conexión con la base de datos
+
+El backend persiste el dominio principal en una base **relacional** (PostgreSQL en despliegue en Render, H2 en desarrollo); el cliente Android mantiene una **réplica local** con Room y delega el **chat en tiempo real** a Firebase Realtime Database. Lo que sigue enlaza rutas de configuración reales y el esquema evolutivo: scripts SQL manuales en el servidor y migraciones versionadas en Room.
+
+### 3.1. Sistemas usados
+
+- **PostgreSQL** en producción  (instancia enlazada desde Render).
+- **H2 en memoria**, modo compatibilidad PostgreSQL (`MODE=PostgreSQL`), en el perfil `dev` para desarrollo sin Docker ni Postgres local, para realizar pruebas rápidas.
 - **Room (SQLite)** como almacén local y caché de datos sincronizables en el cliente Android.
 - **Firebase Realtime Database** para mensajería de chat en tiempo real (reglas que acotan lectura y escritura a participantes autenticados).
 
 ---
 
-### 2.2. Conexión y propiedades de Spring
+### 3.2. Conexión y propiedades de Spring
 
 [`application.yaml`](bdPsicologiaApp/bdPsicologiaApp/src/main/resources/application.yaml): se excluye la autoconfiguración de BD embebida y de la consola H2 (sólo Postgres en despliegue), Hibernate usa `ddl-auto: validate` y el bloque `server` prepara la escucha detrás de proxy (Render, Docker).
 
@@ -359,23 +371,7 @@ springdoc:
     enabled: true
 ```
 
----
-
-### 2.3. Migraciones SQL en backend
-
-En [`bdPsicologiaApp/bdPsicologiaApp/src/main/resources/migraciones/`](bdPsicologiaApp/bdPsicologiaApp/src/main/resources/migraciones/) hay tres scripts **manuales** para PostgreSQL (el primero resuelve nombres reales de tabla, p. ej. `USUARIOS` frente a `usuarios`):
-
-| Fichero | Propósito |
-| --- | --- |
-| `2026-04-07_add_nombre_apellidos_descripcion_psicologo.sql` | Bloque `DO $$ ... $$` que localiza la tabla de usuarios y la de psicólogos (`USUARIOS`/`usuarios`, `PSICOLOGOS`/`psicologos`): añade `nombre` y `apellidos`, hace *backfill* desde `nombre_usuario` o `"nombreUsuario"`, elimina *constraints* e índices únicos ligados al nombre legado y elimina la columna antigua; en psicólogos añade `descripcion` opcional. |
-| `2026-04-07_add_ultima_modificacion_notas_tareas.sql` | `ALTER TABLE` en `NOTAS` y `TAREAS` para `ultima_modificacion TIMESTAMP NOT NULL DEFAULT now()` y `UPDATE` defensivo si hubiera nulos residuales. |
-| `2026-04-15_add_citas.sql` | Crea `CITAS` con claves foráneas a `PSICOLOGOS` y `PACIENTES_v2`, restricción `UNIQUE (psicologo_id, inicio)` para evitar doble reserva e índices `idx_citas_paciente_id` e `idx_citas_psicologo_id`. |
-
-No están integradas en Flyway ni Liquibase en el repositorio; hay que aplicarlas con cliente **`psql`** (comandos con `-f` y rutas de ejemplo en [`bdPsicologiaApp/bdPsicologiaApp/APUNTESPROPIOS.md`](bdPsicologiaApp/bdPsicologiaApp/APUNTESPROPIOS.md)).
-
----
-
-### 2.4. Migraciones Room en cliente
+### 3.3. Migraciones Room en cliente
 
 La base Room se construye en [`BaseDeDatosModulo.kt`](app/src/main/java/dam2/tfg/psicologiaapp/di/BaseDeDatosModulo.kt): el `databaseBuilder` enlaza las migraciones `1→2`, `2→3` y `3→4` antes de `build()`.
 
@@ -414,7 +410,7 @@ Resumen funcional en el mismo módulo: **1→2** crea las tablas `notas` y `tare
 
 ---
 
-### 2.5. Datos iniciales
+### 3.4. Datos iniciales
 
 [`data.sql`](bdPsicologiaApp/bdPsicologiaApp/src/main/resources/data.sql) puede vaciar datos previos (`DELETE`) y después inserta un PACIENTE, un PSICOLOGO y su fila en `psicologo`, con **`ON CONFLICT DO NOTHING`** y reinicio de secuencias en PostgreSQL con `setval`:
 
@@ -448,7 +444,7 @@ Con el perfil `dev`, `spring.sql.init.mode: never` evita que Spring Boot ejecute
 
 ---
 
-### 2.6. Reglas de Firebase Realtime Database (chats)
+### 3.5. Reglas de Firebase Realtime Database (chats)
 
 [`firebase.json`](firebase.json) enlaza las reglas del Realtime Database al fichero `database.rules.json`:
 
@@ -483,20 +479,95 @@ En [`database.rules.json`](database.rules.json), bajo `chats/$chatId/mensajes`:
 }
 ```
 
----
+### 3.6. Prueba básica de lectura o escritura (por ejemplo: insertar y mostrar datos)
 
-## 3. Pendiente
+  - Crear nueva nota:
 
-> _Pendiente de redactar._
-
----
-
-## 4. Pendiente
-
-> _Pendiente de redactar._
+  - Ver mis notas: 
 
 ---
 
-## 5. Pendiente
+## 4. Capturas de pantalla
 
-> _Pendiente de redactar._
+### 4.1. Pantalla de inicio de sesión
+
+<img src="capturas-app/pantalla_iniciosesion.jpg" alt="Pantalla de inicio de sesión" width="400" />
+
+En esta pantalla pide los datos de inicio de sesión al usuario; si no tiene una cuenta, puede registrarse.
+
+### 4.2. Pantalla de registro (elección de rol)
+
+<img src="capturas-app/elegir-rol.jpg" alt="Elección de rol en el registro" width="400" />
+
+Se da a elegir al usuario qué rol escogerá para usar la app.
+
+### 4.3. Pantalla de registro de paciente/psicólogo
+
+<img src="capturas-app/registro-psico.jpg" alt="Formulario de registro de paciente o psicólogo" width="400" />
+
+Pide los datos necesarios para registrar un paciente o psicólogo.
+
+### 4.4. Home de paciente sin terapeuta asignado
+
+<img src="capturas-app/home-paciente-sin-psicologo.jpg" alt="Home de paciente sin psicólogo asignado" width="400" />
+
+Muestra una lista de usuarios con el rol psicólogo que estén registrados en la app.
+
+### 4.5. Perfil de psicólogo
+
+<img src="capturas-app/perfil-psicologo.jpg" alt="Perfil del psicólogo" width="400" />
+
+Muestra el perfil del psicólogo.
+
+### 4.6. Home de paciente con psicólogo asignado
+
+<img src="capturas-app/home-paciente.jpg" alt="Home de paciente con psicólogo asignado" width="400" />
+
+Muestra un panel para elegir diferentes pantallas: nombre del psicólogo asignado, gestionar citas, próxima cita, ajustes y un chat para hablar con el psicólogo.
+
+### 4.7. Crear nota
+
+<img src="capturas-app/crear-nota.jpg" alt="Crear nota" width="400" />
+
+Pantalla que pide un título y un contenido; la nota puede publicarse para que sea visible para el psicólogo.
+
+### 4.8. Notas del paciente
+
+<img src="capturas-app/mis-notas.jpg" alt="Listado de notas del paciente" width="400" />
+
+Pantalla que muestra las notas del paciente autenticado.
+
+### 4.9. Agendar cita
+
+<img src="capturas-app/agendar-cita.jpg" alt="Agendar cita" width="400" />
+
+Permite agendar una cita nueva eligiendo el día y la hora disponible. Si la hora ya está asignada por otro usuario, no estará disponible. También es posible usar un calendario para mayor comodidad.
+
+### 4.10. Cita agendada
+
+<img src="capturas-app/cita-agendada.jpg" alt="Citas agendadas" width="400" />
+
+Permite ver las citas que están agendadas y las que ya han pasado para llevar un registro completo de cada sesión terapéutica.
+
+### 4.11. Home de psicólogo
+
+<img src="capturas-app/home-psicologo.jpg" alt="Home de psicólogo" width="400" />
+
+Muestra cada paciente asignado, si tienen citas asignadas y un botón de chat para conversar con ellos.
+
+
+## 5. Conclusión
+
+### 5.1. Conseguido hasta ahora.
+
+He conseguido tener una app que gestiona y acompaña a los pacientes en su trayectoría terapéutica. La app contiene una base de datos desplegada en render, esto permite desplegar una web y funcionaria bien ya que el backend está desacoplado del frontend. La app es completamente funcional, falta pulir detalles en el frontend para ver correctamente, algunos bugs menores.
+
+### 5.2. Que queda pendiente todavía.
+
+Falta testear que la app sea lo más segura posible, añadir más seguridad si hace falta.
+
+### 5.3. Confirmar la viabilidad del proyecto.
+
+La app es completamente viable, funciona a la perfección.
+
+

@@ -8,6 +8,7 @@ import dam2.tfg.psicologiaapp.chat.domain.usecase.AsegurarChatPacienteUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.AsegurarChatPsicologoUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.EnviarMensajeChatUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.ObservarMensajesChatUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.NotificarMensajeChatUseCase
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class ChatViewModel @Inject constructor(
     private val asegurarChatPsicologoUseCase: AsegurarChatPsicologoUseCase,
     private val observarMensajesChatUseCase: ObservarMensajesChatUseCase,
     private val enviarMensajeChatUseCase: EnviarMensajeChatUseCase,
+    private val notificarMensajeChatUseCase: NotificarMensajeChatUseCase,
 ) : ViewModel() {
 
     /**
@@ -62,6 +64,7 @@ class ChatViewModel @Inject constructor(
                             interlocutorApellidos = chat.interlocutorApellidos,
                             interlocutorFotoPerfilUrl = chat.interlocutorFotoPerfilUrl,
                             rtdbRuta = chat.rtdbRuta,
+                            chatId = chat.chatId,
                         )
                     }
                     observarMensajes(chat.rtdbRuta)
@@ -110,6 +113,12 @@ class ChatViewModel @Inject constructor(
             enviarMensajeChatUseCase(ruta, texto).fold(
                 onSuccess = {
                     _uiState.update { it.copy(textoActual = "", enviando = false) }
+                    val chatId = _uiState.value.chatId
+                    if (!chatId.isNullOrBlank()) {
+                        // No bloqueamos al usuario por la notificación: cualquier fallo solo
+                        // significa que el destinatario no recibe el push, no afecta al mensaje.
+                        notificarMensajeChatUseCase(chatId, texto)
+                    }
                 },
                 onFailure = { e ->
                     _uiState.update {

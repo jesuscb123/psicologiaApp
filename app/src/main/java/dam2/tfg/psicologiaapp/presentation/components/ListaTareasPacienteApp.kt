@@ -2,10 +2,13 @@ package dam2.tfg.psicologiaapp.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,21 +41,37 @@ fun ListaTareasPacienteApp(
                     .fillMaxWidth()
                     .clickable { alPulsar(tarea) },
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = tarea.titulo,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = tarea.titulo,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+
+                    if (tarea.descripcion.isNotBlank()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = tarea.descripcion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    Spacer(Modifier.height(10.dp))
                     Text(
                         text = textoEstadoTarea(tarea),
                         style = MaterialTheme.typography.labelMedium,
@@ -61,6 +80,7 @@ fun ListaTareasPacienteApp(
                             tarea.aceptadaPorPaciente -> MaterialTheme.colorScheme.tertiary
                             else -> MaterialTheme.colorScheme.onSurfaceVariant
                         },
+                        modifier = Modifier.align(Alignment.End),
                     )
                 }
             }

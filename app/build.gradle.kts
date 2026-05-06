@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "dam2.tfg.psicologiaapp"
-        minSdk = 36
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -85,6 +85,8 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.installations)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coil.compose)

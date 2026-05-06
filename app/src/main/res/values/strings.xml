@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">psicologiaapp</string>
+
+    <!-- Canales de notificación -->
+    <string name="canal_notif_chat_nombre">Mensajes de chat</string>
+    <string name="canal_notif_chat_descripcion">Notificaciones cuando recibes un mensaje del chat con tu psicólogo o paciente.</string>
+    <string name="canal_notif_tareas_nombre">Tareas</string>
+    <string name="canal_notif_tareas_descripcion">Notificaciones cuando tu psicólogo te asigna una nueva tarea.</string>
+
+    <!-- Mensaje al solicitar permiso de notificaciones -->
+    <string name="permiso_notificaciones_titulo">Activa las notificaciones</string>
+    <string name="permiso_notificaciones_mensaje">Recibirás avisos cuando llegue un mensaje del chat o cuando se te asigne una nueva tarea.</string>
+    <string name="permiso_notificaciones_aceptar">Activar</string>
+    <string name="permiso_notificaciones_rechazar">Ahora no</string>
 </resources>

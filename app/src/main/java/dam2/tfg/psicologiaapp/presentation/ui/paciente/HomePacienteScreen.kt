@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -111,38 +114,47 @@ fun PantallaHomePaciente(
                 }
 
                 else -> {
-                    Column(
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .navigationBarsPadding()
                             .imePadding(),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 24.dp),
                     ) {
-                        uiState.mensajeError?.let {
-                            Text(
-                                text = it,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall,
+                        uiState.mensajeError?.let { msg ->
+                            item {
+                                Text(
+                                    text = msg,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+
+                        item {
+                            BannerProximaCitaPaciente(
+                                proximaCita = uiState.proximaCita,
+                                alVerCitas = alIrACitas,
                             )
                         }
 
-                        BannerProximaCitaPaciente(
-                            proximaCita = uiState.proximaCita,
-                            alVerCitas = alIrACitas,
-                        )
+                        item {
+                            HomePacienteDashboardGrid(
+                                alIrAMisNotas = alIrANotas,
+                                alIrAMisTareas = alIrATareas,
+                                alIrACitas = alIrACitas,
+                                alIrAAjustes = alIrAAjustes,
+                            )
+                        }
 
-                        HomePacienteDashboardGrid(
-                            alIrAMisNotas = alIrANotas,
-                            alIrAMisTareas = alIrATareas,
-                            alIrACitas = alIrACitas,
-                            alIrAAjustes = alIrAAjustes,
-                        )
-
-                        BannerPsicologoActualPaciente(
-                            psicologo = uiState.psicologoAsignado,
-                            alVerPerfil = alIrAPerfilPsicologo,
-                            alEnviarMensaje = alIrAChat,
-                        )
+                        item {
+                            BannerPsicologoActualPaciente(
+                                psicologo = uiState.psicologoAsignado,
+                                alVerPerfil = alIrAPerfilPsicologo,
+                                alEnviarMensaje = alIrAChat,
+                            )
+                        }
                     }
                 }
             }
@@ -519,9 +531,12 @@ private fun BannerPsicologoActualPaciente(
                     ),
                 ),
             )
-            .padding(20.dp),
+            .padding(16.dp),
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -535,7 +550,7 @@ private fun BannerPsicologoActualPaciente(
                     AvatarPerfilCircularApp(
                         nombreUsuario = nombreCompleto ?: "",
                         fotoPerfilUrl = psicologo?.fotoPerfilUrl,
-                        tamano = 48.dp,
+                        tamano = 44.dp,
                     )
                     Column {
                         Text(
@@ -584,17 +599,25 @@ private fun BannerPsicologoActualPaciente(
                     shape = RoundedCornerShape(percent = 50),
                     color = MaterialTheme.colorScheme.surfaceContainerLowest,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .heightIn(min = 40.dp)
+                        .wrapContentWidth()
+                        .widthIn(max = 220.dp)
                         .clip(RoundedCornerShape(percent = 50))
                         .clickable { alEnviarMensaje() },
                 ) {
-                    Text(
-                        text = "Enviar mensaje",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = "Enviar mensaje",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelLarge,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        )
+                    }
                 }
             }
         }

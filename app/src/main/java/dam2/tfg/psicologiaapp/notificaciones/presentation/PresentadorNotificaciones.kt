@@ -1,0 +1,125 @@
+package dam2.tfg.psicologiaapp.notificaciones.presentation
+
+import android.Manifest
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import dam2.tfg.psicologiaapp.MainActivity
+import dam2.tfg.psicologiaapp.R
+
+/**
+ * Muestra las notificaciones cuando la app está en primer plano (FCM no las pinta solo en ese
+ * caso) y construye un PendingIntent que abre la pantalla correcta al tocarla.
+ *
+ * Las claves de los extras deben mantenerse sincronizadas con
+ * `dam2.tfg.psicologiaapp.notificaciones.presentation.ClavesIntentNotificacion` para que
+ * MainActivity las lea correctamente.
+ */
+object PresentadorNotificaciones {
+
+    private const val ID_BASE_TAREA = 100_000
+    private const val ID_BASE_CHAT = 200_000
+
+    fun mostrarNotificacionMensajeChat(
+        context: Context,
+        chatId: String,
+        pacienteId: Long,
+        psicologoId: Long,
+        titulo: String,
+        cuerpo: String,
+    ) {
+        if (!tienePermisoNotificaciones(context)) return
+        GestorCanalesNotificacion.asegurarCanales(context)
+
+        val pendingIntent = construirPendingIntentChat(context, chatId, pacienteId, psicologoId)
+        val notif = NotificationCompat.Builder(context, GestorCanalesNotificacion.CANAL_CHAT_ID)
+            .setSmallIcon(R.drawable.ic_notificacion)
+            .setContentTitle(titulo.ifBlank { context.getString(R.string.app_name) })
+            .setContentText(cuerpo)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(cuerpo))
+            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val manager = context.getSystemService<NotificationManager>() ?: return
+        val id = ID_BASE_CHAT + chatId.hashCode()
+        manager.notify("chat-$chatId", id, notif)
+    }
+
+    fun mostrarNotificacionTareaNueva(
+        context: Context,
+        tareaId: Long,
+        titulo: String,
+        cuerpo: String,
+    ) {
+        if (!tienePermisoNotificaciones(context)) return
+        GestorCanalesNotificacion.asegurarCanales(context)
+
+        val pendingIntent = construirPendingIntentTareas(context, tareaId)
+        val notif = NotificationCompat.Builder(context, GestorCanalesNotificacion.CANAL_TAREAS_ID)
+            .setSmallIcon(R.drawable.ic_notificacion)
+            .setContentTitle(titulo.ifBlank { context.getString(R.string.app_name) })
+            .setContentText(cuerpo)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(cuerpo))
+            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val manager = context.getSystemService<NotificationManager>() ?: return
+        val id = ID_BASE_TAREA + tareaId.toInt()
+        manager.notify("tarea-$tareaId", id, notif)
+    }
+
+    fun construirPendingIntentChat(
+        context: Context,
+        chatId: String,
+        pacienteId: Long,
+        psicologoId: Long,
+    ): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(ClavesIntentNotificacion.EXTRA_TIPO, ClavesIntentNotificacion.TIPO_CHAT)
+            putExtra(ClavesIntentNotificacion.EXTRA_CHAT_ID, chatId)
+            putExtra(ClavesIntentNotificacion.EXTRA_PACIENTE_ID, pacienteId)
+            putExtra(ClavesIntentNotificacion.EXTRA_PSICOLOGO_ID, psicologoId)
+        }
+        return PendingIntent.getActivity(
+            context,
+            chatId.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+
+    fun construirPendingIntentTareas(context: Context, tareaId: Long): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(ClavesIntentNotificacion.EXTRA_TIPO, ClavesIntentNotificacion.TIPO_TAREA)
+            putExtra(ClavesIntentNotificacion.EXTRA_TAREA_ID, tareaId)
+        }
+        return PendingIntent.getActivity(
+            context,
+            tareaId.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+
+    private fun tienePermisoNotificaciones(context: Context): Boolean {
+        // En Android 13+ se requiere POST_NOTIFICATIONS. Si el usuario lo ha denegado no podemos
+        // mostrar la notificación, pero el push igualmente queda registrado en logs.
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS,
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+}

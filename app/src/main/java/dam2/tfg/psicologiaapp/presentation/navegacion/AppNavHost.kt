@@ -84,6 +84,10 @@ fun AppNavHost() {
                 PantallaSplash()
             }
 
+            // Si el destino lo resolvió el splash y luego entró un push (tap notif), reaccionamos.
+            // Atención: cada grafo (paciente/psicólogo) consume el evento por su cuenta cuando
+            // está montado, así que aquí no hacemos nada extra a nivel raíz.
+
             composable(RutasApp.INICIAR_SESION) {
                 PantallaIniciarSesion(
                     alPulsarCrearCuenta = { navController.navigate(RutasApp.REGISTRO_SELECCION_ROL) },

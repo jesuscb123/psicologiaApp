@@ -3,6 +3,8 @@ package dam2.tfg.psicologiaapp.di
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.GsonBuilder
 import dam2.tfg.psicologiaapp.BuildConfig
 import dam2.tfg.psicologiaapp.data.remote.AuthTokenInterceptor
@@ -12,6 +14,7 @@ import dam2.tfg.psicologiaapp.data.remote.ProveedorTokenFirebase
 import dam2.tfg.psicologiaapp.chat.data.remote.ChatApi
 import dam2.tfg.psicologiaapp.cita.data.remote.CitaApi
 import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
+import dam2.tfg.psicologiaapp.notificaciones.data.remote.NotificacionesApi
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
 import dam2.tfg.psicologiaapp.tarea.data.remote.TareaApi
@@ -44,6 +47,15 @@ abstract class RedModulo {
         @Provides
         @Singleton
         fun proporcionarFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+        @Provides
+        @Singleton
+        fun proporcionarFirebaseMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
+
+        @Provides
+        @Singleton
+        fun proporcionarFirebaseInstallations(): FirebaseInstallations =
+            FirebaseInstallations.getInstance()
 
         @Provides
         @Singleton
@@ -132,5 +144,10 @@ abstract class RedModulo {
         @Singleton
         fun proporcionarChatApi(retrofit: Retrofit): ChatApi =
             retrofit.create(ChatApi::class.java)
+
+        @Provides
+        @Singleton
+        fun proporcionarNotificacionesApi(retrofit: Retrofit): NotificacionesApi =
+            retrofit.create(NotificacionesApi::class.java)
     }
 }

@@ -21,6 +21,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dam2.tfg.psicologiaapp.notificaciones.presentation.ColaDestinosNotificacion
+import dam2.tfg.psicologiaapp.notificaciones.presentation.DestinoPendienteNotificacion
+import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotificacionesUnaVez
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
@@ -58,6 +61,8 @@ fun GrafoPacienteNavegacion(
 
     val nombreBarra = menuUi.nombreUsuario.ifBlank { "Usuario" }
 
+    SolicitarPermisoNotificacionesUnaVez()
+
     LaunchedEffect(menuUi.eventoNavegacion) {
         when (menuUi.eventoNavegacion) {
             EventoNavegacionMenuLateral.SesionCerrada -> {
@@ -65,6 +70,23 @@ fun GrafoPacienteNavegacion(
                 navControllerRaiz.navigate(RutasApp.INICIAR_SESION) {
                     popUpTo(0) { inclusive = true }
                 }
+            }
+            null -> Unit
+        }
+    }
+
+    // Consume el destino dejado por una notificación al entrar al grafo paciente.
+    // El paciente solo tiene un chat (con su psicólogo), así que no necesitamos los ids.
+    val destinoNotif by ColaDestinosNotificacion.destino.collectAsState()
+    LaunchedEffect(destinoNotif) {
+        when (destinoNotif) {
+            is DestinoPendienteNotificacion.Chat -> {
+                ColaDestinosNotificacion.consumir()
+                navPaciente.navigate(RutasGrafoPaciente.CHAT_PSICOLOGO)
+            }
+            is DestinoPendienteNotificacion.TareasPaciente -> {
+                ColaDestinosNotificacion.consumir()
+                navPaciente.navigate(RutasGrafoPaciente.TAREAS)
             }
             null -> Unit
         }

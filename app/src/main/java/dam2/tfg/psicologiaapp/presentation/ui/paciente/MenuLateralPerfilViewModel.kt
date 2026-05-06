@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.CerrarSesionUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.DarDeBajaFcmTokenUseCase
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.EstablecerModoTemaUseCase
 import dam2.tfg.psicologiaapp.preferencias.domain.usecase.ObservarModoTemaUseCase
@@ -30,6 +31,7 @@ class MenuLateralPerfilViewModel @Inject constructor(
     private val establecerModoTemaUseCase: EstablecerModoTemaUseCase,
     private val cerrarSesionUseCase: CerrarSesionUseCase,
     private val sincronizarFotoPerfilUseCase: SincronizarFotoPerfilUseCase,
+    private val darDeBajaFcmTokenUseCase: DarDeBajaFcmTokenUseCase,
     @ApplicationContext private val application: Context,
 ) : ViewModel() {
 
@@ -166,6 +168,10 @@ class MenuLateralPerfilViewModel @Inject constructor(
 
     fun cerrarSesion() {
         viewModelScope.launch {
+            // El token debe darse de baja con la sesión todavía válida (Authorization Bearer).
+            // Si falla no abortamos: lo importante es que la sesión local quede cerrada.
+            darDeBajaFcmTokenUseCase()
+
             cerrarSesionUseCase().fold(
                 onSuccess = {
                     _uiState.update {

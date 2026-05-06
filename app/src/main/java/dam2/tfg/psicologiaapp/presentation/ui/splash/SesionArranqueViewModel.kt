@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.CerrarSesionUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.RegistrarFcmTokenActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GuardarPerfilCacheadoUseCase
@@ -25,6 +26,7 @@ class SesionArranqueViewModel @Inject constructor(
     private val guardarPerfilCacheadoUseCase: GuardarPerfilCacheadoUseCase,
     private val cerrarSesionUseCase: CerrarSesionUseCase,
     private val limpiarPerfilCacheadoUseCase: LimpiarPerfilCacheadoUseCase,
+    private val registrarFcmTokenActualUseCase: RegistrarFcmTokenActualUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SesionArranqueUiState())
@@ -55,6 +57,7 @@ class SesionArranqueViewModel @Inject constructor(
             if (destino != null) {
                 _uiState.update { it.copy(destinoResuelto = destino) }
                 validarPerfilEnBackground()
+                registrarTokenFcmEnSegundoPlano()
                 return@launch
             }
 
@@ -63,8 +66,10 @@ class SesionArranqueViewModel @Inject constructor(
                 onSuccess = { perfil ->
                     guardarPerfilCacheadoUseCase(perfil)
                     when (perfil.rol) {
-                        RolUsuario.PACIENTE, RolUsuario.PSICOLOGO ->
+                        RolUsuario.PACIENTE, RolUsuario.PSICOLOGO -> {
                             _uiState.update { it.copy(destinoResuelto = DestinoSesion.Grafo(rol = perfil.rol)) }
+                            registrarTokenFcmEnSegundoPlano()
+                        }
                         else ->
                             _uiState.update { it.copy(destinoResuelto = DestinoSesion.IniciarSesion) }
                     }
@@ -73,6 +78,17 @@ class SesionArranqueViewModel @Inject constructor(
                     _uiState.update { it.copy(destinoResuelto = DestinoSesion.IniciarSesion) }
                 },
             )
+        }
+    }
+
+    /**
+     * Reasegura el registro del token FCM siempre que la app arranca con sesión válida.
+     * Es idempotente: el backend deduplica por token y por instalación, así que lo lanzamos
+     * "fire and forget" para cubrir el caso en que el token rotó con la app cerrada.
+     */
+    private fun registrarTokenFcmEnSegundoPlano() {
+        viewModelScope.launch {
+            registrarFcmTokenActualUseCase()
         }
     }
 

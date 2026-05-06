@@ -13,4 +13,5 @@ data class ChatUiState(
     val uidActual: String = "",
     val mensajeError: String? = null,
     val rtdbRuta: String? = null,
+    val chatId: String? = null,
 )

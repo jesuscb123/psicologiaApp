@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.IniciarSesionUseCase
 import dam2.tfg.psicologiaapp.auth.domain.usecase.SolicitarRestablecerContrasenaUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.RegistrarFcmTokenActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.VerificarExistenciaCorreoUseCase
@@ -22,7 +23,8 @@ class IniciarSesionViewModel @Inject constructor(
     private val iniciarSesionUseCase: IniciarSesionUseCase,
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
     private val solicitarRestablecerContrasenaUseCase: SolicitarRestablecerContrasenaUseCase,
-    private val verificarExistenciaCorreoUseCase: VerificarExistenciaCorreoUseCase
+    private val verificarExistenciaCorreoUseCase: VerificarExistenciaCorreoUseCase,
+    private val registrarFcmTokenActualUseCase: RegistrarFcmTokenActualUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(IniciarSesionUiState())
@@ -179,11 +181,17 @@ class IniciarSesionViewModel @Inject constructor(
                     resultadoPerfil.fold(
                         onSuccess = { perfil ->
                             when (perfil.rol) {
-                                RolUsuario.PACIENTE -> _uiState.update {
-                                    it.copy(cargando = false, eventoNavegacion = EventoNavegacionIniciarSesion.IrAHomePaciente)
+                                RolUsuario.PACIENTE -> {
+                                    registrarTokenFcmEnSegundoPlano()
+                                    _uiState.update {
+                                        it.copy(cargando = false, eventoNavegacion = EventoNavegacionIniciarSesion.IrAHomePaciente)
+                                    }
                                 }
-                                RolUsuario.PSICOLOGO -> _uiState.update {
-                                    it.copy(cargando = false, eventoNavegacion = EventoNavegacionIniciarSesion.IrAHomePsicologo)
+                                RolUsuario.PSICOLOGO -> {
+                                    registrarTokenFcmEnSegundoPlano()
+                                    _uiState.update {
+                                        it.copy(cargando = false, eventoNavegacion = EventoNavegacionIniciarSesion.IrAHomePsicologo)
+                                    }
                                 }
                                 RolUsuario.SIN_ROL -> _uiState.update {
                                     it.copy(cargando = false, eventoNavegacion = EventoNavegacionIniciarSesion.IrARegistro)
@@ -206,6 +214,17 @@ class IniciarSesionViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    /**
+     * Registra el token FCM en el backend sin bloquear la navegación post-login: si falla
+     * (red, backend caído, etc.) el usuario sigue avanzando y se reintentará en el próximo
+     * onNewToken o login.
+     */
+    private fun registrarTokenFcmEnSegundoPlano() {
+        viewModelScope.launch {
+            registrarFcmTokenActualUseCase()
         }
     }
 

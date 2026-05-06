@@ -3,6 +3,8 @@ package dam2.tfg.psicologiaapp.presentation.ui.inicio
 import dam2.tfg.psicologiaapp.auth.domain.repository.AuthRepository
 import dam2.tfg.psicologiaapp.auth.domain.usecase.IniciarSesionUseCase
 import dam2.tfg.psicologiaapp.auth.domain.usecase.SolicitarRestablecerContrasenaUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.repository.NotificacionesRepository
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.RegistrarFcmTokenActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.Usuario
 import dam2.tfg.psicologiaapp.usuario.domain.model.UsuarioPerfil
 import dam2.tfg.psicologiaapp.usuario.domain.model.UsuarioRequest
@@ -134,12 +136,24 @@ class IniciarSesionViewModelTest {
     ): IniciarSesionViewModel {
         val authRepository = FakeAuthRepository(resultadoRecuperacion)
         val usuarioRepository = FakeUsuarioRepository(resultadoVerificacionCorreo)
+        val notificacionesRepository = FakeNotificacionesRepository()
         return IniciarSesionViewModel(
             iniciarSesionUseCase = IniciarSesionUseCase(authRepository),
             getPerfilActualUseCase = GetPerfilActualUseCase(usuarioRepository),
             solicitarRestablecerContrasenaUseCase = SolicitarRestablecerContrasenaUseCase(authRepository),
-            verificarExistenciaCorreoUseCase = VerificarExistenciaCorreoUseCase(usuarioRepository)
+            verificarExistenciaCorreoUseCase = VerificarExistenciaCorreoUseCase(usuarioRepository),
+            registrarFcmTokenActualUseCase = RegistrarFcmTokenActualUseCase(notificacionesRepository),
         )
+    }
+
+    private class FakeNotificacionesRepository : NotificacionesRepository {
+        override suspend fun registrarTokenActual(token: String): Result<Unit> = Result.success(Unit)
+        override suspend fun darDeBajaToken(token: String): Result<Unit> = Result.success(Unit)
+        override suspend fun obtenerTokenFcmActual(): Result<String> = Result.success("test-token")
+        override suspend fun notificarMensajeChat(
+            chatId: String,
+            vistaPreviaTexto: String,
+        ): Result<Unit> = Result.success(Unit)
     }
 
     private class FakeAuthRepository(

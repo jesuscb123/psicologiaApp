@@ -21,6 +21,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dam2.tfg.psicologiaapp.notificaciones.presentation.ColaDestinosNotificacion
+import dam2.tfg.psicologiaapp.notificaciones.presentation.DestinoPendienteNotificacion
+import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotificacionesUnaVez
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
@@ -54,6 +57,8 @@ fun GrafoPsicologoNavegacion(
 
     val nombreBarra = menuUi.nombreUsuario.ifBlank { "Usuario" }
 
+    SolicitarPermisoNotificacionesUnaVez()
+
     LaunchedEffect(menuUi.eventoNavegacion) {
         when (menuUi.eventoNavegacion) {
             EventoNavegacionMenuLateral.SesionCerrada -> {
@@ -63,6 +68,19 @@ fun GrafoPsicologoNavegacion(
                 }
             }
             null -> Unit
+        }
+    }
+
+    // El psicólogo gestiona varios pacientes, así que el chat necesita el id concreto.
+    // La notificación de tareas no aplica al psicólogo: solo el paciente las recibe.
+    val destinoNotif by ColaDestinosNotificacion.destino.collectAsState()
+    LaunchedEffect(destinoNotif) {
+        val pendiente = destinoNotif
+        if (pendiente is DestinoPendienteNotificacion.Chat) {
+            ColaDestinosNotificacion.consumir()
+            if (pendiente.pacienteId > 0L) {
+                navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(pendiente.pacienteId))
+            }
         }
     }
 

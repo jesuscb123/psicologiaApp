@@ -40,33 +40,37 @@ fun ListaTareasApp(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = tarea.titulo,
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            text = textoEstadoTarea(tarea),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = when {
-                                tarea.realizada -> MaterialTheme.colorScheme.primary
-                                tarea.aceptadaPorPaciente -> MaterialTheme.colorScheme.tertiary
-                                else -> MaterialTheme.colorScheme.onSurfaceVariant
-                            },
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                     Spacer(Modifier.height(6.dp))
+                    if (tarea.descripcion.isNotBlank()) {
+                        Text(
+                            text = tarea.descripcion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Spacer(Modifier.height(10.dp))
+                    }
                     Text(
-                        text = tarea.descripcion,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 6,
-                        overflow = TextOverflow.Ellipsis,
+                        text = textoEstadoTarea(tarea),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = when {
+                            tarea.realizada -> MaterialTheme.colorScheme.primary
+                            tarea.aceptadaPorPaciente -> MaterialTheme.colorScheme.tertiary
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier.align(Alignment.End),
                     )
                 }
             }

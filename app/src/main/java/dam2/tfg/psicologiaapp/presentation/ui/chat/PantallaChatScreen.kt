@@ -84,7 +84,11 @@ fun PantallaChatScreen(
             alVolver = alVolver,
         )
 
-        Box(modifier = Modifier.weight(1f)) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+        ) {
             when {
                 uiState.cargando -> {
                     CircularProgressIndicator(

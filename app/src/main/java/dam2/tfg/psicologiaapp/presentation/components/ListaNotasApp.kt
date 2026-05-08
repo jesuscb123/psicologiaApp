@@ -1,6 +1,7 @@
 package dam2.tfg.psicologiaapp.presentation.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -29,6 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +59,6 @@ fun ListaNotasApp(
     paddingContenido: PaddingValues = PaddingValues(bottom = 80.dp),
     permitirEliminar: Boolean = true,
     alSolicitarEliminar: (Nota) -> Unit = {},
-    alVerDetalle: (Nota) -> Unit = {},
     /** Si es true, usa [Column] en lugar de [LazyColumn] (p. ej. dentro de un scroll padre). */
     listaPlana: Boolean = false,
 ) {
@@ -66,7 +72,6 @@ fun ListaNotasApp(
                     nota = nota,
                     permitirEliminar = permitirEliminar,
                     alSolicitarEliminar = alSolicitarEliminar,
-                    alVerDetalle = alVerDetalle,
                 )
             }
         }
@@ -81,7 +86,6 @@ fun ListaNotasApp(
                     nota = nota,
                     permitirEliminar = permitirEliminar,
                     alSolicitarEliminar = alSolicitarEliminar,
-                    alVerDetalle = alVerDetalle,
                 )
             }
         }
@@ -94,7 +98,6 @@ private fun ContenidoItemNota(
     nota: Nota,
     permitirEliminar: Boolean,
     alSolicitarEliminar: (Nota) -> Unit,
-    alVerDetalle: (Nota) -> Unit,
 ) {
     if (permitirEliminar) {
         val dismissState = rememberSwipeToDismissBoxState(
@@ -142,18 +145,19 @@ private fun ContenidoItemNota(
                 }
             },
             content = {
-                TarjetaContenidoNota(nota = nota, alVerDetalle = alVerDetalle)
+                TarjetaContenidoNota(nota = nota)
             }
         )
     } else {
-        TarjetaContenidoNota(nota = nota, alVerDetalle = alVerDetalle)
+        TarjetaContenidoNota(nota = nota)
     }
 }
 
 @Composable
-private fun TarjetaContenidoNota(nota: Nota, alVerDetalle: (Nota) -> Unit) {
+private fun TarjetaContenidoNota(nota: Nota) {
+    var expanded by rememberSaveable(nota.id) { mutableStateOf(false) }
+
     Card(
-        onClick = { alVerDetalle(nota) },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -164,24 +168,49 @@ private fun TarjetaContenidoNota(nota: Nota, alVerDetalle: (Nota) -> Unit) {
         Column(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
+                .animateContentSize()
                 .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
-            Text(
-                text = nota.asunto,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text = nota.descripcion,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = nota.asunto,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.size(28.dp),
+                ) {
+                    Icon(
+                        imageVector = if (expanded) {
+                            Icons.Filled.KeyboardArrowUp
+                        } else {
+                            Icons.Filled.KeyboardArrowDown
+                        },
+                        contentDescription = if (expanded) "Colapsar" else "Expandir",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            if (expanded) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = nota.descripcion,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),

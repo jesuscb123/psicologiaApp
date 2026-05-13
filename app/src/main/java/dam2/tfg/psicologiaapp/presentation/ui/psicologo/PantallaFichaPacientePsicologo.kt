@@ -30,6 +30,7 @@ import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaTareasApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.components.PestanasPildoraDosOpcionesApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaResumenIaApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,11 +109,24 @@ fun PantallaFichaPacientePsicologo(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 } else {
-                                    ListaNotasApp(
-                                        notas = uiState.notas,
-                                        permitirEliminar = false,
-                                        paddingContenido = PaddingValues(bottom = 88.dp),
-                                    )
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    ) {
+                                        TarjetaResumenIaApp(
+                                            resumen = uiState.resumenIa,
+                                            cargando = uiState.cargandoResumenIa,
+                                            error = uiState.errorResumenIa,
+                                            numeroNotasAnalizadas = uiState.numeroNotasAnalizadasIa,
+                                            alGenerar = viewModel::generarResumenIa,
+                                            alDescartar = viewModel::descartarResumenIa,
+                                        )
+                                        ListaNotasApp(
+                                            notas = uiState.notas,
+                                            permitirEliminar = false,
+                                            paddingContenido = PaddingValues(bottom = 88.dp),
+                                        )
+                                    }
                                 }
                             }
 

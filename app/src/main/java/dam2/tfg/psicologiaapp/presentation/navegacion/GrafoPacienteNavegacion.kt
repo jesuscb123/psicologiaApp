@@ -77,6 +77,8 @@ fun GrafoPacienteNavegacion(
 
     // Consume el destino dejado por una notificación al entrar al grafo paciente.
     // El paciente solo tiene un chat (con su psicólogo), así que no necesitamos los ids.
+    // Los destinos clínicos (FichaPaciente) son exclusivos del grafo del psicólogo; si llegan
+    // aquí por error los descartamos para no dejar la cola bloqueada.
     val destinoNotif by ColaDestinosNotificacion.destino.collectAsState()
     LaunchedEffect(destinoNotif) {
         when (destinoNotif) {
@@ -87,6 +89,9 @@ fun GrafoPacienteNavegacion(
             is DestinoPendienteNotificacion.TareasPaciente -> {
                 ColaDestinosNotificacion.consumir()
                 navPaciente.navigate(RutasGrafoPaciente.TAREAS)
+            }
+            is DestinoPendienteNotificacion.FichaPaciente -> {
+                ColaDestinosNotificacion.consumir()
             }
             null -> Unit
         }
@@ -288,6 +293,9 @@ fun GrafoPacienteNavegacion(
             composable(RutasGrafoPaciente.CHAT_PSICOLOGO) {
                 PantallaChatScreen(
                     alVolver = { navPaciente.popBackStack() },
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
                 )
             }
         }

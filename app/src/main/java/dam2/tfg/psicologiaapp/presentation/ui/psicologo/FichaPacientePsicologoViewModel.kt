@@ -7,6 +7,7 @@ import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
+import dam2.tfg.psicologiaapp.resumenIa.domain.usecase.GenerarResumenIaPacienteUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasDePacienteUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasDePacienteUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
@@ -26,6 +27,7 @@ class FichaPacientePsicologoViewModel @Inject constructor(
     private val observarTareasDePacienteUseCase: ObservarTareasDePacienteUseCase,
     private val sincronizarNotasDePacienteUseCase: SincronizarNotasDePacienteUseCase,
     private val sincronizarTareasDePacienteUseCase: SincronizarTareasDePacienteUseCase,
+    private val generarResumenIaPacienteUseCase: GenerarResumenIaPacienteUseCase,
 ) : ViewModel() {
 
     private val pacienteId: Long = savedStateHandle.get<Long>(RutasApp.ARG_PACIENTE_ID) ?: 0L
@@ -97,6 +99,50 @@ class FichaPacientePsicologoViewModel @Inject constructor(
                     mensajeError = mensajeError,
                 )
             }
+        }
+    }
+
+    fun generarResumenIa() {
+        if (pacienteId == 0L || _uiState.value.cargandoResumenIa) return
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    cargandoResumenIa = true,
+                    errorResumenIa = null,
+                )
+            }
+
+            generarResumenIaPacienteUseCase(pacienteId).fold(
+                onSuccess = { resumen ->
+                    _uiState.update {
+                        it.copy(
+                            cargandoResumenIa = false,
+                            resumenIa = resumen.resumen,
+                            numeroNotasAnalizadasIa = resumen.numeroNotasAnalizadas,
+                            errorResumenIa = null,
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            cargandoResumenIa = false,
+                            errorResumenIa = error.message ?: "No se pudo generar el resumen",
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    fun descartarResumenIa() {
+        _uiState.update {
+            it.copy(
+                resumenIa = null,
+                errorResumenIa = null,
+                numeroNotasAnalizadasIa = 0,
+            )
         }
     }
 }

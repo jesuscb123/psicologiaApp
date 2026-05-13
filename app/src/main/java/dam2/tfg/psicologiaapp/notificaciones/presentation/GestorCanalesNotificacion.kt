@@ -16,6 +16,13 @@ object GestorCanalesNotificacion {
     const val CANAL_CHAT_ID = "chat"
     const val CANAL_TAREAS_ID = "tareas"
 
+    /**
+     * Canal dedicado a alertas clínicas urgentes (indicios de riesgo detectados por IA).
+     * Importance MAX para que pase los filtros de "Modo no molestar" del psicólogo y por la
+     * gravedad del aviso debe poder despertar la pantalla.
+     */
+    const val CANAL_ALERTAS_RIESGO_ID = "alertas_riesgo"
+
     fun asegurarCanales(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = context.getSystemService<NotificationManager>() ?: return
@@ -40,6 +47,17 @@ object GestorCanalesNotificacion {
             enableVibration(true)
         }
 
-        manager.createNotificationChannels(listOf(canalChat, canalTareas))
+        val canalAlertasRiesgo = NotificationChannel(
+            CANAL_ALERTAS_RIESGO_ID,
+            context.getString(R.string.canal_notif_alertas_riesgo_nombre),
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            description = context.getString(R.string.canal_notif_alertas_riesgo_descripcion)
+            enableLights(true)
+            enableVibration(true)
+            setBypassDnd(true)
+        }
+
+        manager.createNotificationChannels(listOf(canalChat, canalTareas, canalAlertasRiesgo))
     }
 }

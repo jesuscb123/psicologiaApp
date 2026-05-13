@@ -16,4 +16,8 @@ data class FichaPacientePsicologoUiState(
     val tareas: List<Tarea> = emptyList(),
     val cargando: Boolean = false,
     val mensajeError: String? = null,
+    val resumenIa: String? = null,
+    val cargandoResumenIa: Boolean = false,
+    val errorResumenIa: String? = null,
+    val numeroNotasAnalizadasIa: Int = 0,
 )

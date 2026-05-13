@@ -8,6 +8,7 @@ package dam2.tfg.psicologiaapp.notificaciones.presentation
  * Tipos posibles:
  *  - [TIPO_CHAT]: extras `chatId`, `pacienteId`, `psicologoId`.
  *  - [TIPO_TAREA]: extras `tareaId`.
+ *  - [TIPO_RIESGO]: extras `pacienteId`, `nombrePaciente` (opcional).
  */
 object ClavesIntentNotificacion {
 
@@ -19,6 +20,9 @@ object ClavesIntentNotificacion {
 
     const val EXTRA_TAREA_ID = "notif_tarea_id"
 
+    const val EXTRA_NOMBRE_PACIENTE = "notif_nombre_paciente"
+
     const val TIPO_CHAT = "CHAT"
     const val TIPO_TAREA = "TAREA"
+    const val TIPO_RIESGO = "RIESGO"
 }

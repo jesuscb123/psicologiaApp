@@ -14,6 +14,8 @@ import dam2.tfg.psicologiaapp.paciente.data.repository.PacienteRepositoryImpl
 import dam2.tfg.psicologiaapp.paciente.domain.repository.PacienteRepository
 import dam2.tfg.psicologiaapp.psicologo.data.repository.PsicologoRepositoryImpl
 import dam2.tfg.psicologiaapp.psicologo.domain.repository.PsicologoRepository
+import dam2.tfg.psicologiaapp.resumenIa.data.repository.ResumenIaRepositoryImpl
+import dam2.tfg.psicologiaapp.resumenIa.domain.repository.ResumenIaRepository
 import dam2.tfg.psicologiaapp.tarea.data.repository.TareaRepositoryImpl
 import dam2.tfg.psicologiaapp.tarea.domain.repository.TareaRepository
 import dam2.tfg.psicologiaapp.preferencias.data.repository.TemaPreferenciasRepositoryImpl
@@ -79,4 +81,8 @@ abstract class RepositorioModulo {
     abstract fun bindNotificacionesRepository(
         impl: NotificacionesRepositoryImpl,
     ): NotificacionesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindResumenIaRepository(impl: ResumenIaRepositoryImpl): ResumenIaRepository
 }

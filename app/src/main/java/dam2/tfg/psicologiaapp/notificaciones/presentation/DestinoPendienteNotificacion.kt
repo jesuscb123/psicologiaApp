@@ -20,6 +20,14 @@ sealed interface DestinoPendienteNotificacion {
 
     /** Abrir la pantalla de tareas del paciente. */
     data object TareasPaciente : DestinoPendienteNotificacion
+
+    /**
+     * Abrir la ficha de un paciente concreto en la app del psicólogo. Se usa al pulsar una
+     * notificación de alerta clínica (indicios de riesgo detectados por IA).
+     */
+    data class FichaPaciente(
+        val pacienteId: Long,
+    ) : DestinoPendienteNotificacion
 }
 
 /**
@@ -65,6 +73,12 @@ object ColaDestinosNotificacion {
             }
             ClavesIntentNotificacion.TIPO_TAREA -> {
                 publicar(DestinoPendienteNotificacion.TareasPaciente)
+                true
+            }
+            ClavesIntentNotificacion.TIPO_RIESGO -> {
+                val pacienteId = intent.getLongExtra(ClavesIntentNotificacion.EXTRA_PACIENTE_ID, 0L)
+                if (pacienteId <= 0L) return false
+                publicar(DestinoPendienteNotificacion.FichaPaciente(pacienteId))
                 true
             }
             else -> false

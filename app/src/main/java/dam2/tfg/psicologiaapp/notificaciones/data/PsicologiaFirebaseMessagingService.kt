@@ -71,6 +71,7 @@ class PsicologiaFirebaseMessagingService : FirebaseMessagingService() {
         when (tipo) {
             ClavesIntentNotificacion.TIPO_CHAT -> manejarMensajeChat(message)
             ClavesIntentNotificacion.TIPO_TAREA -> manejarMensajeTarea(message)
+            ClavesIntentNotificacion.TIPO_RIESGO -> manejarMensajeRiesgo(message)
             else -> Log.d(TAG, "Push recibido sin tipo conocido: $datos")
         }
     }
@@ -104,12 +105,31 @@ class PsicologiaFirebaseMessagingService : FirebaseMessagingService() {
         )
     }
 
+    private fun manejarMensajeRiesgo(message: RemoteMessage) {
+        val pacienteId = message.data[CLAVE_PACIENTE_ID]?.toLongOrNull() ?: 0L
+        if (pacienteId <= 0L) {
+            Log.w(TAG, "Push de riesgo descartado: pacienteId inválido")
+            return
+        }
+        val nombrePaciente = message.data[CLAVE_NOMBRE_PACIENTE].orEmpty()
+        val titulo = message.notification?.title.orEmpty()
+        val cuerpo = message.notification?.body ?: message.data[CLAVE_FALLBACK_CUERPO].orEmpty()
+        PresentadorNotificaciones.mostrarNotificacionAlertaRiesgo(
+            context = applicationContext,
+            pacienteId = pacienteId,
+            nombrePaciente = nombrePaciente,
+            titulo = titulo,
+            cuerpo = cuerpo,
+        )
+    }
+
     private companion object {
         const val CLAVE_TIPO = "tipo"
         const val CLAVE_CHAT_ID = "chatId"
         const val CLAVE_PACIENTE_ID = "pacienteId"
         const val CLAVE_PSICOLOGO_ID = "psicologoId"
         const val CLAVE_TAREA_ID = "tareaId"
+        const val CLAVE_NOMBRE_PACIENTE = "nombrePaciente"
         const val CLAVE_FALLBACK_CUERPO = "cuerpo"
     }
 }

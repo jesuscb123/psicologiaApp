@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -15,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -53,6 +54,9 @@ import java.util.Locale
 @Composable
 fun PantallaChatScreen(
     alVolver: () -> Unit,
+    nombreUsuarioBarra: String,
+    fotoPerfilUrlBarra: String?,
+    revisionCacheFotoBarra: Long = 0L,
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -136,13 +140,31 @@ fun PantallaChatScreen(
                         contentPadding = PaddingValues(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(
+                        itemsIndexed(
                             items = uiState.mensajes,
-                            key = { it.id },
-                        ) { mensaje ->
+                            key = { _, mensaje -> mensaje.id },
+                        ) { index, mensaje ->
+                            val esMio = mensaje.remitenteUid == uiState.uidActual
+                            // Avatar solo en el último mensaje del bloque del mismo remitente
+                            // (esquina inferior, estilo Telegram/Messenger).
+                            val siguiente = uiState.mensajes.getOrNull(index + 1)
+                            val mostrarAvatar = siguiente == null ||
+                                siguiente.remitenteUid != mensaje.remitenteUid
                             BurbujaMensajeChatApp(
                                 mensaje = mensaje,
-                                esMio = mensaje.remitenteUid == uiState.uidActual,
+                                esMio = esMio,
+                                nombreRemitente = if (esMio) {
+                                    nombreUsuarioBarra
+                                } else {
+                                    interlocutorNombreCompleto
+                                },
+                                fotoPerfilUrl = if (esMio) {
+                                    fotoPerfilUrlBarra
+                                } else {
+                                    uiState.interlocutorFotoPerfilUrl
+                                },
+                                revisionCacheFoto = if (esMio) revisionCacheFotoBarra else 0L,
+                                mostrarAvatar = mostrarAvatar,
                             )
                         }
                     }
@@ -265,6 +287,10 @@ private fun BarraEntradaMensajeChatApp(
 private fun BurbujaMensajeChatApp(
     mensaje: MensajeChat,
     esMio: Boolean,
+    nombreRemitente: String,
+    fotoPerfilUrl: String?,
+    revisionCacheFoto: Long,
+    mostrarAvatar: Boolean,
 ) {
     val alineacion = if (esMio) Arrangement.End else Arrangement.Start
     val colorFondo = if (esMio) {
@@ -286,10 +312,27 @@ private fun BurbujaMensajeChatApp(
         SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(mensaje.enviadoEn))
     }
 
+    val tamanoAvatar = 32.dp
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = alineacion,
+        verticalAlignment = Alignment.Bottom,
     ) {
+        if (!esMio) {
+            if (mostrarAvatar) {
+                AvatarPerfilCircularApp(
+                    nombreUsuario = nombreRemitente,
+                    fotoPerfilUrl = fotoPerfilUrl,
+                    tamano = tamanoAvatar,
+                    revisionCacheFoto = revisionCacheFoto,
+                )
+            } else {
+                Spacer(Modifier.size(tamanoAvatar))
+            }
+            Spacer(Modifier.size(8.dp))
+        }
+
         Column(
             modifier = Modifier.widthIn(max = 280.dp),
             horizontalAlignment = if (esMio) Alignment.End else Alignment.Start,
@@ -311,6 +354,20 @@ private fun BurbujaMensajeChatApp(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
             )
+        }
+
+        if (esMio) {
+            Spacer(Modifier.size(8.dp))
+            if (mostrarAvatar) {
+                AvatarPerfilCircularApp(
+                    nombreUsuario = nombreRemitente,
+                    fotoPerfilUrl = fotoPerfilUrl,
+                    tamano = tamanoAvatar,
+                    revisionCacheFoto = revisionCacheFoto,
+                )
+            } else {
+                Spacer(Modifier.size(tamanoAvatar))
+            }
         }
     }
 }

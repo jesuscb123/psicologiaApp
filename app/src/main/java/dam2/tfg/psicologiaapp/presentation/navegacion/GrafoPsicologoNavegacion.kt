@@ -73,14 +73,23 @@ fun GrafoPsicologoNavegacion(
 
     // El psicólogo gestiona varios pacientes, así que el chat necesita el id concreto.
     // La notificación de tareas no aplica al psicólogo: solo el paciente las recibe.
+    // Las alertas clínicas de riesgo SÍ son exclusivas del psicólogo: abren la ficha del paciente.
     val destinoNotif by ColaDestinosNotificacion.destino.collectAsState()
     LaunchedEffect(destinoNotif) {
-        val pendiente = destinoNotif
-        if (pendiente is DestinoPendienteNotificacion.Chat) {
-            ColaDestinosNotificacion.consumir()
-            if (pendiente.pacienteId > 0L) {
-                navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(pendiente.pacienteId))
+        when (val pendiente = destinoNotif) {
+            is DestinoPendienteNotificacion.Chat -> {
+                ColaDestinosNotificacion.consumir()
+                if (pendiente.pacienteId > 0L) {
+                    navPsicologo.navigate(RutasGrafoPsicologo.crearRutaChatPaciente(pendiente.pacienteId))
+                }
             }
+            is DestinoPendienteNotificacion.FichaPaciente -> {
+                ColaDestinosNotificacion.consumir()
+                if (pendiente.pacienteId > 0L) {
+                    navPsicologo.navigate(RutasGrafoPsicologo.crearRutaFichaPaciente(pendiente.pacienteId))
+                }
+            }
+            else -> Unit
         }
     }
 
@@ -236,6 +245,9 @@ fun GrafoPsicologoNavegacion(
             ) {
                 PantallaChatScreen(
                     alVolver = { navPsicologo.popBackStack() },
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
                 )
             }
         }

@@ -17,6 +17,7 @@ import dam2.tfg.psicologiaapp.nota.data.remote.NotaApi
 import dam2.tfg.psicologiaapp.notificaciones.data.remote.NotificacionesApi
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
+import dam2.tfg.psicologiaapp.resumenIa.data.remote.ResumenIaApi
 import dam2.tfg.psicologiaapp.tarea.data.remote.TareaApi
 import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioApi
 import dam2.tfg.psicologiaapp.usuario.data.remote.UsuarioPerfilResponseDto
@@ -149,5 +150,10 @@ abstract class RedModulo {
         @Singleton
         fun proporcionarNotificacionesApi(retrofit: Retrofit): NotificacionesApi =
             retrofit.create(NotificacionesApi::class.java)
+
+        @Provides
+        @Singleton
+        fun proporcionarResumenIaApi(retrofit: Retrofit): ResumenIaApi =
+            retrofit.create(ResumenIaApi::class.java)
     }
 }

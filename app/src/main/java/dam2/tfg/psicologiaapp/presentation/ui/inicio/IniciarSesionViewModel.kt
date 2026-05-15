@@ -106,11 +106,12 @@ class IniciarSesionViewModel @Inject constructor(
             }
 
             if (!existeCorreo) {
+                // Mensaje neutro: no se revela si el correo existe o no (anti-enumeración).
                 _uiState.update { estadoActual ->
                     estadoActual.copy(
                         cargandoRecuperacion = false,
                         mensajeErrorRecuperacion = null,
-                        mensajeInfoRecuperacion = MENSAJE_ERROR_USUARIO_NO_EXISTE
+                        mensajeInfoRecuperacion = MENSAJE_NEUTRO_RECUPERACION
                     )
                 }
                 return@launch
@@ -148,8 +149,7 @@ class IniciarSesionViewModel @Inject constructor(
                             estadoActual.copy(
                                 cargandoRecuperacion = false,
                                 mensajeErrorRecuperacion = null,
-                                mensajeInfoRecuperacion = error.message?.takeIf { it.isNotBlank() }
-                                    ?: MENSAJE_ERROR_DESCONOCIDO_RECUPERACION
+                                mensajeInfoRecuperacion = MENSAJE_ERROR_DESCONOCIDO_RECUPERACION
                             )
                         }
                     }
@@ -206,10 +206,12 @@ class IniciarSesionViewModel @Inject constructor(
                     )
                 },
                 onFailure = { error ->
+                    val esErrorRed = error is FirebaseNetworkException || error is IOException
                     _uiState.update {
                         it.copy(
                             cargando = false,
-                            mensajeError = error.message ?: "No se pudo iniciar sesión"
+                            mensajeError = if (esErrorRed) MENSAJE_ERROR_RED_LOGIN
+                                          else MENSAJE_ERROR_CREDENCIALES_LOGIN
                         )
                     }
                 }
@@ -244,14 +246,19 @@ class IniciarSesionViewModel @Inject constructor(
     companion object {
         private const val MENSAJE_EXITO_RECUPERACION =
             "Correo enviado correctamente. Revisa tu bandeja y también spam."
-        private const val MENSAJE_ERROR_USUARIO_NO_EXISTE =
-            "El correo no existe en Firebase. No se puede modificar la contraseña."
+        /** Mensaje neutro: no revela si el correo está registrado (anti-enumeración). */
+        private const val MENSAJE_NEUTRO_RECUPERACION =
+            "Si el correo está registrado, recibirás un enlace de recuperación."
         private const val MENSAJE_ERROR_RED_RECUPERACION =
             "No se pudo enviar el correo por un problema de red. Inténtalo de nuevo."
         private const val MENSAJE_ERROR_DESCONOCIDO_RECUPERACION =
             "No se pudo enviar el correo de restablecimiento. Inténtalo de nuevo."
         private const val MENSAJE_ERROR_VERIFICAR_CORREO_BACKEND =
             "No se pudo verificar el correo en el servidor. Inténtalo de nuevo."
+        private const val MENSAJE_ERROR_CREDENCIALES_LOGIN =
+            "Correo o contraseña incorrectos."
+        private const val MENSAJE_ERROR_RED_LOGIN =
+            "No se pudo iniciar sesión por un problema de red. Inténtalo de nuevo."
     }
 }
 

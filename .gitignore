@@ -26,3 +26,5 @@ doc/referencias_pantallas
 .cursor
 doc/PRUEBAS_APP.md
 database.rules.json
+
+doc/FALLOS_ENCONTRADOS.md

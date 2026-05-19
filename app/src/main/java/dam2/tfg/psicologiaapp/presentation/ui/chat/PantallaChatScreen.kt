@@ -9,11 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -74,13 +71,13 @@ fun PantallaChatScreen(
             .joinToString(" ")
     }
 
+    // El Scaffold raíz (AppNavHost) ya gestiona todos los insets del sistema (safeDrawing incluye
+    // status bar, nav bar e IME). No se añade ningún padding de insets aquí para evitar duplicar
+    // la compensación del teclado.
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .imePadding(),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         CabeceraChatApp(
             nombreInterlocutor = interlocutorNombreCompleto,
@@ -145,24 +142,14 @@ fun PantallaChatScreen(
                             key = { _, mensaje -> mensaje.id },
                         ) { index, mensaje ->
                             val esMio = mensaje.remitenteUid == uiState.uidActual
-                            // Avatar solo en el último mensaje del bloque del mismo remitente
-                            // (esquina inferior, estilo Telegram/Messenger).
                             val siguiente = uiState.mensajes.getOrNull(index + 1)
                             val mostrarAvatar = siguiente == null ||
                                 siguiente.remitenteUid != mensaje.remitenteUid
                             BurbujaMensajeChatApp(
                                 mensaje = mensaje,
                                 esMio = esMio,
-                                nombreRemitente = if (esMio) {
-                                    nombreUsuarioBarra
-                                } else {
-                                    interlocutorNombreCompleto
-                                },
-                                fotoPerfilUrl = if (esMio) {
-                                    fotoPerfilUrlBarra
-                                } else {
-                                    uiState.interlocutorFotoPerfilUrl
-                                },
+                                nombreRemitente = if (esMio) nombreUsuarioBarra else interlocutorNombreCompleto,
+                                fotoPerfilUrl = if (esMio) fotoPerfilUrlBarra else uiState.interlocutorFotoPerfilUrl,
                                 revisionCacheFoto = if (esMio) revisionCacheFotoBarra else 0L,
                                 mostrarAvatar = mostrarAvatar,
                             )

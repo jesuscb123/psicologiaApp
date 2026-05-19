@@ -4,6 +4,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -21,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-private const val MARCA_APP = "mindCare"
+private const val MARCA_APP = "Acompáñame"
 
 @Composable
 fun EncabezadoUsuarioApp(
@@ -43,12 +44,14 @@ fun EncabezadoUsuarioApp(
     val accionMenu = alAbrirMenu ?: alAbrirMenuPerfil
 
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.9f),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -84,17 +87,17 @@ fun EncabezadoUsuarioApp(
 
         Text(
             text = tituloCentro,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1.2f),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             color = colorTextoPrincipal,
         )
 
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.9f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {

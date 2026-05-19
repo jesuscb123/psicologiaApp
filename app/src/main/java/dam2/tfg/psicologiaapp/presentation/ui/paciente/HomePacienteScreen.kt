@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
@@ -552,18 +553,21 @@ private fun BannerPsicologoActualPaciente(
                         fotoPerfilUrl = psicologo?.fotoPerfilUrl,
                         tamano = 44.dp,
                     )
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Psicólogo actual",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onPrimary,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                         )
                         Text(
                             text = nombreCompleto ?: "Sin especialista asignado",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
                             maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -571,6 +575,7 @@ private fun BannerPsicologoActualPaciente(
                     shape = RoundedCornerShape(percent = 50),
                     color = MaterialTheme.colorScheme.surfaceContainerLowest,
                     modifier = Modifier
+                        .wrapContentWidth()
                         .padding(start = 8.dp)
                         .clip(RoundedCornerShape(percent = 50))
                         .then(
@@ -658,6 +663,8 @@ private fun FilaPsicologoApp(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (psicologo.especialidad.isNotBlank()) {
                     Text(
@@ -665,6 +672,7 @@ private fun FilaPsicologoApp(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

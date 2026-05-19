@@ -138,7 +138,7 @@ fun NotasPacienteScreen(
             FloatingActionButton(
                 onClick = alIrAAnadirNota,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
                     .padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,

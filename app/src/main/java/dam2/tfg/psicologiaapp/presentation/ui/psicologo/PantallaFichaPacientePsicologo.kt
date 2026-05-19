@@ -140,7 +140,7 @@ fun PantallaFichaPacientePsicologo(
                                 } else {
                                     ListaTareasApp(
                                         tareas = uiState.tareas,
-                                        paddingContenido = PaddingValues(bottom = 12.dp),
+                                        paddingContenido = PaddingValues(bottom = 88.dp),
                                     )
                                 }
                             }
@@ -154,7 +154,7 @@ fun PantallaFichaPacientePsicologo(
             FloatingActionButton(
                 onClick = alIrAnadirTarea,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
                     .padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,

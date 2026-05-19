@@ -4,10 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -27,31 +25,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.AvatarPerfilCircularApp
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
-import dam2.tfg.psicologiaapp.presentation.components.PestanasPildoraDosOpcionesApp
-
-private enum class PestanaPerfilPsicologoPaciente {
-    DESCRIPCION,
-    RESENAS,
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,8 +114,6 @@ fun PantallaPerfilPsicologo(
                 return@Column
             }
 
-            var pestanaActual by rememberSaveable { mutableStateOf(PestanaPerfilPsicologoPaciente.DESCRIPCION) }
-
             val nombreCompleto = listOf(psicologo.nombre, psicologo.apellidos)
                 .filter { it.isNotBlank() }
                 .joinToString(" ")
@@ -144,7 +131,7 @@ fun PantallaPerfilPsicologo(
                         .fillMaxSize()
                         .padding(bottom = 72.dp),
                 ) {
-                    // ── CABECERA FIJA: avatar, nombre, badge rating, pestañas ─────────
+                    // ── CABECERA FIJA: avatar, nombre, badge rating ─────────
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -189,6 +176,11 @@ fun PantallaPerfilPsicologo(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                         )
 
                         Surface(
@@ -199,23 +191,12 @@ fun PantallaPerfilPsicologo(
                                 text = "Valoración de la comunidad — próximamente",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                             )
                         }
-
-                        PestanasPildoraDosOpcionesApp(
-                            primeraEtiqueta = "Descripción",
-                            segundaEtiqueta = "Reseñas",
-                            indiceSeleccionado = when (pestanaActual) {
-                                PestanaPerfilPsicologoPaciente.DESCRIPCION -> 0
-                                PestanaPerfilPsicologoPaciente.RESENAS -> 1
-                            },
-                            alSeleccionarPrimera = { pestanaActual = PestanaPerfilPsicologoPaciente.DESCRIPCION },
-                            alSeleccionarSegunda = { pestanaActual = PestanaPerfilPsicologoPaciente.RESENAS },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                        )
 
                         HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHigh)
                     }
@@ -228,122 +209,87 @@ fun PantallaPerfilPsicologo(
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                     ) {
-                        when (pestanaActual) {
-                            PestanaPerfilPsicologoPaciente.DESCRIPCION -> {
-                                Surface(
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(20.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Text(
+                                    text = "Sobre mí",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                Text(
+                                    text = psicologo.descripcion?.takeIf { it.isNotBlank() }
+                                        ?: "Este psicólogo todavía no ha añadido una descripción.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(24.dp),
-                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 ) {
-                                    Column(
-                                        modifier = Modifier.padding(20.dp),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-                                        Text(
-                                            text = "Sobre mí",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                        )
-                                        Text(
-                                            text = psicologo.descripcion?.takeIf { it.isNotBlank() }
-                                                ?: "Este psicólogo todavía no ha añadido una descripción.",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                        ) {
-                                            TarjetaInfoContacto(
-                                                titulo = "Educación / colegiado",
-                                                subtitulo = psicologo.numeroColegiado.ifBlank { "—" },
-                                                icono = {
-                                                    Icon(
-                                                        Icons.Filled.Info,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                    )
-                                                },
-                                                colorIconoFondo = MaterialTheme.colorScheme.tertiaryContainer,
-                                                modifier = Modifier.weight(1f),
+                                    TarjetaInfoContacto(
+                                        titulo = "Educación / colegiado",
+                                        subtitulo = psicologo.numeroColegiado.ifBlank { "—" },
+                                        icono = {
+                                            Icon(
+                                                Icons.Filled.Info,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
                                             )
-                                            TarjetaInfoContacto(
-                                                titulo = "Disponibilidad",
-                                                subtitulo = "Consulta horas al agendar una cita.",
-                                                icono = {
-                                                    Icon(
-                                                        Icons.Filled.DateRange,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                    )
-                                                },
-                                                colorIconoFondo = MaterialTheme.colorScheme.secondaryContainer,
-                                                modifier = Modifier.weight(1f),
+                                        },
+                                        colorIconoFondo = MaterialTheme.colorScheme.tertiaryContainer,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    TarjetaInfoContacto(
+                                        titulo = "Disponibilidad",
+                                        subtitulo = "Consulta horas al agendar una cita.",
+                                        icono = {
+                                            Icon(
+                                                Icons.Filled.DateRange,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                                             )
-                                        }
-
-                                        if (especialidadesTokens.isNotEmpty()) {
-                                            Text(
-                                                text = "Especialidades",
-                                                style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                            )
-                                            Row(
-                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                                modifier = Modifier.fillMaxWidth(),
-                                            ) {
-                                                especialidadesTokens.take(6).forEach { esp ->
-                                                    Surface(
-                                                        shape = RoundedCornerShape(999.dp),
-                                                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                                                    ) {
-                                                        Text(
-                                                            text = esp,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            fontWeight = FontWeight.Medium,
-                                                            color = MaterialTheme.colorScheme.primary,
-                                                            modifier = Modifier.padding(
-                                                                horizontal = 14.dp,
-                                                                vertical = 8.dp,
-                                                            ),
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                                        },
+                                        colorIconoFondo = MaterialTheme.colorScheme.secondaryContainer,
+                                        modifier = Modifier.weight(1f),
+                                    )
                                 }
-                            }
 
-                            PestanaPerfilPsicologoPaciente.RESENAS -> {
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(24.dp),
-                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(20.dp),
-                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                if (especialidadesTokens.isNotEmpty()) {
+                                    Text(
+                                        text = "Especialidades",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.fillMaxWidth(),
                                     ) {
-                                        Text(
-                                            text = "Reseñas",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                        )
-                                        Text(
-                                            text = "Las reseñas de otros pacientes estarán disponibles próximamente.",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                        TextButton(
-                                            onClick = { },
-                                            enabled = false,
-                                        ) {
-                                            Text("Ver reseñas (próximamente)")
+                                        especialidadesTokens.take(6).forEach { esp ->
+                                            Surface(
+                                                shape = RoundedCornerShape(999.dp),
+                                                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                                            ) {
+                                                Text(
+                                                    text = esp,
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.padding(
+                                                        horizontal = 14.dp,
+                                                        vertical = 8.dp,
+                                                    ),
+                                                )
+                                            }
                                         }
                                     }
                                 }

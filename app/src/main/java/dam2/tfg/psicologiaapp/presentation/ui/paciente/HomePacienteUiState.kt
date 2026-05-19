@@ -14,6 +14,7 @@ data class HomePacienteUiState(
     val notas: List<Nota> = emptyList(),
     val tareas: List<Tarea> = emptyList(),
     val proximaCita: Cita? = null,
+    val cargandoProximaCita: Boolean = true,
     val mensajeError: String? = null
 )
 

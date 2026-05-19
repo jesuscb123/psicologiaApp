@@ -33,6 +33,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAnadirTareaPsico
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAjustesPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaFichaPacientePsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.HomePsicologoViewModel
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaHomePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.citas.MisCitasPsicologoScreen
 import kotlinx.coroutines.launch
@@ -45,6 +46,9 @@ fun GrafoPsicologoNavegacion(
 ) {
     val menuViewModel = hiltViewModel<MenuLateralPerfilViewModel>(entradaGrafo)
     val menuUi by menuViewModel.uiState.collectAsState()
+    // HomePsicologoViewModel compartido entre HOME, FICHA y demás para evitar
+    // re-instancias y re-cargas al navegar entre ellas.
+    val homePsicologoViewModel = hiltViewModel<HomePsicologoViewModel>(entradaGrafo)
     val navPsicologo = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -169,6 +173,7 @@ fun GrafoPsicologoNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    viewModel = homePsicologoViewModel,
                 )
             }
 

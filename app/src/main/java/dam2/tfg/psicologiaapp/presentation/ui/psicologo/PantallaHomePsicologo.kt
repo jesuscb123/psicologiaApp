@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
@@ -50,7 +49,7 @@ fun PantallaHomePsicologo(
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
     revisionCacheFotoBarra: Long = 0L,
-    viewModel: HomePsicologoViewModel = hiltViewModel(),
+    viewModel: HomePsicologoViewModel,
 ) {
     LaunchedEffect(Unit) {
         viewModel.sincronizarSiProcede()

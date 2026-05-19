@@ -10,11 +10,12 @@ data class RegistroPsicologoUiState(
     val errorLongitudApellidos: String? = null,
     val numeroColegiado: String = "",
     val errorLongitudNumeroColegiado: String? = null,
-    val especialidad: String = "",
+    val especialidades: List<String> = emptyList(),
+    val especialidadInput: String = "",
+    val errorEspecialidadInput: String? = null,
     val descripcion: String = "",
     val errorLongitudDescripcion: String? = null,
     val cargando: Boolean = false,
     val mensajeError: String? = null,
     val registroCompletado: Boolean = false
 )
-

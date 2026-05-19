@@ -37,7 +37,7 @@ fun UsuarioResponseDto.toDomain(): Usuario = when (this) {
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad,
+        especialidades = especialidades,
         descripcion = descripcion,
     )
     is PacienteResponseDto -> UsuarioPaciente(
@@ -70,7 +70,7 @@ fun UsuarioPerfilResponseDto.toDomain(): UsuarioPerfil = when (this) {
         fotoPerfilUrl = fotoPerfilUrl,
         rol = rol.aRolUsuario(),
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad,
+        especialidades = especialidades,
         descripcion = descripcion,
     )
     is PacientePerfilResponseDto -> PacientePerfil(
@@ -100,7 +100,7 @@ fun UsuarioRequest.toDto(): UsuarioRequestDto = when (this) {
         apellidos = apellidos,
         fotoPerfilUrl = fotoPerfilUrl,
         numeroColegiado = numeroColegiado,
-        especialidad = especialidad,
+        especialidades = especialidades,
         descripcion = descripcion,
     )
     is PacienteRequest -> PacienteRequestDto(

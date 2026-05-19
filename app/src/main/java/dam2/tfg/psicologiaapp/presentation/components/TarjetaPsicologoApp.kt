@@ -61,7 +61,7 @@ fun TarjetaPsicologoApp(
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = psicologo.especialidad,
+                text = psicologo.especialidades.joinToString(", "),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,

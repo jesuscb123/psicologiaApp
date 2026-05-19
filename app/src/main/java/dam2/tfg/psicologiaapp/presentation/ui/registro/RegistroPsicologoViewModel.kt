@@ -71,8 +71,50 @@ class RegistroPsicologoViewModel @Inject constructor(
         }
     }
 
-    fun alCambiarEspecialidad(nuevaEspecialidad: String) {
-        _uiState.update { it.copy(especialidad = nuevaEspecialidad, mensajeError = null) }
+    fun alCambiarEspecialidadInput(texto: String) {
+        val limitado = limitarTexto(texto, LimiteCaracteresRegistroPsicologo.ESPECIALIDAD)
+        _uiState.update {
+            it.copy(
+                especialidadInput = limitado.texto,
+                errorEspecialidadInput = limitado.error,
+                mensajeError = null
+            )
+        }
+    }
+
+    fun alAnadirEspecialidad() {
+        val texto = _uiState.value.especialidadInput.trim()
+        val lista = _uiState.value.especialidades
+
+        if (texto.isBlank()) {
+            _uiState.update { it.copy(errorEspecialidadInput = "Escribe una especialidad antes de añadir") }
+            return
+        }
+        if (lista.size >= LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES) {
+            _uiState.update { it.copy(errorEspecialidadInput = "Máximo ${LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES} especialidades") }
+            return
+        }
+        if (lista.any { it.equals(texto, ignoreCase = true) }) {
+            _uiState.update { it.copy(errorEspecialidadInput = "Esa especialidad ya está en la lista") }
+            return
+        }
+
+        _uiState.update {
+            it.copy(
+                especialidades = lista + texto,
+                especialidadInput = "",
+                errorEspecialidadInput = null,
+                mensajeError = null
+            )
+        }
+    }
+
+    fun alEliminarEspecialidad(index: Int) {
+        val lista = _uiState.value.especialidades.toMutableList()
+        if (index in lista.indices) {
+            lista.removeAt(index)
+            _uiState.update { it.copy(especialidades = lista, mensajeError = null) }
+        }
     }
 
     fun alCambiarDescripcion(nuevaDescripcion: String) {
@@ -96,7 +138,7 @@ class RegistroPsicologoViewModel @Inject constructor(
         val nombre = uiState.value.nombre.trim()
         val apellidos = uiState.value.apellidos.trim()
         val numeroColegiado = uiState.value.numeroColegiado.trim()
-        val especialidad = uiState.value.especialidad.trim()
+        val especialidades = uiState.value.especialidades
         val descripcion = uiState.value.descripcion.trim().ifBlank { null }
 
         if (
@@ -105,7 +147,7 @@ class RegistroPsicologoViewModel @Inject constructor(
             nombre.isBlank() ||
             apellidos.isBlank() ||
             numeroColegiado.isBlank() ||
-            especialidad.isBlank()
+            especialidades.isEmpty()
         ) {
             _uiState.update { it.copy(mensajeError = "Rellena todos los campos") }
             return
@@ -122,7 +164,7 @@ class RegistroPsicologoViewModel @Inject constructor(
                         apellidos = apellidos,
                         fotoPerfilUrl = null,
                         numeroColegiado = numeroColegiado,
-                        especialidad = especialidad,
+                        especialidades = especialidades,
                         descripcion = descripcion,
                     )
 
@@ -173,4 +215,3 @@ class RegistroPsicologoViewModel @Inject constructor(
         )
     }
 }
-

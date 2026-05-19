@@ -1,9 +1,9 @@
 package dam2.tfg.psicologiaapp.presentation.ui.registro
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,11 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
+import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.CampoConEtiquetaExternaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoContrasenaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoCorreoApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
-import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
+import dam2.tfg.psicologiaapp.presentation.components.EditorEspecialidadesApp
+import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
 @Composable
 fun PantallaRegistroPsicologo(
@@ -111,78 +113,139 @@ fun PantallaRegistroPsicologo(
             item { Spacer(modifier = Modifier.height(6.dp)) }
 
             item {
-                CampoCorreoApp(
-                    valor = uiState.correo,
-                    alCambiar = viewModel::alCambiarCorreo,
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                    textoError = uiState.errorLongitudCorreo,
-                )
+                CampoConEtiquetaExternaApp(
+                    etiqueta = "Correo electrónico",
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoCorreoApp(
+                        valor = uiState.correo,
+                        alCambiar = viewModel::alCambiarCorreo,
+                        etiqueta = "",
+                        placeholder = "tu@email.com",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudCorreo,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
             }
 
             item {
-                CampoContrasenaApp(
-                    valor = uiState.contrasena,
-                    alCambiar = viewModel::alCambiarContrasena,
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                )
+                CampoConEtiquetaExternaApp(
+                    etiqueta = "Contraseña",
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoContrasenaApp(
+                        valor = uiState.contrasena,
+                        alCambiar = viewModel::alCambiarContrasena,
+                        etiqueta = "",
+                        placeholder = "••••••••",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
             }
 
             item {
-                CampoTextoApp(
-                    valor = uiState.nombre,
-                    alCambiar = viewModel::alCambiarNombre,
+                CampoConEtiquetaExternaApp(
                     etiqueta = "Nombre",
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                    textoError = uiState.errorLongitudNombre,
-                )
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoTextoApp(
+                        valor = uiState.nombre,
+                        alCambiar = viewModel::alCambiarNombre,
+                        etiqueta = "",
+                        placeholder = "Ej. Juan",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudNombre,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
             }
 
             item {
-                CampoTextoApp(
-                    valor = uiState.apellidos,
-                    alCambiar = viewModel::alCambiarApellidos,
+                CampoConEtiquetaExternaApp(
                     etiqueta = "Apellidos",
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                    textoError = uiState.errorLongitudApellidos,
-                )
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoTextoApp(
+                        valor = uiState.apellidos,
+                        alCambiar = viewModel::alCambiarApellidos,
+                        etiqueta = "",
+                        placeholder = "Ej. Pérez",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudApellidos,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
             }
 
             item {
-                CampoTextoApp(
-                    valor = uiState.numeroColegiado,
-                    alCambiar = viewModel::alCambiarNumeroColegiado,
+                CampoConEtiquetaExternaApp(
                     etiqueta = "Número de colegiado",
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                    textoError = uiState.errorLongitudNumeroColegiado,
-                )
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoTextoApp(
+                        valor = uiState.numeroColegiado,
+                        alCambiar = viewModel::alCambiarNumeroColegiado,
+                        etiqueta = "",
+                        placeholder = "Ej. 12345",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        textoError = uiState.errorLongitudNumeroColegiado,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
             }
 
             item {
-                CampoTextoApp(
-                    valor = uiState.especialidad,
-                    alCambiar = viewModel::alCambiarEspecialidad,
-                    etiqueta = "Especialidad",
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                )
-            }
-
-            item {
-                CampoTextoApp(
-                    valor = uiState.descripcion,
-                    alCambiar = viewModel::alCambiarDescripcion,
+                CampoConEtiquetaExternaApp(
                     etiqueta = "Descripción (opcional)",
-                    modifier = Modifier.fillMaxWidth(),
-                    habilitado = !uiState.cargando,
-                    singleLine = false,
-                    minLines = 3,
-                    textoError = uiState.errorLongitudDescripcion,
-                )
+                    etiquetaEnMayusculas = true,
+                ) {
+                    CampoTextoApp(
+                        valor = uiState.descripcion,
+                        alCambiar = viewModel::alCambiarDescripcion,
+                        etiqueta = "",
+                        placeholder = "Cuéntale a tus pacientes tu enfoque…",
+                        modifier = Modifier.fillMaxWidth(),
+                        habilitado = !uiState.cargando,
+                        singleLine = false,
+                        minLines = 3,
+                        textoError = uiState.errorLongitudDescripcion,
+                        paddingExterno = EstiloCamposRegistro.paddingCampo,
+                        estilo = EstiloCamposRegistro.estiloCampo,
+                    )
+                }
+            }
+
+            item {
+                CampoConEtiquetaExternaApp(
+                    etiqueta = "Especialidades",
+                    etiquetaEnMayusculas = true,
+                    textoAuxiliarDerecha = "${uiState.especialidades.size}/${LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES}",
+                ) {
+                    EditorEspecialidadesApp(
+                        especialidades = uiState.especialidades,
+                        especialidadInput = uiState.especialidadInput,
+                        errorEspecialidadInput = uiState.errorEspecialidadInput,
+                        habilitado = !uiState.cargando,
+                        maxEspecialidades = LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES,
+                        alCambiarInput = viewModel::alCambiarEspecialidadInput,
+                        alAnadir = viewModel::alAnadirEspecialidad,
+                        alEliminar = viewModel::alEliminarEspecialidad,
+                        formaEntrada = EstiloCamposRegistro.formaEditorEspecialidades,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
 
             item {
@@ -209,4 +272,3 @@ fun PantallaRegistroPsicologo(
         }
     }
 }
-

@@ -12,7 +12,7 @@ fun PsicologoResponseDto.toDomain(): Psicologo = Psicologo(
     apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     numeroColegiado = numeroColegiado,
-    especialidad = especialidad,
+    especialidades = especialidades,
     descripcion = descripcion,
 )
 
@@ -24,7 +24,7 @@ fun PsicologoResponseDto.toEntity(): PsicologoEntity = PsicologoEntity(
     apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     numeroColegiado = numeroColegiado,
-    especialidad = especialidad,
+    especialidades = especialidades,
     descripcion = descripcion,
 )
 
@@ -36,7 +36,6 @@ fun PsicologoEntity.toDomain(): Psicologo = Psicologo(
     apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     numeroColegiado = numeroColegiado,
-    especialidad = especialidad,
+    especialidades = especialidades,
     descripcion = descripcion,
 )
-

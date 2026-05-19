@@ -5,6 +5,7 @@ import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.psicologo.data.local.PsicologoDao
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import dam2.tfg.psicologiaapp.psicologo.data.remote.ActualizarDescripcionPsicologoRequestDto
+import dam2.tfg.psicologiaapp.psicologo.data.remote.ActualizarEspecialidadesPsicologoRequestDto
 import dam2.tfg.psicologiaapp.psicologo.data.remote.PsicologoApi
 import dam2.tfg.psicologiaapp.paciente.data.mappers.toDomain as pacienteToDomain
 import dam2.tfg.psicologiaapp.paciente.data.mappers.toEntity as pacienteToEntity
@@ -56,6 +57,12 @@ class PsicologoRepositoryImpl @Inject constructor(
     override suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo> = runCatching {
         psicologoApi.actualizarMiDescripcion(
             ActualizarDescripcionPsicologoRequestDto(descripcion = descripcion)
+        ).psicologoToDomain()
+    }
+
+    override suspend fun actualizarMisEspecialidades(especialidades: List<String>): Result<Psicologo> = runCatching {
+        psicologoApi.actualizarMisEspecialidades(
+            ActualizarEspecialidadesPsicologoRequestDto(especialidades = especialidades)
         ).psicologoToDomain()
     }
 

@@ -31,4 +31,9 @@ interface PsicologoApi {
     suspend fun actualizarMiDescripcion(
         @Body body: ActualizarDescripcionPsicologoRequestDto
     ): PsicologoResponseDto
+
+    @PATCH("api/psicologos/me/especialidades")
+    suspend fun actualizarMisEspecialidades(
+        @Body body: ActualizarEspecialidadesPsicologoRequestDto
+    ): PsicologoResponseDto
 }

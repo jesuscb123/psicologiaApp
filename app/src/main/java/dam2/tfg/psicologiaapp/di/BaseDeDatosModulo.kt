@@ -132,6 +132,16 @@ object BaseDeDatosModulo {
         }
     }
 
+    private val migracion_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("UPDATE psicologos SET especialidad = '[]' WHERE especialidad = '' OR especialidad IS NULL")
+            db.execSQL(
+                "UPDATE psicologos SET especialidad = '[\"' || especialidad || '\"]' " +
+                "WHERE especialidad != '' AND especialidad NOT LIKE '[%'"
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun proporcionarBaseDeDatos(
@@ -142,7 +152,7 @@ object BaseDeDatosModulo {
             PsicologiaAppDatabase::class.java,
             "psicologia_app.db"
         )
-            .addMigrations(migracion_1_2, migracion_2_3, migracion_3_4, migracion_4_5)
+            .addMigrations(migracion_1_2, migracion_2_3, migracion_3_4, migracion_4_5, migracion_5_6)
             .build()
 
     @Provides

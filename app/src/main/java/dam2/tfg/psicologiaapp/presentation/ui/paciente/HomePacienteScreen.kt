@@ -136,6 +136,7 @@ fun PantallaHomePaciente(
                         item {
                             BannerProximaCitaPaciente(
                                 proximaCita = uiState.proximaCita,
+                                cargandoProximaCita = uiState.cargandoProximaCita,
                                 alVerCitas = alIrACitas,
                             )
                         }
@@ -207,7 +208,7 @@ private fun HomePacienteSeleccionPsicologo(
             psicologos.filter { p ->
                 p.nombre.lowercase().contains(q) ||
                     p.apellidos.lowercase().contains(q) ||
-                    p.especialidad.lowercase().contains(q)
+                    p.especialidades.any { it.lowercase().contains(q) }
             }
         }
     }
@@ -325,6 +326,7 @@ private fun HomePacienteSeleccionPsicologo(
 @Composable
 private fun BannerProximaCitaPaciente(
     proximaCita: Cita?,
+    cargandoProximaCita: Boolean,
     alVerCitas: () -> Unit,
 ) {
     val sub = when {
@@ -332,6 +334,7 @@ private fun BannerProximaCitaPaciente(
             val fechaHora = formatearInicioCitaBanner(proximaCita.inicio)
             "$fechaHora · ${proximaCita.nombrePsicologo}"
         }
+        cargandoProximaCita -> "Consultando próxima cita…"
         else -> "No tienes citas próximas. Consulta o reserva desde Mis citas."
     }
 
@@ -666,9 +669,9 @@ private fun FilaPsicologoApp(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (psicologo.especialidad.isNotBlank()) {
+                if (psicologo.especialidades.isNotEmpty()) {
                     Text(
-                        text = psicologo.especialidad,
+                        text = psicologo.especialidades.joinToString(", "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,

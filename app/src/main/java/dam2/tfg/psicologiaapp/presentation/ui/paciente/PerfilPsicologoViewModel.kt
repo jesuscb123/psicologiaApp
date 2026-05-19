@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.paciente.domain.usecase.AsignarPsicologoUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPsicologosUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPsicologosUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.ObservarPerfilCacheadoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,7 @@ class PerfilPsicologoViewModel @Inject constructor(
     private val observarPsicologosUseCase: ObservarPsicologosUseCase,
     private val sincronizarPsicologosUseCase: SincronizarPsicologosUseCase,
     private val asignarPsicologoUseCase: AsignarPsicologoUseCase,
+    private val observarPerfilCacheadoUseCase: ObservarPerfilCacheadoUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PerfilPsicologoUiState())
@@ -33,6 +35,11 @@ class PerfilPsicologoViewModel @Inject constructor(
                 if (psicologo != null) {
                     _uiState.update { it.copy(cargando = false, psicologo = psicologo, mensajeError = null) }
                 }
+            }
+        }
+        viewModelScope.launch {
+            observarPerfilCacheadoUseCase().collectLatest { perfil ->
+                _uiState.update { it.copy(pacienteYaTienePsicologo = perfil?.psicologoId != null) }
             }
         }
     }

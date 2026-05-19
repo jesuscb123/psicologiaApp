@@ -88,7 +88,7 @@ class HomePacienteViewModel @Inject constructor(
         viewModelScope.launch {
             observarMisCitasPacienteUseCase().collectLatest { citas ->
                 val proxima = calcularProximaCitaActiva(citas)
-                _uiState.update { it.copy(proximaCita = proxima) }
+                _uiState.update { it.copy(proximaCita = proxima, cargandoProximaCita = false) }
             }
         }
     }

@@ -11,7 +11,6 @@ data class UsuarioPsicologo(
     override val fotoPerfilUrl: String?,
     override val rol: RolUsuario = RolUsuario.PSICOLOGO,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
 ) : Usuario
-

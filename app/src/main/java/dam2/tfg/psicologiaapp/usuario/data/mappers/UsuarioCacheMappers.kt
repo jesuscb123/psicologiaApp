@@ -63,7 +63,7 @@ fun UsuarioEntity.toPsicologoPerfil(): PsicologoPerfil? {
         email = email,
         fotoPerfilUrl = fotoPerfilUrl,
         numeroColegiado = "",
-        especialidad = "",
+        especialidades = emptyList(),
     )
 }
 

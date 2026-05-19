@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,6 +27,8 @@ enum class EstiloCampoTextoApp {
     Minimal,
     /** Fondo `surfaceContainerHigh`, borde invisible hasta foco (inputs tipo Stitch). */
     ContenedorAlta,
+    /** Formularios de registro: esquinas rectas y fondo suave. */
+    Registro,
 }
 
 @Composable
@@ -52,7 +56,8 @@ fun CampoTextoBaseApp(
     val esError = !textoError.isNullOrBlank()
     val colorContenedorHabilitado = MaterialTheme.colorScheme.surface
     val colorContenedorDeshabilitado = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
-    val formaCampo = when (estilo) {
+    val formaCampo: Shape = when (estilo) {
+        EstiloCampoTextoApp.Registro -> RectangleShape
         EstiloCampoTextoApp.ContenedorAlta -> MaterialTheme.shapes.medium
         else -> MaterialTheme.shapes.large
     }
@@ -127,6 +132,27 @@ fun CampoTextoBaseApp(
             disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             errorTrailingIconColor = MaterialTheme.colorScheme.error
         )
+
+        EstiloCampoTextoApp.Registro -> OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f),
+            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error,
+        )
     }
 
     OutlinedTextField(
@@ -139,7 +165,11 @@ fun CampoTextoBaseApp(
         readOnly = soloLectura,
         singleLine = singleLine,
         minLines = minLines,
-        label = { Text(etiqueta) },
+        label = if (etiqueta.isNotBlank()) {
+            { Text(etiqueta) }
+        } else {
+            null
+        },
         placeholder = if (placeholder.isNullOrBlank()) null else {
             { Text(text = placeholder, style = MaterialTheme.typography.bodyMedium) }
         },

@@ -9,7 +9,7 @@ data class PsicologoRequestDto(
     override val apellidos: String,
     override val fotoPerfilUrl: String? = null,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
     override val rol: String = "PSICOLOGO"
 ) : UsuarioRequestDto
@@ -24,7 +24,7 @@ data class PsicologoResponseDto(
     override val fotoPerfilUrl: String?,
     override val rol: String,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
 ) : UsuarioResponseDto
 
@@ -37,7 +37,6 @@ data class PsicologoPerfilResponseDto(
     override val fotoPerfilUrl: String?,
     override val rol: String,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
 ) : UsuarioPerfilResponseDto
-

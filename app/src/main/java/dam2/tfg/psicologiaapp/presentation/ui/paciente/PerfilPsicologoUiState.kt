@@ -7,7 +7,8 @@ data class PerfilPsicologoUiState(
     val asignando: Boolean = false,
     val psicologo: Psicologo? = null,
     val mensajeError: String? = null,
-    val eventoNavegacion: EventoNavegacionPerfilPsicologo? = null
+    val eventoNavegacion: EventoNavegacionPerfilPsicologo? = null,
+    val pacienteYaTienePsicologo: Boolean = false,
 )
 
 sealed interface EventoNavegacionPerfilPsicologo {

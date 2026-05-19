@@ -7,11 +7,10 @@ import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.paciente.data.local.PacienteDao
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
-import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
+import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.resumenIa.domain.usecase.GenerarResumenIaPacienteUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasDePacienteUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasDePacienteUseCase
-import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FichaPacientePsicologoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getPacientesDePsicologoUseCase: GetPacientesDePsicologoUseCase,
+    private val sincronizarPacientesDePsicologoUseCase: SincronizarPacientesDePsicologoUseCase,
     private val pacienteDao: PacienteDao,
     private val observarNotasDePacienteUseCase: ObservarNotasDePacienteUseCase,
     private val observarTareasDePacienteUseCase: ObservarTareasDePacienteUseCase,
@@ -92,33 +91,21 @@ class FichaPacientePsicologoViewModel @Inject constructor(
                 _uiState.update { it.copy(cargando = true, mensajeError = null) }
             }
 
-            val pacienteEnLista = getPacientesDePsicologoUseCase().fold(
-                onSuccess = { lista -> lista.find { it.idPaciente == pacienteId } },
-                onFailure = { null },
-            )
-            val nombrePaciente = pacienteEnLista?.let { listOf(it.nombre, it.apellidos).filter { p -> p.isNotBlank() }.joinToString(" ") }
-                .orEmpty()
-            val fotoPaciente = pacienteEnLista?.fotoPerfilUrl
-
+            // Sync en background; Room Flow en init actualiza nombre/foto automáticamente
+            val resultadoPacientes = sincronizarPacientesDePsicologoUseCase()
             val resultadoNotas = sincronizarNotasDePacienteUseCase(pacienteId)
             val resultadoTareas = sincronizarTareasDePacienteUseCase(pacienteId)
 
-            val errNotas = resultadoNotas.exceptionOrNull()
-            val errTareas = resultadoTareas.exceptionOrNull()
-            val mensajeError = when {
-                errNotas != null && errTareas != null ->
-                    listOfNotNull(errNotas.message, errTareas.message).joinToString(" · ")
-                errNotas != null -> errNotas.message ?: "No se pudieron cargar las notas"
-                errTareas != null -> errTareas.message ?: "No se pudieron cargar las tareas"
-                else -> null
-            }
+            val errores = listOfNotNull(
+                resultadoPacientes.exceptionOrNull()?.message,
+                resultadoNotas.exceptionOrNull()?.message,
+                resultadoTareas.exceptionOrNull()?.message,
+            )
 
             _uiState.update {
                 it.copy(
                     cargando = false,
-                    nombreUsuarioPaciente = nombrePaciente,
-                    fotoPerfilUrlPaciente = fotoPaciente,
-                    mensajeError = mensajeError,
+                    mensajeError = errores.firstOrNull(),
                 )
             }
         }

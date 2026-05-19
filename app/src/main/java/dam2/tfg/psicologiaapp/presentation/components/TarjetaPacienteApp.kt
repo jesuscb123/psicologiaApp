@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -49,9 +50,11 @@ fun TarjetaPacienteApp(
             null
         } else {
             try {
-                val dt = OffsetDateTime.parse(citaProxima.inicio)
                 val formatter = DateTimeFormatter.ofPattern("EEE, d MMM · HH:mm", Locale("es"))
-                dt.format(formatter)
+                val zoned = OffsetDateTime.parse(citaProxima.inicio)
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                zoned.format(formatter)
                     .replaceFirstChar { it.titlecase(Locale("es")) }
             } catch (_: Exception) {
                 null

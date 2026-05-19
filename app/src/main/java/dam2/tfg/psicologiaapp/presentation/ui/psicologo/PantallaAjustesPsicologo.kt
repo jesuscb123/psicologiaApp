@@ -2,10 +2,14 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoBaseApp
+import dam2.tfg.psicologiaapp.presentation.components.EditorEspecialidadesApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
+import dam2.tfg.psicologiaapp.presentation.ui.registro.LimiteCaracteresRegistroPsicologo
 
 @Composable
 fun PantallaAjustesPsicologo(
@@ -48,7 +54,10 @@ fun PantallaAjustesPsicologo(
         },
         contenido = {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
@@ -101,9 +110,50 @@ fun PantallaAjustesPsicologo(
                             valor = uiState.descripcion,
                             alCambiar = viewModel::alCambiarDescripcion,
                             etiqueta = "Descripción",
-                            placeholder = "Cuéntale a tus pacientes tu enfoque, especialidad, etc.",
+                            placeholder = "Cuéntale a tus pacientes tu enfoque, especialidades, etc.",
                             singleLine = false,
                             minLines = 4,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                text = "Especialidades",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Text(
+                                text = "${uiState.especialidades.size}/${LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        EditorEspecialidadesApp(
+                            especialidades = uiState.especialidades,
+                            especialidadInput = uiState.especialidadInput,
+                            errorEspecialidadInput = uiState.errorEspecialidadInput,
+                            habilitado = !uiState.guardando,
+                            maxEspecialidades = LimiteCaracteresRegistroPsicologo.MAX_ESPECIALIDADES,
+                            alCambiarInput = viewModel::alCambiarEspecialidadInput,
+                            alAnadir = viewModel::alAnadirEspecialidad,
+                            alEliminar = viewModel::alEliminarEspecialidad,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }

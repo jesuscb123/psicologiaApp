@@ -9,7 +9,6 @@ data class Psicologo(
     val apellidos: String,
     val fotoPerfilUrl: String?,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
 )
-

@@ -7,7 +7,6 @@ data class PsicologoRequest(
     override val apellidos: String,
     override val fotoPerfilUrl: String? = null,
     val numeroColegiado: String,
-    val especialidad: String,
+    val especialidades: List<String>,
     val descripcion: String? = null,
 ) : UsuarioRequest
-

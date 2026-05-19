@@ -20,6 +20,8 @@ interface PsicologoRepository {
 
     suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo>
 
+    suspend fun actualizarMisEspecialidades(especialidades: List<String>): Result<Psicologo>
+
     fun observarPsicologos(): Flow<List<Psicologo>>
 
     fun observarPacientesDePsicologo(): Flow<List<Paciente>>

@@ -28,7 +28,10 @@ class AjustesPsicologoViewModel @Inject constructor(
 
     fun recargar() {
         viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null, mensajeOk = null) }
+            val hayDatos = _uiState.value.yaSeHaCargado
+            if (!hayDatos) {
+                _uiState.update { it.copy(cargando = true, mensajeError = null, mensajeOk = null) }
+            }
             getPerfilActualUseCase().fold(
                 onSuccess = { perfil ->
                     if (perfil.rol != RolUsuario.PSICOLOGO) {
@@ -48,6 +51,7 @@ class AjustesPsicologoViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cargando = false,
+                            yaSeHaCargado = true,
                             descripcion = descripcion,
                             descripcionInicial = descripcion,
                             mensajeError = null,

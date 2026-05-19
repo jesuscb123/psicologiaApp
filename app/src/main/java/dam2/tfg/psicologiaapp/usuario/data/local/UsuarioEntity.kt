@@ -10,6 +10,8 @@ data class UsuarioEntity(
     val nombre: String,
     val apellidos: String,
     val fotoPerfilUrl: String?,
-    val rol: String
+    val rol: String,
+    val email: String = "",
+    val psicologoId: Long? = null,
 )
 

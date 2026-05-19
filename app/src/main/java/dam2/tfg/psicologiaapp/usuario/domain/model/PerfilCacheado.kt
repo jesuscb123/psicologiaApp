@@ -7,5 +7,6 @@ data class PerfilCacheado(
     val apellidos: String,
     val fotoPerfilUrl: String?,
     val rol: RolUsuario,
+    val psicologoId: Long? = null,
 )
 

@@ -4,36 +4,47 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
 import dam2.tfg.psicologiaapp.cita.domain.usecase.CancelarCitaUseCase
-import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MisCitasPacienteViewModel @Inject constructor(
-    private val obtenerMisCitasPacienteUseCase: ObtenerMisCitasPacienteUseCase,
+    private val observarMisCitasPacienteUseCase: ObservarMisCitasPacienteUseCase,
+    private val sincronizarMisCitasPacienteUseCase: SincronizarMisCitasPacienteUseCase,
     private val cancelarCitaUseCase: CancelarCitaUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MisCitasPacienteUiState())
     val uiState: StateFlow<MisCitasPacienteUiState> = _uiState
 
+    init {
+        viewModelScope.launch {
+            observarMisCitasPacienteUseCase().collectLatest { lista ->
+                _uiState.update { it.copy(citas = lista) }
+            }
+        }
+    }
+
     fun recargar() {
         viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null) }
-            obtenerMisCitasPacienteUseCase().fold(
-                onSuccess = { lista ->
-                    _uiState.update { it.copy(cargando = false, citas = lista, mensajeError = null) }
-                },
+            val hayDatos = _uiState.value.citas.isNotEmpty()
+            if (!hayDatos) {
+                _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            }
+            sincronizarMisCitasPacienteUseCase().fold(
+                onSuccess = { _uiState.update { it.copy(cargando = false, mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(
                             cargando = false,
-                            citas = emptyList(),
                             mensajeError = error.message ?: "No se pudieron cargar las citas",
                         )
                     }
@@ -46,10 +57,7 @@ class MisCitasPacienteViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, mensajeError = null) }
             cancelarCitaUseCase(citaId).fold(
-                onSuccess = {
-                    _uiState.update { it.copy(cargando = false) }
-                    recargar()
-                },
+                onSuccess = { _uiState.update { it.copy(cargando = false) } },
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(
@@ -57,7 +65,6 @@ class MisCitasPacienteViewModel @Inject constructor(
                             mensajeError = error.message ?: "No se pudo cancelar la cita",
                         )
                     }
-                    recargar()
                 }
             )
         }
@@ -70,4 +77,3 @@ class MisCitasPacienteViewModel @Inject constructor(
     fun puedeCancelar(estado: EstadoCitaCalculado): Boolean =
         estado == EstadoCitaCalculado.ACTIVA
 }
-

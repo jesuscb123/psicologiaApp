@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasDePacienteUseCase
+import dam2.tfg.psicologiaapp.paciente.data.local.PacienteDao
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.GetPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.resumenIa.domain.usecase.GenerarResumenIaPacienteUseCase
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class FichaPacientePsicologoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getPacientesDePsicologoUseCase: GetPacientesDePsicologoUseCase,
+    private val pacienteDao: PacienteDao,
     private val observarNotasDePacienteUseCase: ObservarNotasDePacienteUseCase,
     private val observarTareasDePacienteUseCase: ObservarTareasDePacienteUseCase,
     private val sincronizarNotasDePacienteUseCase: SincronizarNotasDePacienteUseCase,
@@ -37,6 +39,23 @@ class FichaPacientePsicologoViewModel @Inject constructor(
 
     init {
         if (pacienteId != 0L) {
+            // Observe paciente from Room cache (name/photo available instantly on re-entry).
+            viewModelScope.launch {
+                pacienteDao.observarPorId(pacienteId).collectLatest { entity ->
+                    if (entity != null) {
+                        val nombre = listOf(entity.nombre, entity.apellidos)
+                            .filter { it.isNotBlank() }.joinToString(" ")
+                        if (nombre.isNotBlank()) {
+                            _uiState.update {
+                                it.copy(
+                                    nombreUsuarioPaciente = nombre,
+                                    fotoPerfilUrlPaciente = entity.fotoPerfilUrl,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             viewModelScope.launch {
                 observarNotasDePacienteUseCase(pacienteId)
                     .collectLatest { notas ->
@@ -68,7 +87,10 @@ class FichaPacientePsicologoViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            val hayDatos = _uiState.value.nombreUsuarioPaciente.isNotEmpty()
+            if (!hayDatos) {
+                _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            }
 
             val pacienteEnLista = getPacientesDePsicologoUseCase().fold(
                 onSuccess = { lista -> lista.find { it.idPaciente == pacienteId } },

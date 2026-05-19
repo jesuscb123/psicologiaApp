@@ -27,6 +27,7 @@ import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotifi
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.HomePacienteViewModel
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewModel
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAjustesPaciente
@@ -49,6 +50,9 @@ fun GrafoPacienteNavegacion(
 ) {
     val menuViewModel = hiltViewModel<MenuLateralPerfilViewModel>(entradaGrafo)
     val menuUi by menuViewModel.uiState.collectAsState()
+    // HomePacienteViewModel compartido entre HOME, NOTAS y TAREAS para evitar
+    // re-instancias y re-cargas al navegar entre ellas.
+    val homePacienteViewModel = hiltViewModel<HomePacienteViewModel>(entradaGrafo)
     val navPaciente = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -181,6 +185,7 @@ fun GrafoPacienteNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    viewModel = homePacienteViewModel,
                 )
             }
 
@@ -214,6 +219,7 @@ fun GrafoPacienteNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    viewModel = homePacienteViewModel,
                 )
             }
 
@@ -235,6 +241,7 @@ fun GrafoPacienteNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    viewModel = homePacienteViewModel,
                 )
             }
 

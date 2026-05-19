@@ -8,7 +8,7 @@ data class MenuLateralPerfilUiState(
     /** Incrementa al cambiar la foto para que Coil no muestre una imagen en caché obsoleta. */
     val revisionCacheFoto: Long = 0L,
     val modoTema: ModoTemaApp = ModoTemaApp.SeguirSistema,
-    val cargandoPerfil: Boolean = true,
+    val cargandoPerfil: Boolean = false,
     val cargandoFotoPerfil: Boolean = false,
     val mensajeError: String? = null,
     val eventoNavegacion: EventoNavegacionMenuLateral? = null,

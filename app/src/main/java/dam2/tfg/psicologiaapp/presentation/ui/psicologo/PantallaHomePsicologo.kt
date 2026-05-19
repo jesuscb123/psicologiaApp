@@ -53,7 +53,7 @@ fun PantallaHomePsicologo(
     viewModel: HomePsicologoViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
-        viewModel.recargar()
+        viewModel.sincronizarSiProcede()
     }
 
     val uiState by viewModel.uiState.collectAsState()

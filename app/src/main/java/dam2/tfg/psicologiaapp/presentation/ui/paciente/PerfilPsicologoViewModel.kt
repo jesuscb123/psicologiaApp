@@ -3,22 +3,39 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.paciente.domain.usecase.AsignarPsicologoUseCase
-import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ListarPsicologosUseCase
+import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPsicologosUseCase
+import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPsicologosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PerfilPsicologoViewModel @Inject constructor(
-    private val listarPsicologosUseCase: ListarPsicologosUseCase,
+    private val observarPsicologosUseCase: ObservarPsicologosUseCase,
+    private val sincronizarPsicologosUseCase: SincronizarPsicologosUseCase,
     private val asignarPsicologoUseCase: AsignarPsicologoUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PerfilPsicologoUiState())
     val uiState: StateFlow<PerfilPsicologoUiState> = _uiState
+
+    private var psicologoIdActual: Long? = null
+
+    init {
+        viewModelScope.launch {
+            observarPsicologosUseCase().collectLatest { lista ->
+                val id = psicologoIdActual ?: return@collectLatest
+                val psicologo = lista.firstOrNull { it.usuarioId == id || it.idEntidadPsicologo == id }
+                if (psicologo != null) {
+                    _uiState.update { it.copy(cargando = false, psicologo = psicologo, mensajeError = null) }
+                }
+            }
+        }
+    }
 
     fun cargar(psicologoId: String) {
         val idLong = psicologoId.toLongOrNull()
@@ -26,22 +43,16 @@ class PerfilPsicologoViewModel @Inject constructor(
             _uiState.update { it.copy(mensajeError = "Id de psicólogo inválido") }
             return
         }
+        psicologoIdActual = idLong
 
         viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null) }
-            val resultado = listarPsicologosUseCase()
-            resultado.fold(
-                onSuccess = { lista ->
-                    val psicologo = lista.firstOrNull { it.usuarioId == idLong }
-                    _uiState.update {
-                        it.copy(
-                            cargando = false,
-                            psicologo = psicologo,
-                            mensajeError = if (psicologo == null) "No se encontró el psicólogo" else null
-                        )
-                    }
-                },
-                onFailure = { error ->
+            val hayDatos = _uiState.value.psicologo != null
+            if (!hayDatos) {
+                _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            }
+            // Sync in background; Room Flow will update via init collector.
+            sincronizarPsicologosUseCase().onFailure { error ->
+                if (!hayDatos) {
                     _uiState.update {
                         it.copy(
                             cargando = false,
@@ -49,7 +60,7 @@ class PerfilPsicologoViewModel @Inject constructor(
                         )
                     }
                 }
-            )
+            }
         }
     }
 
@@ -88,4 +99,3 @@ class PerfilPsicologoViewModel @Inject constructor(
         }
     }
 }
-

@@ -9,9 +9,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dam2.tfg.psicologiaapp.cita.data.local.CitaDao
 import dam2.tfg.psicologiaapp.data.local.PsicologiaAppDatabase
 import dam2.tfg.psicologiaapp.nota.data.local.NotaDao
+import dam2.tfg.psicologiaapp.paciente.data.local.PacienteDao
+import dam2.tfg.psicologiaapp.psicologo.data.local.PsicologoDao
 import dam2.tfg.psicologiaapp.tarea.data.local.TareaDao
+import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioDao
 import javax.inject.Singleton
 
 @Module
@@ -88,6 +92,46 @@ object BaseDeDatosModulo {
         }
     }
 
+    private val migracion_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // usuarios: add email and psicologoId
+            db.execSQL("ALTER TABLE usuarios ADD COLUMN email TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE usuarios ADD COLUMN psicologoId INTEGER")
+
+            // pacientes: add extra fields
+            db.execSQL("ALTER TABLE pacientes ADD COLUMN firebaseUid TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE pacientes ADD COLUMN nombre TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE pacientes ADD COLUMN apellidos TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE pacientes ADD COLUMN fotoPerfilUrl TEXT")
+
+            // psicologos: add extra fields
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN idEntidadPsicologo INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN firebaseUid TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN nombre TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN apellidos TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN fotoPerfilUrl TEXT")
+            db.execSQL("ALTER TABLE psicologos ADD COLUMN descripcion TEXT")
+
+            // citas: new table
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS citas (
+                    id INTEGER NOT NULL PRIMARY KEY,
+                    inicio TEXT NOT NULL,
+                    fin TEXT NOT NULL,
+                    psicologoId INTEGER NOT NULL,
+                    pacienteId INTEGER NOT NULL,
+                    nombrePsicologo TEXT NOT NULL,
+                    nombrePaciente TEXT NOT NULL,
+                    estadoPersistido TEXT NOT NULL,
+                    estadoCalculado TEXT NOT NULL,
+                    esDePaciente INTEGER NOT NULL DEFAULT 1
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun proporcionarBaseDeDatos(
@@ -98,7 +142,7 @@ object BaseDeDatosModulo {
             PsicologiaAppDatabase::class.java,
             "psicologia_app.db"
         )
-            .addMigrations(migracion_1_2, migracion_2_3, migracion_3_4)
+            .addMigrations(migracion_1_2, migracion_2_3, migracion_3_4, migracion_4_5)
             .build()
 
     @Provides
@@ -110,5 +154,25 @@ object BaseDeDatosModulo {
     fun proporcionarTareaDao(
         baseDeDatos: PsicologiaAppDatabase,
     ): TareaDao = baseDeDatos.tareaDao()
+
+    @Provides
+    fun proporcionarCitaDao(
+        baseDeDatos: PsicologiaAppDatabase,
+    ): CitaDao = baseDeDatos.citaDao()
+
+    @Provides
+    fun proporcionarPacienteDao(
+        baseDeDatos: PsicologiaAppDatabase,
+    ): PacienteDao = baseDeDatos.pacienteDao()
+
+    @Provides
+    fun proporcionarPsicologoDao(
+        baseDeDatos: PsicologiaAppDatabase,
+    ): PsicologoDao = baseDeDatos.psicologoDao()
+
+    @Provides
+    fun proporcionarUsuarioDao(
+        baseDeDatos: PsicologiaAppDatabase,
+    ): UsuarioDao = baseDeDatos.usuarioDao()
 }
 

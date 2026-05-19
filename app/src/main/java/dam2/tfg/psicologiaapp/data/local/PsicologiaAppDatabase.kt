@@ -2,6 +2,8 @@ package dam2.tfg.psicologiaapp.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import dam2.tfg.psicologiaapp.cita.data.local.CitaDao
+import dam2.tfg.psicologiaapp.cita.data.local.CitaEntity
 import dam2.tfg.psicologiaapp.nota.data.local.NotaDao
 import dam2.tfg.psicologiaapp.nota.data.local.NotaEntity
 import dam2.tfg.psicologiaapp.paciente.data.local.PacienteDao
@@ -23,8 +25,9 @@ import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioEntity
         PsicologoEntity::class,
         NotaEntity::class,
         TareaEntity::class,
+        CitaEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class PsicologiaAppDatabase : RoomDatabase() {
@@ -38,5 +41,7 @@ abstract class PsicologiaAppDatabase : RoomDatabase() {
     abstract fun notaDao(): NotaDao
 
     abstract fun tareaDao(): TareaDao
+
+    abstract fun citaDao(): CitaDao
 }
 

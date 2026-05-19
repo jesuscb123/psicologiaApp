@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.cita.domain.repository
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.cita.domain.model.DisponibilidadDia
 import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
 
 interface CitaRepository {
 
@@ -15,5 +16,13 @@ interface CitaRepository {
     suspend fun getMisCitasPsicologo(): Result<List<Cita>>
 
     suspend fun cancelarCita(citaId: Long): Result<Cita>
+
+    fun observarMisCitasPaciente(): Flow<List<Cita>>
+
+    fun observarMisCitasPsicologo(): Flow<List<Cita>>
+
+    suspend fun sincronizarMisCitasPaciente(): Result<Unit>
+
+    suspend fun sincronizarMisCitasPsicologo(): Result<Unit>
 }
 

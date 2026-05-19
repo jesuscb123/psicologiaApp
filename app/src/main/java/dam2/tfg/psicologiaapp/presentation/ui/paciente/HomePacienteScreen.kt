@@ -78,7 +78,7 @@ fun PantallaHomePaciente(
     viewModel: HomePacienteViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
-        viewModel.recargar()
+        viewModel.sincronizarSiProcede()
     }
 
     val uiState by viewModel.uiState.collectAsState()

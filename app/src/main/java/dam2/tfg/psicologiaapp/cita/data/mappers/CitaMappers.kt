@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.cita.data.mappers
 
+import dam2.tfg.psicologiaapp.cita.data.local.CitaEntity
 import dam2.tfg.psicologiaapp.cita.data.remote.CitaResponseDto
 import dam2.tfg.psicologiaapp.cita.data.remote.DisponibilidadResponseDto
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
@@ -28,6 +29,33 @@ fun CitaResponseDto.toDomain(): Cita = Cita(
     pacienteId = paciente.idPaciente,
     nombrePsicologo = listOf(psicologo.nombre, psicologo.apellidos).filter { it.isNotBlank() }.joinToString(" "),
     nombrePaciente = listOf(paciente.nombre, paciente.apellidos).filter { it.isNotBlank() }.joinToString(" "),
+    estadoPersistido = runCatching { EstadoCitaPersistido.valueOf(estadoPersistido) }
+        .getOrElse { EstadoCitaPersistido.RESERVADA },
+    estadoCalculado = runCatching { EstadoCitaCalculado.valueOf(estadoCalculado) }
+        .getOrElse { EstadoCitaCalculado.ACTIVA },
+)
+
+fun CitaResponseDto.toEntity(esDePaciente: Boolean): CitaEntity = CitaEntity(
+    id = id,
+    inicio = inicio,
+    fin = fin,
+    psicologoId = psicologo.idEntidadPsicologo,
+    pacienteId = paciente.idPaciente,
+    nombrePsicologo = listOf(psicologo.nombre, psicologo.apellidos).filter { it.isNotBlank() }.joinToString(" "),
+    nombrePaciente = listOf(paciente.nombre, paciente.apellidos).filter { it.isNotBlank() }.joinToString(" "),
+    estadoPersistido = estadoPersistido,
+    estadoCalculado = estadoCalculado,
+    esDePaciente = esDePaciente,
+)
+
+fun CitaEntity.toDomain(): Cita = Cita(
+    id = id,
+    inicio = inicio,
+    fin = fin,
+    psicologoId = psicologoId,
+    pacienteId = pacienteId,
+    nombrePsicologo = nombrePsicologo,
+    nombrePaciente = nombrePaciente,
     estadoPersistido = runCatching { EstadoCitaPersistido.valueOf(estadoPersistido) }
         .getOrElse { EstadoCitaPersistido.RESERVADA },
     estadoCalculado = runCatching { EstadoCitaCalculado.valueOf(estadoCalculado) }

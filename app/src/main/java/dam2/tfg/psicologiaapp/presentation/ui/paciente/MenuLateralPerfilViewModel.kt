@@ -13,6 +13,7 @@ import dam2.tfg.psicologiaapp.preferencias.domain.usecase.ObservarModoTemaUseCas
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.model.nombreCompleto
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.ObservarPerfilCacheadoUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarFotoPerfilUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +30,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class MenuLateralPerfilViewModel @Inject constructor(
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
+    private val observarPerfilCacheadoUseCase: ObservarPerfilCacheadoUseCase,
     private val observarModoTemaUseCase: ObservarModoTemaUseCase,
     private val establecerModoTemaUseCase: EstablecerModoTemaUseCase,
     private val cerrarSesionUseCase: CerrarSesionUseCase,
@@ -50,7 +53,32 @@ class MenuLateralPerfilViewModel @Inject constructor(
                 _uiState.update { it.copy(modoTema = modo) }
             }
         }
-        recargarPerfil()
+        viewModelScope.launch {
+            observarPerfilCacheadoUseCase().collectLatest { perfil ->
+                if (perfil != null) {
+                    val nombre = listOf(perfil.nombre, perfil.apellidos)
+                        .filter { it.isNotBlank() }.joinToString(" ")
+                    _uiState.update { prev ->
+                        val nuevaUrl = perfil.fotoPerfilUrl
+                        val revision = if (nuevaUrl != prev.fotoPerfilUrl) {
+                            prev.revisionCacheFoto + 1L
+                        } else {
+                            prev.revisionCacheFoto
+                        }
+                        prev.copy(
+                            cargandoPerfil = false,
+                            nombreUsuario = nombre,
+                            fotoPerfilUrl = nuevaUrl,
+                            revisionCacheFoto = revision,
+                        )
+                    }
+                }
+            }
+        }
+        // Background refresh: update cache from network without blocking UI.
+        viewModelScope.launch {
+            recargarPerfilEnBackground()
+        }
     }
 
     fun procesarUriNuevaFoto(uri: Uri) {
@@ -113,48 +141,52 @@ class MenuLateralPerfilViewModel @Inject constructor(
         }
     }
 
+    private suspend fun recargarPerfilEnBackground() {
+        getPerfilActualUseCase().fold(
+            onSuccess = { perfil ->
+                when (perfil.rol) {
+                    RolUsuario.PACIENTE, RolUsuario.PSICOLOGO -> {
+                        _uiState.update { prev ->
+                            val nuevaUrl = perfil.fotoPerfilUrl
+                            val revision = if (nuevaUrl != prev.fotoPerfilUrl) {
+                                prev.revisionCacheFoto + 1L
+                            } else {
+                                prev.revisionCacheFoto
+                            }
+                            prev.copy(
+                                cargandoPerfil = false,
+                                nombreUsuario = perfil.nombreCompleto(),
+                                fotoPerfilUrl = nuevaUrl,
+                                revisionCacheFoto = revision,
+                                mensajeError = null,
+                            )
+                        }
+                    }
+                    else -> {
+                        _uiState.update {
+                            it.copy(
+                                cargandoPerfil = false,
+                                mensajeError = "Perfil no válido",
+                            )
+                        }
+                    }
+                }
+            },
+            onFailure = { error ->
+                _uiState.update {
+                    it.copy(
+                        cargandoPerfil = false,
+                        mensajeError = error.message ?: "No se pudo cargar el perfil",
+                    )
+                }
+            },
+        )
+    }
+
     fun recargarPerfil() {
         viewModelScope.launch {
-            _uiState.update { it.copy(cargandoPerfil = true, mensajeError = null) }
-            getPerfilActualUseCase().fold(
-                onSuccess = { perfil ->
-                    when (perfil.rol) {
-                        RolUsuario.PACIENTE, RolUsuario.PSICOLOGO -> {
-                            _uiState.update { prev ->
-                                val nuevaUrl = perfil.fotoPerfilUrl
-                                val revision = if (nuevaUrl != prev.fotoPerfilUrl) {
-                                    prev.revisionCacheFoto + 1L
-                                } else {
-                                    prev.revisionCacheFoto
-                                }
-                                prev.copy(
-                                    cargandoPerfil = false,
-                                    nombreUsuario = perfil.nombreCompleto(),
-                                    fotoPerfilUrl = nuevaUrl,
-                                    revisionCacheFoto = revision,
-                                    mensajeError = null,
-                                )
-                            }
-                        }
-                        else -> {
-                            _uiState.update {
-                                it.copy(
-                                    cargandoPerfil = false,
-                                    mensajeError = "Perfil no válido",
-                                )
-                            }
-                        }
-                    }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            cargandoPerfil = false,
-                            mensajeError = error.message ?: "No se pudo cargar el perfil",
-                        )
-                    }
-                },
-            )
+            _uiState.update { it.copy(cargandoPerfil = _uiState.value.nombreUsuario.isEmpty(), mensajeError = null) }
+            recargarPerfilEnBackground()
         }
     }
 

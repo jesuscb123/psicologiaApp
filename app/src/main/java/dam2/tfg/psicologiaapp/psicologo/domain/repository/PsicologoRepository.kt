@@ -3,6 +3,8 @@ package dam2.tfg.psicologiaapp.psicologo.domain.repository
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * Contrato del repositorio de psicólogos en dominio.
  */
@@ -17,4 +19,8 @@ interface PsicologoRepository {
     suspend fun getPacientesDePsicologo(): Result<List<Paciente>>
 
     suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo>
+
+    fun observarPsicologos(): Flow<List<Psicologo>>
+
+    fun observarPacientesDePsicologo(): Flow<List<Paciente>>
 }

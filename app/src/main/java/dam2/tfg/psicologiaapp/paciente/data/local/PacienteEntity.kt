@@ -7,6 +7,10 @@ import androidx.room.PrimaryKey
 data class PacienteEntity(
     @PrimaryKey val idPaciente: Long,
     val usuarioId: Long,
-    val psicologoId: Long?
+    val psicologoId: Long?,
+    val firebaseUid: String = "",
+    val nombre: String = "",
+    val apellidos: String = "",
+    val fotoPerfilUrl: String? = null,
 )
 

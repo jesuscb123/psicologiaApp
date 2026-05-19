@@ -4,19 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
-import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.BorrarNotaUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
-import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
-import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
-import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ListarPsicologosUseCase
+import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPsicologosUseCase
+import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPsicologosUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.AceptarTareaUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.MarcarTareaRealizadaUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.ObservarTareasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasPacienteActualUseCase
-import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.GetPerfilActualUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.ObservarPerfilCacheadoUseCase
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -31,129 +32,125 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomePacienteViewModel @Inject constructor(
+    private val observarPerfilCacheadoUseCase: ObservarPerfilCacheadoUseCase,
+    private val sincronizarPerfilActualUseCase: SincronizarPerfilActualUseCase,
     private val getPerfilActualUseCase: GetPerfilActualUseCase,
-    private val listarPsicologosUseCase: ListarPsicologosUseCase,
+    private val observarPsicologosUseCase: ObservarPsicologosUseCase,
+    private val sincronizarPsicologosUseCase: SincronizarPsicologosUseCase,
     private val observarNotasPacienteActualUseCase: ObservarNotasPacienteActualUseCase,
     private val observarTareasPacienteActualUseCase: ObservarTareasPacienteActualUseCase,
     private val sincronizarNotasPacienteActualUseCase: SincronizarNotasPacienteActualUseCase,
     private val sincronizarTareasPacienteActualUseCase: SincronizarTareasPacienteActualUseCase,
+    private val observarMisCitasPacienteUseCase: ObservarMisCitasPacienteUseCase,
+    private val sincronizarMisCitasPacienteUseCase: SincronizarMisCitasPacienteUseCase,
     private val aceptarTareaUseCase: AceptarTareaUseCase,
     private val marcarTareaRealizadaUseCase: MarcarTareaRealizadaUseCase,
     private val borrarNotaUseCase: BorrarNotaUseCase,
-    private val obtenerMisCitasPacienteUseCase: ObtenerMisCitasPacienteUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomePacienteUiState())
     val uiState: StateFlow<HomePacienteUiState> = _uiState
 
-    private var trabajoRecarga: Job? = null
+    private var trabajoSincronizacion: Job? = null
 
     init {
         viewModelScope.launch {
-            observarNotasPacienteActualUseCase()
-                .collectLatest { notas ->
-                    _uiState.update { it.copy(notas = notas) }
-                }
+            observarPerfilCacheadoUseCase().collectLatest { perfil ->
+                if (perfil == null) return@collectLatest
+                val pacientePerfil = dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil(
+                    usuarioId = perfil.usuarioId,
+                    firebaseUid = perfil.firebaseUid,
+                    nombre = perfil.nombre,
+                    apellidos = perfil.apellidos,
+                    email = "",
+                    fotoPerfilUrl = perfil.fotoPerfilUrl,
+                    psicologoId = perfil.psicologoId,
+                )
+                _uiState.update { it.copy(perfilPaciente = pacientePerfil) }
+            }
         }
         viewModelScope.launch {
-            observarTareasPacienteActualUseCase()
-                .collectLatest { tareas ->
-                    _uiState.update { it.copy(tareas = tareas) }
-                }
+            observarPsicologosUseCase().collectLatest { lista ->
+                val psicologoAsignado = obtenerPsicologoAsignado(lista, _uiState.value.perfilPaciente?.psicologoId)
+                _uiState.update { it.copy(listaPsicologos = lista, psicologoAsignado = psicologoAsignado) }
+            }
+        }
+        viewModelScope.launch {
+            observarNotasPacienteActualUseCase().collectLatest { notas ->
+                _uiState.update { it.copy(notas = notas) }
+            }
+        }
+        viewModelScope.launch {
+            observarTareasPacienteActualUseCase().collectLatest { tareas ->
+                _uiState.update { it.copy(tareas = tareas) }
+            }
+        }
+        viewModelScope.launch {
+            observarMisCitasPacienteUseCase().collectLatest { citas ->
+                val proxima = calcularProximaCitaActiva(citas)
+                _uiState.update { it.copy(proximaCita = proxima) }
+            }
         }
     }
 
-    fun recargar() {
-        trabajoRecarga?.cancel()
-        trabajoRecarga = viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null) }
+    /**
+     * Sincroniza datos con el servidor. Solo muestra el indicador de carga
+     * si no hay datos en caché local todavía (primera carga tras login).
+     */
+    fun sincronizarSiProcede() {
+        trabajoSincronizacion?.cancel()
+        trabajoSincronizacion = viewModelScope.launch {
+            val hayDatos = _uiState.value.perfilPaciente != null
+            if (!hayDatos) {
+                _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            }
 
-            val resultadoPerfil = getPerfilActualUseCase()
-            ensureActive()
-            val resultadoPsicologos = listarPsicologosUseCase()
+            // Sincronizar perfil: esto guarda en Room y dispara el Flow en init.
+            val resultadoPerfil = sincronizarPerfilActualUseCase()
             ensureActive()
 
-            var perfilPaciente: PacientePerfil? = null
-            resultadoPerfil.fold(
-                onSuccess = { perfil ->
-                    if (perfil.rol != RolUsuario.PACIENTE) {
-                        _uiState.update {
-                            it.copy(
-                                cargando = false,
-                                mensajeError = "Perfil no válido para paciente"
-                            )
-                        }
-                        return@launch
-                    }
-                    perfilPaciente = perfil as? PacientePerfil
-                    if (perfilPaciente == null) {
-                        _uiState.update {
-                            it.copy(
-                                cargando = false,
-                                mensajeError = "No se pudo cargar el perfil de paciente"
-                            )
-                        }
-                        return@launch
-                    }
-                },
-                onFailure = { error ->
+            if (!hayDatos && resultadoPerfil.isFailure) {
+                // Como alternativa, intentar con getPerfilActualUseCase (sin guardar en caché)
+                val perfilDirecto = getPerfilActualUseCase().getOrNull()
+                if (perfilDirecto == null) {
                     _uiState.update {
-                        it.copy(
-                            cargando = false,
-                            mensajeError = error.message ?: "No se pudo cargar el perfil"
-                        )
+                        it.copy(cargando = false, mensajeError = "No se pudo cargar el perfil")
                     }
                     return@launch
                 }
-            )
+                // Actualizar estado directamente si Room Flow no ha emitido todavía
+                val perfil = perfilDirecto as? dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
+                if (perfil != null && _uiState.value.perfilPaciente == null) {
+                    _uiState.update { it.copy(perfilPaciente = perfil) }
+                }
+            }
+            ensureActive()
 
-            val listaPsicologos = resultadoPsicologos.getOrElse { emptyList() }
-            val psicologoAsignado = obtenerPsicologoAsignado(
-                listaPsicologos = listaPsicologos,
-                psicologoId = perfilPaciente?.psicologoId
-            )
+            // PsicologoId puede venir de la caché o del perfil recién obtenido
+            val psicologoId = _uiState.value.perfilPaciente?.psicologoId
 
-            _uiState.update {
-                it.copy(
-                    perfilPaciente = perfilPaciente,
-                    listaPsicologos = listaPsicologos,
-                    psicologoAsignado = psicologoAsignado,
-                    proximaCita = null,
-                    mensajeError = resultadoPsicologos.exceptionOrNull()?.message,
-                )
+            // Sync psicólogos siempre (para tener lista actualizada en Room)
+            val errPsicologos = sincronizarPsicologosUseCase().exceptionOrNull()
+            ensureActive()
+            if (errPsicologos != null && _uiState.value.listaPsicologos.isEmpty()) {
+                _uiState.update { it.copy(mensajeError = "No se pudo cargar la lista de profesionales") }
             }
 
-            if (perfilPaciente?.psicologoId != null) {
-                val resultadoNotas = sincronizarNotasPacienteActualUseCase()
+            if (psicologoId != null) {
+                sincronizarNotasPacienteActualUseCase()
                 ensureActive()
-                val resultadoTareas = sincronizarTareasPacienteActualUseCase()
+                sincronizarTareasPacienteActualUseCase()
                 ensureActive()
-                val resultadoCitas = obtenerMisCitasPacienteUseCase()
-                ensureActive()
-                val proximaCita = resultadoCitas.getOrNull()?.let { calcularProximaCitaActiva(it) }
-                val errNotas = resultadoNotas.exceptionOrNull()
-                val errTareas = resultadoTareas.exceptionOrNull()
-                val errCitas = resultadoCitas.exceptionOrNull()
-                val textoErrorCarga = buildList {
-                    errNotas?.let { add(it.message ?: "No se pudieron cargar las notas") }
-                    errTareas?.let { add(it.message ?: "No se pudieron cargar las tareas") }
-                    errCitas?.let { add(it.message ?: "No se pudieron cargar las citas") }
-                }.takeIf { it.isNotEmpty() }?.joinToString(" · ")
+                val errCitas = sincronizarMisCitasPacienteUseCase().exceptionOrNull()
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        proximaCita = proximaCita,
-                        mensajeError = textoErrorCarga ?: it.mensajeError,
+                        mensajeError = errCitas?.message,
                     )
                 }
             } else {
                 _uiState.update {
-                    it.copy(
-                        cargando = false,
-                        notas = emptyList(),
-                        tareas = emptyList(),
-                        proximaCita = null,
-                    )
+                    it.copy(cargando = false, notas = emptyList(), tareas = emptyList(), proximaCita = null)
                 }
             }
         }
@@ -165,9 +162,7 @@ class HomePacienteViewModel @Inject constructor(
                 onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
-                        it.copy(
-                            mensajeError = error.message ?: "No se pudo aceptar la tarea"
-                        )
+                        it.copy(mensajeError = error.message ?: "No se pudo aceptar la tarea")
                     }
                 }
             )
@@ -196,9 +191,7 @@ class HomePacienteViewModel @Inject constructor(
                 onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
-                        it.copy(
-                            mensajeError = error.message ?: "No se pudo eliminar la nota"
-                        )
+                        it.copy(mensajeError = error.message ?: "No se pudo eliminar la nota")
                     }
                 }
             )
@@ -206,9 +199,9 @@ class HomePacienteViewModel @Inject constructor(
     }
 
     private fun obtenerPsicologoAsignado(
-        listaPsicologos: List<Psicologo>,
+        listaPsicologos: List<dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo>,
         psicologoId: Long?,
-    ): Psicologo? {
+    ): dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo? {
         if (psicologoId == null) return null
         return listaPsicologos.firstOrNull { it.idEntidadPsicologo == psicologoId }
     }
@@ -229,3 +222,5 @@ class HomePacienteViewModel @Inject constructor(
     }
 }
 
+private fun <T, R> Result<T>.map(transform: (T) -> R): Result<R> =
+    fold(onSuccess = { Result.success(transform(it)) }, onFailure = { Result.failure(it) })

@@ -3,7 +3,8 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo
 data class AjustesPsicologoUiState(
     val descripcion: String = "",
     val descripcionInicial: String = "",
-    val cargando: Boolean = true,
+    val cargando: Boolean = false,
+    val yaSeHaCargado: Boolean = false,
     val guardando: Boolean = false,
     val mensajeError: String? = null,
     val mensajeOk: String? = null,

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDao {
@@ -13,6 +14,9 @@ interface UsuarioDao {
 
     @Query("SELECT * FROM usuarios WHERE firebaseUid = :firebaseUid LIMIT 1")
     suspend fun obtenerPorFirebaseUid(firebaseUid: String): UsuarioEntity?
+
+    @Query("SELECT * FROM usuarios LIMIT 1")
+    fun observarPrimero(): Flow<UsuarioEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardar(usuario: UsuarioEntity)

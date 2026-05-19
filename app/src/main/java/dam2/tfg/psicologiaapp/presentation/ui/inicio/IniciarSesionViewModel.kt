@@ -255,6 +255,9 @@ class IniciarSesionViewModel @Inject constructor(
             "No se pudo enviar el correo de restablecimiento. Inténtalo de nuevo."
         private const val MENSAJE_ERROR_VERIFICAR_CORREO_BACKEND =
             "No se pudo verificar el correo en el servidor. Inténtalo de nuevo."
+        /** Mensaje neutro: no revela si el usuario estaba o no en Firebase (anti-enumeración). */
+        private const val MENSAJE_ERROR_USUARIO_NO_EXISTE =
+            "Si el correo está registrado, recibirás un enlace de recuperación."
         private const val MENSAJE_ERROR_CREDENCIALES_LOGIN =
             "Correo o contraseña incorrectos."
         private const val MENSAJE_ERROR_RED_LOGIN =

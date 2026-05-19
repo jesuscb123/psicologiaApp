@@ -1,5 +1,7 @@
 package dam2.tfg.psicologiaapp.usuario.data.mappers
 
+import dam2.tfg.psicologiaapp.paciente.domain.model.PacientePerfil
+import dam2.tfg.psicologiaapp.psicologo.domain.model.PsicologoPerfil
 import dam2.tfg.psicologiaapp.usuario.data.local.UsuarioEntity
 import dam2.tfg.psicologiaapp.usuario.domain.model.PerfilCacheado
 import dam2.tfg.psicologiaapp.usuario.domain.model.RolUsuario
@@ -24,6 +26,7 @@ fun UsuarioEntity.toPerfilCacheado(): PerfilCacheado = PerfilCacheado(
     apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     rol = rol.aRolUsuario(),
+    psicologoId = psicologoId,
 )
 
 fun UsuarioPerfil.toEntityCache(): UsuarioEntity = UsuarioEntity(
@@ -33,5 +36,34 @@ fun UsuarioPerfil.toEntityCache(): UsuarioEntity = UsuarioEntity(
     apellidos = apellidos,
     fotoPerfilUrl = fotoPerfilUrl,
     rol = rol.aStringRol(),
+    email = email,
+    psicologoId = (this as? PacientePerfil)?.psicologoId,
 )
+
+fun UsuarioEntity.toPacientePerfil(): PacientePerfil? {
+    if (rol.aRolUsuario() != RolUsuario.PACIENTE) return null
+    return PacientePerfil(
+        usuarioId = usuarioId,
+        firebaseUid = firebaseUid,
+        nombre = nombre,
+        apellidos = apellidos,
+        email = email,
+        fotoPerfilUrl = fotoPerfilUrl,
+        psicologoId = psicologoId,
+    )
+}
+
+fun UsuarioEntity.toPsicologoPerfil(): PsicologoPerfil? {
+    if (rol.aRolUsuario() != RolUsuario.PSICOLOGO) return null
+    return PsicologoPerfil(
+        usuarioId = usuarioId,
+        firebaseUid = firebaseUid,
+        nombre = nombre,
+        apellidos = apellidos,
+        email = email,
+        fotoPerfilUrl = fotoPerfilUrl,
+        numeroColegiado = "",
+        especialidad = "",
+    )
+}
 

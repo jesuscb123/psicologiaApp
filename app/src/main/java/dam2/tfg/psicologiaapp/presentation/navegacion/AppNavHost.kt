@@ -17,9 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.ui.inicio.PantallaIniciarSesion
-import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPaciente
-import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaRegistroPsicologo
-import dam2.tfg.psicologiaapp.presentation.ui.registro.PantallaSeleccionRolRegistro
+import dam2.tfg.psicologiaapp.presentation.ui.registro.paciente.PantallaRegistroPaciente
+import dam2.tfg.psicologiaapp.presentation.ui.registro.psicologo.PantallaRegistroPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.registro.seleccionRol.PantallaSeleccionRolRegistro
 import dam2.tfg.psicologiaapp.presentation.ui.splash.DestinoSesion
 import dam2.tfg.psicologiaapp.presentation.ui.splash.PantallaSplash
 import dam2.tfg.psicologiaapp.presentation.ui.splash.SesionArranqueViewModel

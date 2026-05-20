@@ -26,20 +26,20 @@ import dam2.tfg.psicologiaapp.notificaciones.presentation.DestinoPendienteNotifi
 import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotificacionesUnaVez
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.HomePacienteViewModel
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewModel
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAjustesPaciente
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAnadirNota
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.EventoNavegacionMenuLateral
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.home.HomePacienteViewModel
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.MenuLateralPerfilViewModel
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.acerca.PantallaAcercaDePaciente
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.ajustes.PantallaAjustesPaciente
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.anadirNota.PantallaAnadirNota
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasMenuScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.MisCitasPacienteScreen
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.NotasPacienteScreen
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.home.NotasPacienteScreen
 import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaHomePaciente
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaPerfilPsicologo
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.TareasPacienteScreen
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.home.PantallaHomePaciente
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.perfilPsicologo.PantallaPerfilPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.home.TareasPacienteScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

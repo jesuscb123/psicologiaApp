@@ -26,15 +26,15 @@ import dam2.tfg.psicologiaapp.notificaciones.presentation.DestinoPendienteNotifi
 import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotificacionesUnaVez
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.EventoNavegacionMenuLateral
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.MenuLateralPerfilViewModel
-import dam2.tfg.psicologiaapp.presentation.ui.paciente.PantallaAcercaDePaciente
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAnadirTareaPsicologo
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaAjustesPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.EventoNavegacionMenuLateral
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.MenuLateralPerfilViewModel
+import dam2.tfg.psicologiaapp.presentation.ui.paciente.acerca.PantallaAcercaDePaciente
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.anadirTarea.PantallaAnadirTareaPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.ajustes.PantallaAjustesPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaFichaPacientePsicologo
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.HomePsicologoViewModel
-import dam2.tfg.psicologiaapp.presentation.ui.psicologo.PantallaHomePsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.fichaPaciente.PantallaFichaPacientePsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.home.HomePsicologoViewModel
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.home.PantallaHomePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.citas.MisCitasPsicologoScreen
 import kotlinx.coroutines.launch
 

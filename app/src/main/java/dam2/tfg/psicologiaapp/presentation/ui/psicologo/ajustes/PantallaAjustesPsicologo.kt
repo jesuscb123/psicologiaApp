@@ -1,12 +1,16 @@
 package dam2.tfg.psicologiaapp.presentation.ui.psicologo.ajustes
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,11 +21,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.presentation.components.AvatarPerfilCircularApp
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoBaseApp
 import dam2.tfg.psicologiaapp.presentation.components.EditorEspecialidadesApp
@@ -36,6 +44,9 @@ fun PantallaAjustesPsicologo(
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
     revisionCacheFotoBarra: Long = 0L,
+    alPulsarCambiarFotoPerfil: () -> Unit = {},
+    cargandoFotoPerfil: Boolean = false,
+    mensajeErrorFotoPerfil: String? = null,
     viewModel: AjustesPsicologoViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,7 +54,7 @@ fun PantallaAjustesPsicologo(
     PantallaConCabeceraOndaApp(
         encabezado = {
             EncabezadoUsuarioApp(
-                tituloCentro = "Ajustes",
+                tituloCentro = "Modificar perfil",
                 mostrarFlechaAtras = true,
                 alVolver = alVolver,
                 nombreUsuario = nombreUsuarioBarra,
@@ -72,6 +83,44 @@ fun PantallaAjustesPsicologo(
                 }
                 uiState.mensajeOk?.let {
                     Text(text = it, color = MaterialTheme.colorScheme.primary)
+                }
+
+                val descripcionEditarFoto = "Cambiar foto de perfil"
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClickLabel = descripcionEditarFoto,
+                            role = Role.Button,
+                            onClick = alPulsarCambiarFotoPerfil,
+                        ),
+                ) {
+                    AvatarPerfilCircularApp(
+                        nombreUsuario = nombreUsuarioBarra,
+                        fotoPerfilUrl = fotoPerfilUrlBarra,
+                        tamano = 104.dp,
+                        revisionCacheFoto = revisionCacheFotoBarra,
+                    )
+                    if (cargandoFotoPerfil) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(44.dp),
+                            strokeWidth = 3.dp,
+                        )
+                    }
+                }
+
+                mensajeErrorFotoPerfil?.let { texto ->
+                    Text(
+                        text = texto,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
 
                 if (uiState.cargando) {

@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente.anadirNota
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam2.tfg.psicologiaapp.nota.domain.LimitesCaracteresNota
 import dam2.tfg.psicologiaapp.nota.domain.usecase.CrearNotaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +20,15 @@ class AnadirNotaViewModel @Inject constructor(
     val uiState: StateFlow<AnadirNotaUiState> = _uiState
 
     fun alCambiarAsunto(nuevoAsunto: String) {
-        _uiState.update { it.copy(asunto = nuevoAsunto, mensajeError = null) }
+        if (nuevoAsunto.length <= LimitesCaracteresNota.ASUNTO) {
+            _uiState.update { it.copy(asunto = nuevoAsunto, mensajeError = null) }
+        }
     }
 
     fun alCambiarDescripcion(nuevaDescripcion: String) {
-        _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+        if (nuevaDescripcion.length <= LimitesCaracteresNota.DESCRIPCION) {
+            _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+        }
     }
 
     fun alConsumirEventoNavegacion() {

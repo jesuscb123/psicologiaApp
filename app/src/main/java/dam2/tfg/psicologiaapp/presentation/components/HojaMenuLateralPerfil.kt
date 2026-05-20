@@ -30,7 +30,6 @@ fun HojaMenuLateralPerfil(
     nombreUsuario: String,
     fotoPerfilUrl: String?,
     revisionCacheFoto: Long = 0L,
-    modoTema: ModoTemaApp,
     temaOscuroResuelto: Boolean,
     modifier: Modifier = Modifier,
     mensajeError: String? = null,
@@ -40,6 +39,7 @@ fun HojaMenuLateralPerfil(
     alIrCitas: (() -> Unit)? = null,
     alIrAgendarCita: (() -> Unit)? = null,
     alIrMisCitas: (() -> Unit)? = null,
+    etiquetaEntradaPerfil: String = "Ajustes",
     alIrAjustes: () -> Unit,
     alAcercaDe: () -> Unit,
     alCerrarSesion: () -> Unit,
@@ -99,7 +99,7 @@ fun HojaMenuLateralPerfil(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavigationDrawerItem(
-                label = { Text("Ajustes") },
+                label = { Text(etiquetaEntradaPerfil) },
                 selected = false,
                 onClick = alIrAjustes,
             )
@@ -133,12 +133,6 @@ fun HojaMenuLateralPerfil(
                 alCambiarOscuro = { activar ->
                     alFijarModoTema(if (activar) ModoTemaApp.Oscuro else ModoTemaApp.Claro)
                 },
-            )
-
-            NavigationDrawerItem(
-                label = { Text("Usar tema del dispositivo") },
-                selected = modoTema == ModoTemaApp.SeguirSistema,
-                onClick = { alFijarModoTema(ModoTemaApp.SeguirSistema) },
             )
 
             NavigationDrawerItem(

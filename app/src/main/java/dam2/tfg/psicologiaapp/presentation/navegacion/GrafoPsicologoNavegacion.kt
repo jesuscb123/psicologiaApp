@@ -124,11 +124,11 @@ fun GrafoPsicologoNavegacion(
                 nombreUsuario = nombreBarra,
                 fotoPerfilUrl = menuUi.fotoPerfilUrl,
                 revisionCacheFoto = menuUi.revisionCacheFoto,
-                modoTema = menuUi.modoTema,
                 temaOscuroResuelto = temaOscuroResuelto,
                 mensajeError = menuUi.mensajeError,
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
+                etiquetaEntradaPerfil = "Modificar perfil",
                 alFijarModoTema = menuViewModel::fijarModoTema,
                 alIrMisCitas = {
                     scope.launch {
@@ -219,6 +219,9 @@ fun GrafoPsicologoNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    alPulsarCambiarFotoPerfil = abrirSelectorFoto,
+                    cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
+                    mensajeErrorFotoPerfil = menuUi.mensajeError,
                 )
             }
 

@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
+import dam2.tfg.psicologiaapp.presentation.components.BotonFlotantePrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
@@ -135,17 +132,14 @@ fun NotasPacienteScreen(
         }
 
         if (!uiState.cargando && uiState.perfilPaciente?.psicologoId != null) {
-            FloatingActionButton(
-                onClick = alIrAAnadirNota,
+            BotonFlotantePrimarioApp(
+                alPulsar = alIrAAnadirNota,
+                descripcionIcono = "Anadir nota",
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
                     .padding(16.dp),
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Anadir nota")
-            }
+            )
         }
     }
 }

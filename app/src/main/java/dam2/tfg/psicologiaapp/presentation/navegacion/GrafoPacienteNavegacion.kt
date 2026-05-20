@@ -128,7 +128,6 @@ fun GrafoPacienteNavegacion(
                 nombreUsuario = nombreBarra,
                 fotoPerfilUrl = menuUi.fotoPerfilUrl,
                 revisionCacheFoto = menuUi.revisionCacheFoto,
-                modoTema = menuUi.modoTema,
                 temaOscuroResuelto = temaOscuroResuelto,
                 mensajeError = menuUi.mensajeError,
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,

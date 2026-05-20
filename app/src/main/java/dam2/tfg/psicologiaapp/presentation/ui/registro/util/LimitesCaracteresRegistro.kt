@@ -16,7 +16,8 @@ object LimitesCaracteresRegistro {
         const val CORREO = 254
         const val DESCRIPCION = 1000
         const val NUMERO_COLEGIADO = 15
-        const val ESPECIALIDAD = 80
+        /** Máximo de caracteres por cada etiqueta de especialidad al escribir. */
+        const val ESPECIALIDAD = 30
         const val MAX_ESPECIALIDADES = 10
 
         fun mensajeMaximoCaracteres(max: Int): String = "Máximo $max caracteres"

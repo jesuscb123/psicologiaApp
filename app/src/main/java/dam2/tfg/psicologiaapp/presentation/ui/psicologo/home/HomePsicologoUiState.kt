@@ -9,4 +9,6 @@ data class HomePsicologoUiState(
     val listaPacientes: List<Paciente> = emptyList(),
     val mapaCitaProxima: Map<Long, Cita?> = emptyMap(),
     val mensajeError: String? = null,
+    val mapaNoLeidosPorPaciente: Map<Long, Boolean> = emptyMap(),
+    val mapaRiesgoPorPaciente: Map<Long, Boolean> = emptyMap(),
 )

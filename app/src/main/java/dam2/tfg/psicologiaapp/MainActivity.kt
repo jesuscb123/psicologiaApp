@@ -9,8 +9,8 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import dam2.tfg.psicologiaapp.notificaciones.presentation.ColaDestinosNotificacion
-import dam2.tfg.psicologiaapp.notificaciones.presentation.GestorCanalesNotificacion
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.ColaDestinosNotificacion
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.GestorCanalesNotificacion
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.ModoTemaActividadViewModel
 import dam2.tfg.psicologiaapp.presentation.navegacion.AppNavHost

@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
+import kotlinx.coroutines.CancellationException
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.chat.domain.usecase.ObservarNoLeidosEnChatUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.BorrarNotaUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
@@ -46,6 +48,7 @@ class HomePacienteViewModel @Inject constructor(
     private val aceptarTareaUseCase: AceptarTareaUseCase,
     private val marcarTareaRealizadaUseCase: MarcarTareaRealizadaUseCase,
     private val borrarNotaUseCase: BorrarNotaUseCase,
+    private val observarNoLeidosEnChatUseCase: ObservarNoLeidosEnChatUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomePacienteUiState())
@@ -89,6 +92,26 @@ class HomePacienteViewModel @Inject constructor(
             observarMisCitasPacienteUseCase().collectLatest { citas ->
                 val proxima = calcularProximaCitaActiva(citas)
                 _uiState.update { it.copy(proximaCita = proxima, cargandoProximaCita = false) }
+            }
+        }
+        viewModelScope.launch {
+            try {
+                observarPerfilCacheadoUseCase().collectLatest { perfil ->
+                    val uid = perfil?.firebaseUid ?: return@collectLatest
+                    try {
+                        observarNoLeidosEnChatUseCase(uid).collectLatest { chatIds ->
+                            _uiState.update { it.copy(tieneMensajeNoLeido = chatIds.isNotEmpty()) }
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        _uiState.update { it.copy(tieneMensajeNoLeido = false) }
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                _uiState.update { it.copy(tieneMensajeNoLeido = false) }
             }
         }
     }

@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.notificaciones.presentation
+package dam2.tfg.psicologiaapp.presentation.ui.notificaciones
 
 import android.content.Intent
 import kotlinx.coroutines.flow.MutableStateFlow

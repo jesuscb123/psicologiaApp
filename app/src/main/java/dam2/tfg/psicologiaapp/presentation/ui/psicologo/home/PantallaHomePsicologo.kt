@@ -85,6 +85,8 @@ fun PantallaHomePsicologo(
                         mensajeError = uiState.mensajeError,
                         pacientes = uiState.listaPacientes,
                         mapaCitaProxima = uiState.mapaCitaProxima,
+                        mapaNoLeidosPorPaciente = uiState.mapaNoLeidosPorPaciente,
+                        mapaRiesgoPorPaciente = uiState.mapaRiesgoPorPaciente,
                         alIrAFichaPaciente = alIrAFichaPaciente,
                         alIrAChatConPaciente = alIrAChatConPaciente,
                     )
@@ -156,6 +158,8 @@ private fun HomePsicologoListaPacientes(
     mensajeError: String?,
     pacientes: List<Paciente>,
     mapaCitaProxima: Map<Long, Cita?>,
+    mapaNoLeidosPorPaciente: Map<Long, Boolean>,
+    mapaRiesgoPorPaciente: Map<Long, Boolean>,
     alIrAFichaPaciente: (Long) -> Unit,
     alIrAChatConPaciente: (Long) -> Unit,
 ) {
@@ -245,6 +249,8 @@ private fun HomePsicologoListaPacientes(
                         modifier = Modifier.fillMaxWidth(),
                         citaProxima = mapaCitaProxima[paciente.idPaciente],
                         alPulsarChat = { alIrAChatConPaciente(it.idPaciente) },
+                        tieneNoLeidos = mapaNoLeidosPorPaciente[paciente.idPaciente] == true,
+                        tieneAlertaRiesgo = mapaRiesgoPorPaciente[paciente.idPaciente] == true,
                     )
                 }
             }

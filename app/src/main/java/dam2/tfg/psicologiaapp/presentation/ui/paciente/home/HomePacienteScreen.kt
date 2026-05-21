@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
@@ -155,6 +154,7 @@ fun PantallaHomePaciente(
                                 psicologo = uiState.psicologoAsignado,
                                 alVerPerfil = alIrAPerfilPsicologo,
                                 alEnviarMensaje = alIrAChat,
+                                tieneMensajeNoLeido = uiState.tieneMensajeNoLeido,
                             )
                         }
                     }
@@ -282,7 +282,6 @@ private fun HomePacienteSeleccionPsicologo(
             text = "Profesionales disponibles",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 2,
         )
 
         Box(
@@ -355,11 +354,11 @@ private fun BannerProximaCitaPaciente(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 modifier = Modifier.weight(1f),
             ) {
                 Box(
@@ -375,7 +374,7 @@ private fun BannerProximaCitaPaciente(
                         modifier = Modifier.size(28.dp),
                     )
                 }
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Tus citas",
                         style = MaterialTheme.typography.titleMedium,
@@ -386,7 +385,6 @@ private fun BannerProximaCitaPaciente(
                         text = sub,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                        maxLines = 2,
                     )
                 }
             }
@@ -506,7 +504,6 @@ private fun TarjetaAccesoPacienteApp(
                     text = subtitulo,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
                 )
             }
         }
@@ -518,6 +515,7 @@ private fun BannerPsicologoActualPaciente(
     psicologo: Psicologo?,
     alVerPerfil: (String) -> Unit,
     alEnviarMensaje: () -> Unit,
+    tieneMensajeNoLeido: Boolean = false,
 ) {
     val nombreCompleto = psicologo?.let {
         listOf(it.nombre, it.apellidos).filter { p -> p.isNotBlank() }.joinToString(" ")
@@ -544,11 +542,11 @@ private fun BannerPsicologoActualPaciente(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier.weight(1f),
                 ) {
                     AvatarPerfilCircularApp(
@@ -562,15 +560,11 @@ private fun BannerPsicologoActualPaciente(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onPrimary,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
                         )
                         Text(
                             text = nombreCompleto ?: "Sin especialista asignado",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -603,27 +597,40 @@ private fun BannerPsicologoActualPaciente(
             }
 
             if (psicologo != null) {
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                    modifier = Modifier
-                        .heightIn(min = 40.dp)
-                        .wrapContentWidth()
-                        .widthIn(max = 220.dp)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .clickable { alEnviarMensaje() },
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                Box {
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                            .heightIn(min = 40.dp)
+                            .wrapContentWidth()
+                            .widthIn(max = 220.dp)
+                            .clip(RoundedCornerShape(percent = 50))
+                            .clickable { alEnviarMensaje() },
                     ) {
-                        Text(
-                            text = "Enviar mensaje",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.labelLarge,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                        ) {
+                            Text(
+                                text = "Enviar mensaje",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelLarge,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            )
+                        }
+                    }
+                    if (tieneMensajeNoLeido) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .align(Alignment.TopEnd)
+                                .background(
+                                    color = MaterialTheme.colorScheme.error,
+                                    shape = RoundedCornerShape(percent = 50),
+                                ),
                         )
                     }
                 }
@@ -650,7 +657,7 @@ private fun FilaPsicologoApp(
         Row(
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             AvatarPerfilCircularApp(
                 nombreUsuario = nombreCompleto,
@@ -666,16 +673,12 @@ private fun FilaPsicologoApp(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 if (psicologo.especialidades.isNotEmpty()) {
                     Text(
                         text = psicologo.especialidades.joinToString(", "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

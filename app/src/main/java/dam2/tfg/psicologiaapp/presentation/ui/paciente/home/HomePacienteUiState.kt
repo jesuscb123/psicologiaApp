@@ -15,5 +15,6 @@ data class HomePacienteUiState(
     val tareas: List<Tarea> = emptyList(),
     val proximaCita: Cita? = null,
     val cargandoProximaCita: Boolean = true,
-    val mensajeError: String? = null
+    val mensajeError: String? = null,
+    val tieneMensajeNoLeido: Boolean = false,
 )

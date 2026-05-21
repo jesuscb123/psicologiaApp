@@ -3,8 +3,10 @@ package dam2.tfg.psicologiaapp.presentation.ui.psicologo.fichaPaciente
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import dam2.tfg.psicologiaapp.nota.domain.usecase.ObservarNotasDePacienteUseCase
 import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasDePacienteUseCase
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.LimpiarAlertaRiesgoPacienteUseCase
 import dam2.tfg.psicologiaapp.paciente.data.local.PacienteDao
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPacientesDePsicologoUseCase
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FichaPacientePsicologoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val firebaseAuth: FirebaseAuth,
     private val sincronizarPacientesDePsicologoUseCase: SincronizarPacientesDePsicologoUseCase,
     private val pacienteDao: PacienteDao,
     private val observarNotasDePacienteUseCase: ObservarNotasDePacienteUseCase,
@@ -29,6 +32,7 @@ class FichaPacientePsicologoViewModel @Inject constructor(
     private val sincronizarNotasDePacienteUseCase: SincronizarNotasDePacienteUseCase,
     private val sincronizarTareasDePacienteUseCase: SincronizarTareasDePacienteUseCase,
     private val generarResumenIaPacienteUseCase: GenerarResumenIaPacienteUseCase,
+    private val limpiarAlertaRiesgoPacienteUseCase: LimpiarAlertaRiesgoPacienteUseCase,
 ) : ViewModel() {
 
     private val pacienteId: Long = savedStateHandle.get<Long>(RutasApp.ARG_PACIENTE_ID) ?: 0L
@@ -38,6 +42,10 @@ class FichaPacientePsicologoViewModel @Inject constructor(
 
     init {
         if (pacienteId != 0L) {
+            viewModelScope.launch {
+                val psicologoUid = firebaseAuth.currentUser?.uid.orEmpty()
+                limpiarAlertaRiesgoPacienteUseCase(psicologoUid, pacienteId)
+            }
             // Observe paciente from Room cache (name/photo available instantly on re-entry).
             viewModelScope.launch {
                 pacienteDao.observarPorId(pacienteId).collectLatest { entity ->

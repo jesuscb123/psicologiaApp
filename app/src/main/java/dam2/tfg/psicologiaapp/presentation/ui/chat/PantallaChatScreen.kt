@@ -59,6 +59,12 @@ fun PantallaChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
 
+    LaunchedEffect(uiState.rtdbRuta) {
+        if (uiState.rtdbRuta != null) {
+            viewModel.marcarLeido()
+        }
+    }
+
     LaunchedEffect(uiState.mensajes.size) {
         if (uiState.mensajes.isNotEmpty()) {
             listState.animateScrollToItem(uiState.mensajes.size - 1)

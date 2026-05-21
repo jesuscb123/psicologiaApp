@@ -29,4 +29,16 @@ interface ChatRepository {
      * current Firebase Auth session, so the caller only needs to supply the text.
      */
     suspend fun enviarMensaje(rtdbRuta: String, texto: String): Result<Unit>
+
+    /**
+     * Marks the chat at [rtdbRuta] as read for the current user by removing the unread
+     * marker from the RTDB `mensajesNoLeidos/{miUid}/{chatId}` node.
+     */
+    suspend fun marcarChatLeido(rtdbRuta: String): Result<Unit>
+
+    /**
+     * Observes the `mensajesNoLeidos/{miUid}` RTDB node and emits the set of chatIds
+     * that have at least one unread message for [miUid].
+     */
+    fun observarNoLeidosChatIds(miUid: String): Flow<Set<String>>
 }

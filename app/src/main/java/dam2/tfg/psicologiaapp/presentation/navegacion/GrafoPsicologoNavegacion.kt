@@ -21,9 +21,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import dam2.tfg.psicologiaapp.notificaciones.presentation.ColaDestinosNotificacion
-import dam2.tfg.psicologiaapp.notificaciones.presentation.DestinoPendienteNotificacion
-import dam2.tfg.psicologiaapp.notificaciones.presentation.SolicitarPermisoNotificacionesUnaVez
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.ColaDestinosNotificacion
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.DestinoPendienteNotificacion
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.SolicitarPermisoNotificacionesUnaVez
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.HojaMenuLateralPerfil
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.EventoNavegacionMenuLateral

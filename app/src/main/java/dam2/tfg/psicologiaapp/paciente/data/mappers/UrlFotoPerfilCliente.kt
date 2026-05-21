@@ -9,7 +9,7 @@ import dam2.tfg.psicologiaapp.BuildConfig
 internal fun normalizarUrlFotoPerfilCliente(url: String?): String? {
     val u = url?.trim()?.takeIf { it.isNotEmpty() } ?: return null
     val lower = u.lowercase()
-    val apuntaABucleLocal = lower.contains("localhost") || lower.contains("127.0.0.1")
+    val apuntaABucleLocal = lower.contains("localhost") || lower.contains("127.0.0.1") || lower.contains("10.0.2.2")
     if (!apuntaABucleLocal) return u
     val idx = u.indexOf("/api/")
     if (idx < 0) return u

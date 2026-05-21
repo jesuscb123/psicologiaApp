@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.notificaciones.presentation
+package dam2.tfg.psicologiaapp.presentation.ui.notificaciones
 
 import android.Manifest
 import android.content.pm.PackageManager

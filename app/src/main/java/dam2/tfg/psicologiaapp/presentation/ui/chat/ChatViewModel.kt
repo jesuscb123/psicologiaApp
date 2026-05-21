@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dam2.tfg.psicologiaapp.chat.domain.usecase.AsegurarChatPacienteUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.AsegurarChatPsicologoUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.EnviarMensajeChatUseCase
+import dam2.tfg.psicologiaapp.chat.domain.usecase.MarcarChatLeidoUseCase
 import dam2.tfg.psicologiaapp.chat.domain.usecase.ObservarMensajesChatUseCase
 import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.NotificarMensajeChatUseCase
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
@@ -28,6 +29,7 @@ class ChatViewModel @Inject constructor(
     private val observarMensajesChatUseCase: ObservarMensajesChatUseCase,
     private val enviarMensajeChatUseCase: EnviarMensajeChatUseCase,
     private val notificarMensajeChatUseCase: NotificarMensajeChatUseCase,
+    private val marcarChatLeidoUseCase: MarcarChatLeidoUseCase,
 ) : ViewModel() {
 
     /**
@@ -129,6 +131,13 @@ class ChatViewModel @Inject constructor(
                     }
                 },
             )
+        }
+    }
+
+    fun marcarLeido() {
+        val ruta = _uiState.value.rtdbRuta ?: return
+        viewModelScope.launch {
+            marcarChatLeidoUseCase(ruta)
         }
     }
 

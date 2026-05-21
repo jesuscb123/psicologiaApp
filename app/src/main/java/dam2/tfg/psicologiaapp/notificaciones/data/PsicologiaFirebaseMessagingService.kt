@@ -5,9 +5,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
+import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.MarcarAlertaRiesgoUseCase
 import dam2.tfg.psicologiaapp.notificaciones.domain.usecase.RegistrarFcmTokenActualUseCase
-import dam2.tfg.psicologiaapp.notificaciones.presentation.ClavesIntentNotificacion
-import dam2.tfg.psicologiaapp.notificaciones.presentation.PresentadorNotificaciones
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.ClavesIntentNotificacion
+import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.PresentadorNotificaciones
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,6 +37,9 @@ class PsicologiaFirebaseMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
+
+    @Inject
+    lateinit var marcarAlertaRiesgoUseCase: MarcarAlertaRiesgoUseCase
 
     private val scope: CoroutineScope by lazy {
         CoroutineScope(Job() + Dispatchers.IO + SupervisorJob())
@@ -121,6 +125,14 @@ class PsicologiaFirebaseMessagingService : FirebaseMessagingService() {
             titulo = titulo,
             cuerpo = cuerpo,
         )
+        val psicologoUid = firebaseAuth.currentUser?.uid.orEmpty()
+        scope.launch {
+            try {
+                marcarAlertaRiesgoUseCase(psicologoUid, pacienteId)
+            } catch (e: Exception) {
+                Log.w(TAG, "No se pudo marcar alerta riesgo en RTDB: ${e.message}")
+            }
+        }
     }
 
     private companion object {

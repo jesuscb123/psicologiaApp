@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.notificaciones.presentation
+package dam2.tfg.psicologiaapp.presentation.ui.notificaciones
 
 import android.Manifest
 import android.app.NotificationManager
@@ -17,8 +17,7 @@ import dam2.tfg.psicologiaapp.R
  * caso) y construye un PendingIntent que abre la pantalla correcta al tocarla.
  *
  * Las claves de los extras deben mantenerse sincronizadas con
- * `dam2.tfg.psicologiaapp.notificaciones.presentation.ClavesIntentNotificacion` para que
- * MainActivity las lea correctamente.
+ * [ClavesIntentNotificacion] para que MainActivity las lea correctamente.
  */
 object PresentadorNotificaciones {
 

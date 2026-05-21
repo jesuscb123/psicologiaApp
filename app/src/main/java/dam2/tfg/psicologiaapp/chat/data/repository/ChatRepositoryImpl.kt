@@ -63,6 +63,18 @@ class ChatRepositoryImpl @Inject constructor(
         Result.failure(e)
     }
 
+    override suspend fun marcarChatLeido(rtdbRuta: String): Result<Unit> = try {
+        chatFuenteDatosFirebase.marcarLeido(rtdbRuta)
+        Result.success(Unit)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
+
+    override fun observarNoLeidosChatIds(miUid: String): Flow<Set<String>> =
+        chatFuenteDatosFirebase.observarNoLeidosChatIds(miUid)
+
     private suspend fun <T> ejecutarConRefrescoTokenSi401(
         bloque: suspend () -> retrofit2.Response<T>,
     ): retrofit2.Response<T> {

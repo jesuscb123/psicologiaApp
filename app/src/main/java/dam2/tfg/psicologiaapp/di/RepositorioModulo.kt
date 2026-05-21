@@ -8,7 +8,9 @@ import dam2.tfg.psicologiaapp.cita.data.repository.CitaRepositoryImpl
 import dam2.tfg.psicologiaapp.cita.domain.repository.CitaRepository
 import dam2.tfg.psicologiaapp.nota.data.repository.NotaRepositoryImpl
 import dam2.tfg.psicologiaapp.nota.domain.repository.NotaRepository
+import dam2.tfg.psicologiaapp.notificaciones.data.repository.AlertaRiesgoRepositoryImpl
 import dam2.tfg.psicologiaapp.notificaciones.data.repository.NotificacionesRepositoryImpl
+import dam2.tfg.psicologiaapp.notificaciones.domain.repository.AlertaRiesgoRepository
 import dam2.tfg.psicologiaapp.notificaciones.domain.repository.NotificacionesRepository
 import dam2.tfg.psicologiaapp.paciente.data.repository.PacienteRepositoryImpl
 import dam2.tfg.psicologiaapp.paciente.domain.repository.PacienteRepository
@@ -81,6 +83,12 @@ abstract class RepositorioModulo {
     abstract fun bindNotificacionesRepository(
         impl: NotificacionesRepositoryImpl,
     ): NotificacionesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAlertaRiesgoRepository(
+        impl: AlertaRiesgoRepositoryImpl,
+    ): AlertaRiesgoRepository
 
     @Binds
     @Singleton

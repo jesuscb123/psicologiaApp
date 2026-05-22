@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.EstadoVacioContenidoApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaTareasPacienteApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
@@ -79,11 +80,10 @@ fun TareasPacienteScreen(
                     }
 
                     uiState.tareas.isEmpty() -> {
-                        Text(
-                            text = "No hay tareas todavia.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.align(Alignment.TopStart),
+                        EstadoVacioContenidoApp(
+                            titulo = "Aún no tienes tareas",
+                            subtitulo = "Cuando tu psicólogo te asigne actividades, aparecerán aquí para que las completes.",
+                            modifier = Modifier.align(Alignment.Center),
                         )
                     }
 

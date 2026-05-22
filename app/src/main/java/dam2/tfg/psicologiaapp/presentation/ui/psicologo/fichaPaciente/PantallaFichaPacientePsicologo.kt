@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.BotonFlotantePrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.EstadoVacioContenidoApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaTareasApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
@@ -96,14 +97,18 @@ fun PantallaFichaPacientePsicologo(
                         modifier = Modifier.fillMaxWidth(),
                     )
 
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         when (uiState.pestanaActual) {
                             PestanaFichaPacientePsi.NOTAS -> {
                                 if (uiState.notas.isEmpty()) {
-                                    Text(
-                                        text = "No hay notas",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    EstadoVacioContenidoApp(
+                                        titulo = "Sin notas del paciente",
+                                        subtitulo = "Cuando registre entradas en su diario, las verás en esta pestaña.",
                                     )
                                 } else {
                                     Column(
@@ -129,10 +134,9 @@ fun PantallaFichaPacientePsicologo(
 
                             PestanaFichaPacientePsi.TAREAS -> {
                                 if (uiState.tareas.isEmpty()) {
-                                    Text(
-                                        text = "No hay tareas",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    EstadoVacioContenidoApp(
+                                        titulo = "Sin tareas asignadas",
+                                        subtitulo = "Pulsa + para crear la primera tarea y acompañar el seguimiento.",
                                     )
                                 } else {
                                     ListaTareasApp(

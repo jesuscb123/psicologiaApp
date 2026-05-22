@@ -132,7 +132,6 @@ fun GrafoPacienteNavegacion(
                 mensajeError = menuUi.mensajeError,
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
-                alFijarModoTema = menuViewModel::fijarModoTema,
                 alIrAgendarCita = {
                     scope.launch {
                         drawerState.close()
@@ -149,18 +148,6 @@ fun GrafoPacienteNavegacion(
                     scope.launch {
                         drawerState.close()
                         navPaciente.navigate(RutasGrafoPaciente.AJUSTES)
-                    }
-                },
-                alAcercaDe = {
-                    scope.launch {
-                        drawerState.close()
-                        navPaciente.navigate(RutasGrafoPaciente.ACERCA)
-                    }
-                },
-                alCerrarSesion = {
-                    scope.launch {
-                        drawerState.close()
-                        menuViewModel.cerrarSesion()
                     }
                 },
             )
@@ -283,6 +270,8 @@ fun GrafoPacienteNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    alIrAcercaDe = { navPaciente.navigate(RutasGrafoPaciente.ACERCA) },
+                    alCerrarSesion = { menuViewModel.cerrarSesion() },
                 )
             }
 

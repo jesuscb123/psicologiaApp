@@ -1,4 +1,4 @@
-package dam2.tfg.psicologiaapp.presentation.ui.paciente.ajustes
+package dam2.tfg.psicologiaapp.presentation.ui.psicologo.ajustes
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,38 +11,37 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.preferencias.domain.model.ModoTemaApp
 import dam2.tfg.psicologiaapp.presentation.components.ChipSeleccionableApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
 @Composable
-fun PantallaAjustesPaciente(
+fun PantallaAjustesHubPsicologo(
     alVolver: () -> Unit,
     alAbrirMenuPerfil: () -> Unit,
     nombreUsuarioBarra: String,
     fotoPerfilUrlBarra: String?,
     revisionCacheFotoBarra: Long = 0L,
-    alIrAcercaDe: () -> Unit = {},
-    alCerrarSesion: () -> Unit = {},
-    viewModel: AjustesPacienteViewModel = hiltViewModel(),
+    modoTema: ModoTemaApp,
+    alFijarModoTema: (ModoTemaApp) -> Unit,
+    alIrModificarPerfil: () -> Unit,
+    alIrAcercaDe: () -> Unit,
+    alCerrarSesion: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     PantallaConCabeceraOndaApp(
         encabezado = {
             EncabezadoUsuarioApp(
@@ -90,29 +89,21 @@ fun PantallaAjustesPaciente(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         ChipSeleccionableApp(
                             texto = "Sistema",
-                            seleccionado = uiState.modoTema == ModoTemaApp.SeguirSistema,
-                            alCambiarSeleccion = { seleccionado ->
-                                if (seleccionado) viewModel.fijarModoTema(ModoTemaApp.SeguirSistema)
-                            },
+                            seleccionado = modoTema == ModoTemaApp.SeguirSistema,
+                            alCambiarSeleccion = { if (it) alFijarModoTema(ModoTemaApp.SeguirSistema) },
                         )
                         ChipSeleccionableApp(
                             texto = "Claro",
-                            seleccionado = uiState.modoTema == ModoTemaApp.Claro,
-                            alCambiarSeleccion = { seleccionado ->
-                                if (seleccionado) viewModel.fijarModoTema(ModoTemaApp.Claro)
-                            },
+                            seleccionado = modoTema == ModoTemaApp.Claro,
+                            alCambiarSeleccion = { if (it) alFijarModoTema(ModoTemaApp.Claro) },
                         )
                         ChipSeleccionableApp(
                             texto = "Oscuro",
-                            seleccionado = uiState.modoTema == ModoTemaApp.Oscuro,
-                            alCambiarSeleccion = { seleccionado ->
-                                if (seleccionado) viewModel.fijarModoTema(ModoTemaApp.Oscuro)
-                            },
+                            seleccionado = modoTema == ModoTemaApp.Oscuro,
+                            alCambiarSeleccion = { if (it) alFijarModoTema(ModoTemaApp.Oscuro) },
                         )
                     }
                 }
@@ -131,13 +122,19 @@ fun PantallaAjustesPaciente(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    FilaAjuste(
+                    FilaAjustePsicologo(
+                        texto = "Modificar perfil",
+                        icono = Icons.Filled.Person,
+                        onClick = alIrModificarPerfil,
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
+                    FilaAjustePsicologo(
                         texto = "Acerca de",
                         icono = Icons.Filled.Info,
                         onClick = alIrAcercaDe,
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
-                    FilaAjuste(
+                    FilaAjustePsicologo(
                         texto = "Cerrar sesión",
                         icono = Icons.AutoMirrored.Filled.ExitToApp,
                         onClick = alCerrarSesion,
@@ -150,11 +147,11 @@ fun PantallaAjustesPaciente(
 }
 
 @Composable
-private fun FilaAjuste(
+private fun FilaAjustePsicologo(
     texto: String,
     icono: ImageVector,
     onClick: () -> Unit,
-    colorTexto: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface,
+    colorTexto: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Row(
         modifier = Modifier

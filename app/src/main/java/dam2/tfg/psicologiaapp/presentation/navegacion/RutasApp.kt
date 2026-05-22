@@ -44,6 +44,7 @@ object RutasGrafoPsicologo {
     const val ANADIR_TAREA = "tarea/anadir/{pacienteId}"
     const val MIS_CITAS = "citas/mis_citas"
     const val AJUSTES = "ajustes"
+    const val AJUSTES_HUB = "ajustes/hub"
     const val ACERCA = "acerca"
     const val CHAT_PACIENTE = "chat/paciente/{pacienteId}"
 

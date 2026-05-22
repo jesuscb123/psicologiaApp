@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.presentation.components.BotonFlotantePrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.presentation.components.EstadoVacioContenidoApp
 import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
@@ -40,6 +42,10 @@ fun NotasPacienteScreen(
     revisionCacheFotoBarra: Long = 0L,
     viewModel: HomePacienteViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.sincronizarSiProcede()
+    }
+
     val uiState by viewModel.uiState.collectAsState()
     var notaPendienteEliminar by remember { mutableStateOf<Nota?>(null) }
 
@@ -109,11 +115,10 @@ fun NotasPacienteScreen(
                         }
 
                         uiState.notas.isEmpty() -> {
-                            Text(
-                                text = "No hay notas todavia.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.align(Alignment.TopStart),
+                            EstadoVacioContenidoApp(
+                                titulo = "Tu diario está en blanco",
+                                subtitulo = "Pulsa el botón + para registrar cómo te sientes y compartirlo con tu psicólogo.",
+                                modifier = Modifier.align(Alignment.Center),
                             )
                         }
 

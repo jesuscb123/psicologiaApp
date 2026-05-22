@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObtenerDisponibilidadDiaUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ReservarCitaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -47,6 +48,17 @@ class CitasViewModel @Inject constructor(
 
     fun cargarDisponibilidad() {
         val fecha = _uiState.value.fechaSeleccionada
+        if (fecha.dayOfWeek == DayOfWeek.SATURDAY || fecha.dayOfWeek == DayOfWeek.SUNDAY) {
+            _uiState.update {
+                it.copy(
+                    cargando = false,
+                    disponibilidad = null,
+                    mensajeError = "No hay citas disponibles los fines de semana.",
+                )
+            }
+            return
+        }
+
         val zonaHoraria = _uiState.value.zonaHoraria.ifBlank { ZoneId.systemDefault().id }
 
         viewModelScope.launch {

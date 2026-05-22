@@ -31,6 +31,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.menuLateral.MenuLateralPe
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.acerca.PantallaAcercaDePaciente
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.anadirTarea.PantallaAnadirTareaPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.ajustes.PantallaAjustesPsicologo
+import dam2.tfg.psicologiaapp.presentation.ui.psicologo.ajustes.PantallaAjustesHubPsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.chat.PantallaChatScreen
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.fichaPaciente.PantallaFichaPacientePsicologo
 import dam2.tfg.psicologiaapp.presentation.ui.psicologo.home.HomePsicologoViewModel
@@ -128,8 +129,7 @@ fun GrafoPsicologoNavegacion(
                 mensajeError = menuUi.mensajeError,
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
-                etiquetaEntradaPerfil = "Modificar perfil",
-                alFijarModoTema = menuViewModel::fijarModoTema,
+                etiquetaEntradaPerfil = "Ajustes",
                 alIrMisCitas = {
                     scope.launch {
                         drawerState.close()
@@ -139,19 +139,7 @@ fun GrafoPsicologoNavegacion(
                 alIrAjustes = {
                     scope.launch {
                         drawerState.close()
-                        navPsicologo.navigate(RutasGrafoPsicologo.AJUSTES)
-                    }
-                },
-                alAcercaDe = {
-                    scope.launch {
-                        drawerState.close()
-                        navPsicologo.navigate(RutasGrafoPsicologo.ACERCA)
-                    }
-                },
-                alCerrarSesion = {
-                    scope.launch {
-                        drawerState.close()
-                        menuViewModel.cerrarSesion()
+                        navPsicologo.navigate(RutasGrafoPsicologo.AJUSTES_HUB)
                     }
                 },
             )
@@ -209,6 +197,21 @@ fun GrafoPsicologoNavegacion(
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                )
+            }
+
+            composable(RutasGrafoPsicologo.AJUSTES_HUB) {
+                PantallaAjustesHubPsicologo(
+                    alVolver = { navPsicologo.popBackStack() },
+                    alAbrirMenuPerfil = abrirMenu,
+                    nombreUsuarioBarra = nombreBarra,
+                    fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
+                    revisionCacheFotoBarra = menuUi.revisionCacheFoto,
+                    modoTema = menuUi.modoTema,
+                    alFijarModoTema = menuViewModel::fijarModoTema,
+                    alIrModificarPerfil = { navPsicologo.navigate(RutasGrafoPsicologo.AJUSTES) },
+                    alIrAcercaDe = { navPsicologo.navigate(RutasGrafoPsicologo.ACERCA) },
+                    alCerrarSesion = { menuViewModel.cerrarSesion() },
                 )
             }
 

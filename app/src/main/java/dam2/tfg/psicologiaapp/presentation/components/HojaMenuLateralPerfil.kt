@@ -35,14 +35,14 @@ fun HojaMenuLateralPerfil(
     mensajeError: String? = null,
     cargandoFotoPerfil: Boolean = false,
     alPulsarFotoPerfil: () -> Unit = {},
-    alFijarModoTema: (ModoTemaApp) -> Unit,
+    alFijarModoTema: ((ModoTemaApp) -> Unit)? = null,
     alIrCitas: (() -> Unit)? = null,
     alIrAgendarCita: (() -> Unit)? = null,
     alIrMisCitas: (() -> Unit)? = null,
     etiquetaEntradaPerfil: String = "Ajustes",
     alIrAjustes: () -> Unit,
-    alAcercaDe: () -> Unit,
-    alCerrarSesion: () -> Unit,
+    alAcercaDe: (() -> Unit)? = null,
+    alCerrarSesion: (() -> Unit)? = null,
 ) {
     ModalDrawerSheet(modifier = modifier) {
         Column(
@@ -128,24 +128,30 @@ fun HojaMenuLateralPerfil(
                 )
             }
 
-            FilaModoOscuroMenuLateral(
-                temaOscuroResuelto = temaOscuroResuelto,
-                alCambiarOscuro = { activar ->
-                    alFijarModoTema(if (activar) ModoTemaApp.Oscuro else ModoTemaApp.Claro)
-                },
-            )
+            if (alFijarModoTema != null) {
+                FilaModoOscuroMenuLateral(
+                    temaOscuroResuelto = temaOscuroResuelto,
+                    alCambiarOscuro = { activar ->
+                        alFijarModoTema(if (activar) ModoTemaApp.Oscuro else ModoTemaApp.Claro)
+                    },
+                )
+            }
 
-            NavigationDrawerItem(
-                label = { Text("Acerca de") },
-                selected = false,
-                onClick = alAcercaDe,
-            )
+            if (alAcercaDe != null) {
+                NavigationDrawerItem(
+                    label = { Text("Acerca de") },
+                    selected = false,
+                    onClick = alAcercaDe,
+                )
+            }
 
-            NavigationDrawerItem(
-                label = { Text("Cerrar sesión") },
-                selected = false,
-                onClick = alCerrarSesion,
-            )
+            if (alCerrarSesion != null) {
+                NavigationDrawerItem(
+                    label = { Text("Cerrar sesión") },
+                    selected = false,
+                    onClick = alCerrarSesion,
+                )
+            }
         }
     }
 }

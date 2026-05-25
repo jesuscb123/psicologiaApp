@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">psicologiaapp</string>
+    <string name="app_name">acompañame</string>
 
     <!-- Canales de notificación -->
     <string name="canal_notif_chat_nombre">Mensajes de chat</string>

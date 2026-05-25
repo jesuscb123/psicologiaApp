@@ -1,24 +1,34 @@
 package dam2.tfg.psicologiaapp.presentation.navegacion
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.ColaDestinosNotificacion
@@ -53,6 +63,24 @@ fun GrafoPsicologoNavegacion(
     val navPsicologo = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Observa el lifecycle del destino actual para saber si la animación de navegación
+    // ha terminado. Mientras el entry no haya alcanzado RESUMED, hay una transición activa.
+    val entradaActual by navPsicologo.currentBackStackEntryAsState()
+    var navEnTransicion by remember { mutableStateOf(false) }
+    DisposableEffect(entradaActual) {
+        val lifecycle = entradaActual?.lifecycle
+        if (lifecycle == null) {
+            navEnTransicion = false
+            return@DisposableEffect onDispose {}
+        }
+        navEnTransicion = !lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        val observer = LifecycleEventObserver { _, _ ->
+            navEnTransicion = !lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
     val sistemaEnOscuro = isSystemInDarkTheme()
     val temaOscuroResuelto = when (menuUi.modoTema) {
         ModoTemaApp.SeguirSistema -> sistemaEnOscuro
@@ -98,8 +126,42 @@ fun GrafoPsicologoNavegacion(
         }
     }
 
+    val manejarVolver: () -> Unit = {
+        // Guard de re-entrada: si ya estamos en una transición, ignorar el click.
+        // Esto evita doble-pop cuando la pantalla saliente sigue viva durante el render.
+        if (!navEnTransicion) {
+            val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+            if (drawerState.isOpen || drawerEnTransicion) {
+                scope.launch { drawerState.close() }
+            } else {
+                navEnTransicion = true
+                navPsicologo.popBackStack()
+            }
+        }
+    }
+
+    // BackHandler reactivo: usa entradaActual (Compose state) para saber si hay destino previo.
+    val enHome = entradaActual?.destination?.route == RutasGrafoPsicologo.HOME
+    val puedeManejarBack = !enHome || drawerState.isOpen || navEnTransicion
+    BackHandler(enabled = puedeManejarBack) {
+        manejarVolver()
+    }
+
     val abrirMenu: () -> Unit = {
-        scope.launch { drawerState.open() }
+        val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+        if (drawerState.isClosed && !drawerEnTransicion && !navEnTransicion) {
+            scope.launch { drawerState.open() }
+        }
+    }
+
+    val navegarDesdeMenu: (String) -> Unit = { ruta ->
+        scope.launch {
+            val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+            if (drawerState.isOpen || drawerEnTransicion) {
+                drawerState.close()
+            }
+            navPsicologo.navigate(ruta)
+        }
     }
 
     val lanzadorElegirFoto = rememberLauncherForActivityResult(
@@ -120,6 +182,7 @@ fun GrafoPsicologoNavegacion(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = !navEnTransicion,
         drawerContent = {
             HojaMenuLateralPerfil(
                 nombreUsuario = nombreBarra,
@@ -131,16 +194,10 @@ fun GrafoPsicologoNavegacion(
                 alPulsarFotoPerfil = abrirSelectorFoto,
                 etiquetaEntradaPerfil = "Ajustes",
                 alIrMisCitas = {
-                    scope.launch {
-                        drawerState.close()
-                        navPsicologo.navigate(RutasGrafoPsicologo.MIS_CITAS)
-                    }
+                    navegarDesdeMenu(RutasGrafoPsicologo.MIS_CITAS)
                 },
                 alIrAjustes = {
-                    scope.launch {
-                        drawerState.close()
-                        navPsicologo.navigate(RutasGrafoPsicologo.AJUSTES_HUB)
-                    }
+                    navegarDesdeMenu(RutasGrafoPsicologo.AJUSTES_HUB)
                 },
             )
         },
@@ -148,6 +205,13 @@ fun GrafoPsicologoNavegacion(
         NavHost(
             navController = navPsicologo,
             startDestination = RutasGrafoPsicologo.HOME,
+            // Sin animaciones de transición entre destinos: eliminan la ventana de carrera
+            // en la que ambas pantallas conviven en composición y permiten que toques sobre
+            // la pantalla saliente disparen acciones que dejan el NavHost sin destino.
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
         ) {
             composable(RutasGrafoPsicologo.HOME) {
                 PantallaHomePsicologo(
@@ -173,7 +237,7 @@ fun GrafoPsicologoNavegacion(
             ) { entrada ->
                 val pacienteId = entrada.arguments?.getLong(RutasApp.ARG_PACIENTE_ID) ?: 0L
                 PantallaFichaPacientePsicologo(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alIrAnadirTarea = {
                         navPsicologo.navigate(RutasGrafoPsicologo.crearRutaAnadirTarea(pacienteId))
                     },
@@ -192,7 +256,7 @@ fun GrafoPsicologoNavegacion(
             ) {
                 PantallaAnadirTareaPsicologo(
                     alTareaGuardada = { navPsicologo.popBackStack() },
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -202,7 +266,7 @@ fun GrafoPsicologoNavegacion(
 
             composable(RutasGrafoPsicologo.AJUSTES_HUB) {
                 PantallaAjustesHubPsicologo(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -217,7 +281,7 @@ fun GrafoPsicologoNavegacion(
 
             composable(RutasGrafoPsicologo.AJUSTES) {
                 PantallaAjustesPsicologo(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -230,7 +294,7 @@ fun GrafoPsicologoNavegacion(
 
             composable(RutasGrafoPsicologo.MIS_CITAS) {
                 MisCitasPsicologoScreen(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -240,7 +304,7 @@ fun GrafoPsicologoNavegacion(
 
             composable(RutasGrafoPsicologo.ACERCA) {
                 PantallaAcercaDePaciente(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -255,7 +319,7 @@ fun GrafoPsicologoNavegacion(
                 ),
             ) {
                 PantallaChatScreen(
-                    alVolver = { navPsicologo.popBackStack() },
+                    alVolver = manejarVolver,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,

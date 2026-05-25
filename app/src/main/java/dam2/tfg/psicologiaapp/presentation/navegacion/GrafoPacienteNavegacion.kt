@@ -1,24 +1,34 @@
 package dam2.tfg.psicologiaapp.presentation.navegacion
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dam2.tfg.psicologiaapp.presentation.ui.notificaciones.ColaDestinosNotificacion
@@ -56,6 +66,24 @@ fun GrafoPacienteNavegacion(
     val navPaciente = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Observa el lifecycle del destino actual para saber si la animación de navegación
+    // ha terminado. Mientras el entry no haya alcanzado RESUMED, hay una transición activa.
+    val entradaActual by navPaciente.currentBackStackEntryAsState()
+    var navEnTransicion by remember { mutableStateOf(false) }
+    DisposableEffect(entradaActual) {
+        val lifecycle = entradaActual?.lifecycle
+        if (lifecycle == null) {
+            navEnTransicion = false
+            return@DisposableEffect onDispose {}
+        }
+        navEnTransicion = !lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        val observer = LifecycleEventObserver { _, _ ->
+            navEnTransicion = !lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
     val sistemaEnOscuro = isSystemInDarkTheme()
     val temaOscuroResuelto = when (menuUi.modoTema) {
         ModoTemaApp.SeguirSistema -> sistemaEnOscuro
@@ -101,8 +129,42 @@ fun GrafoPacienteNavegacion(
         }
     }
 
+    val manejarVolver: () -> Unit = {
+        // Guard de re-entrada: si ya estamos en una transición, ignorar el click.
+        // Esto evita doble-pop cuando la pantalla saliente sigue viva durante el render.
+        if (!navEnTransicion) {
+            val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+            if (drawerState.isOpen || drawerEnTransicion) {
+                scope.launch { drawerState.close() }
+            } else {
+                navEnTransicion = true
+                navPaciente.popBackStack()
+            }
+        }
+    }
+
+    // BackHandler reactivo: usa entradaActual (Compose state) para saber si hay destino previo.
+    val enHome = entradaActual?.destination?.route == RutasGrafoPaciente.HOME
+    val puedeManejarBack = !enHome || drawerState.isOpen || navEnTransicion
+    BackHandler(enabled = puedeManejarBack) {
+        manejarVolver()
+    }
+
     val abrirMenu: () -> Unit = {
-        scope.launch { drawerState.open() }
+        val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+        if (drawerState.isClosed && !drawerEnTransicion && !navEnTransicion) {
+            scope.launch { drawerState.open() }
+        }
+    }
+
+    val navegarDesdeMenu: (String) -> Unit = { ruta ->
+        scope.launch {
+            val drawerEnTransicion = drawerState.currentValue != drawerState.targetValue
+            if (drawerState.isOpen || drawerEnTransicion) {
+                drawerState.close()
+            }
+            navPaciente.navigate(ruta)
+        }
     }
 
     val lanzadorElegirFoto = rememberLauncherForActivityResult(
@@ -123,6 +185,7 @@ fun GrafoPacienteNavegacion(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = !navEnTransicion,
         drawerContent = {
             HojaMenuLateralPerfil(
                 nombreUsuario = nombreBarra,
@@ -133,22 +196,13 @@ fun GrafoPacienteNavegacion(
                 cargandoFotoPerfil = menuUi.cargandoFotoPerfil,
                 alPulsarFotoPerfil = abrirSelectorFoto,
                 alIrAgendarCita = {
-                    scope.launch {
-                        drawerState.close()
-                        navPaciente.navigate(RutasGrafoPaciente.AGENDAR_CITA)
-                    }
+                    navegarDesdeMenu(RutasGrafoPaciente.AGENDAR_CITA)
                 },
                 alIrMisCitas = {
-                    scope.launch {
-                        drawerState.close()
-                        navPaciente.navigate(RutasGrafoPaciente.MIS_CITAS)
-                    }
+                    navegarDesdeMenu(RutasGrafoPaciente.MIS_CITAS)
                 },
                 alIrAjustes = {
-                    scope.launch {
-                        drawerState.close()
-                        navPaciente.navigate(RutasGrafoPaciente.AJUSTES)
-                    }
+                    navegarDesdeMenu(RutasGrafoPaciente.AJUSTES)
                 },
             )
         },
@@ -156,6 +210,13 @@ fun GrafoPacienteNavegacion(
         NavHost(
             navController = navPaciente,
             startDestination = RutasGrafoPaciente.HOME,
+            // Sin animaciones de transición entre destinos: eliminan la ventana de carrera
+            // en la que ambas pantallas conviven en composición y permiten que toques sobre
+            // la pantalla saliente disparen acciones que dejan el NavHost sin destino.
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
         ) {
             composable(RutasGrafoPaciente.HOME) {
                 PantallaHomePaciente(
@@ -189,7 +250,7 @@ fun GrafoPacienteNavegacion(
                             popUpTo(RutasGrafoPaciente.HOME) { inclusive = true }
                         }
                     },
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -199,7 +260,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.NOTAS) {
                 NotasPacienteScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alIrAAnadirNota = { navPaciente.navigate(RutasGrafoPaciente.ANADIR_NOTA) },
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
@@ -212,7 +273,7 @@ fun GrafoPacienteNavegacion(
             composable(RutasGrafoPaciente.ANADIR_NOTA) {
                 PantallaAnadirNota(
                     alNotaGuardada = { navPaciente.popBackStack() },
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -222,7 +283,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.TAREAS) {
                 TareasPacienteScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -233,7 +294,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.CITAS_MENU) {
                 CitasMenuScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -245,7 +306,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.AGENDAR_CITA) {
                 CitasScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -255,7 +316,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.MIS_CITAS) {
                 MisCitasPacienteScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -265,7 +326,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.AJUSTES) {
                 PantallaAjustesPaciente(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -277,7 +338,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.ACERCA) {
                 PantallaAcercaDePaciente(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
@@ -287,7 +348,7 @@ fun GrafoPacienteNavegacion(
 
             composable(RutasGrafoPaciente.CHAT_PSICOLOGO) {
                 PantallaChatScreen(
-                    alVolver = { navPaciente.popBackStack() },
+                    alVolver = manejarVolver,
                     nombreUsuarioBarra = nombreBarra,
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,

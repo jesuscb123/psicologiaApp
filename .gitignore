@@ -19,15 +19,16 @@ GoogleService-Info.plist
 .cursorrules
 
 doc/stitch_mindbridge_therapy_hub/
-
-
+doc/PRUEBAS_APP.md
+doc/FALLOS_ENCONTRADOS.md
+doc/APUNTES.md
 doc/referencias_pantallas
 
 .cursor
-doc/PRUEBAS_APP.md
+
 database.rules.json
 
-doc/FALLOS_ENCONTRADOS.md
+
 
 /app/build/
 

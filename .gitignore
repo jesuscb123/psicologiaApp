@@ -28,3 +28,9 @@ doc/PRUEBAS_APP.md
 database.rules.json
 
 doc/FALLOS_ENCONTRADOS.md
+
+/app/build/
+
+app/prod
+
+build/

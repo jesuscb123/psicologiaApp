@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,7 @@ fun PantallaConCabeceraOndaApp(
         val alturaPantallaBase = LocalConfiguration.current.screenHeightDp.dp
         val alturaCabecera = alturaPantallaBase * proporcionAlturaCabecera
         val colorContenidoBajoOnda = MaterialTheme.colorScheme.background
-        val colorCabeceraDefecto = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surface else Color.White
+        val colorCabeceraDefecto = MaterialTheme.colorScheme.surface
         val colorCabeceraFinal = colorCabecera ?: colorCabeceraDefecto
         val formaHoja = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         val contenidoCabecera = cabecera ?: encabezado

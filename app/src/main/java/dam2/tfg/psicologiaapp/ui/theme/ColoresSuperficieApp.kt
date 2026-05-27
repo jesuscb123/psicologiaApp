@@ -53,6 +53,18 @@ fun colorFondoCampoAzulApp(): Color {
     }
 }
 
+/** Fondo claro para tarjetas de pacientes (home psicólogo). */
+@Composable
+@ReadOnlyComposable
+fun colorFondoTarjetaPacienteApp(): Color {
+    val scheme = MaterialTheme.colorScheme
+    return if (esTemaOscuroApp()) {
+        scheme.surfaceContainerHighest
+    } else {
+        scheme.surfaceContainerLowest
+    }
+}
+
 /** Fondo blanco para tarjetas de notas y tareas. */
 @Composable
 @ReadOnlyComposable

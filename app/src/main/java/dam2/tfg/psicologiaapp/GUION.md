@@ -150,7 +150,7 @@ Desarrollar un ecosistema digital seguro que conecte a **paciente** y **psicólo
 
 ### Qué incluye
 
-- Aplicación Android: **Kotlin**, **Jetpack Compose**, **Material 3**, **Hilt**, **Room**, **Retrofit**, **DataStore**; `minSdk` 26, `compileSdk` 36; flavors `**local`** y `**prod**`.
+- Aplicación Android: **Kotlin**, **Jetpack Compose**, **Material 3**, **Hilt**, **Room**, **Retrofit**, **DataStore**; `minSdk` 26, `compileSdk` 36; flavors `**local`** y `**prod`**.
 - API REST bajo prefijo `**/api**`, seguridad Spring con filtro Firebase, roles `ROLE_PACIENTE` / `ROLE_PSICOLOGO`.
 - Persistencia **PostgreSQL** en producción (Flyway); **H2** en perfil `dev`.
 - **Firebase**: Auth, Realtime Database (chat), Cloud Messaging (push); **App Check** en builds release del cliente.

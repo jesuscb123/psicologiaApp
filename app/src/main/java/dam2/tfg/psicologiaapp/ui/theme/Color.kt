@@ -68,23 +68,23 @@ val enTerciarioOscuro = Color(0xFF221730)
 val contenedorTerciarioOscuro = Color(0xFF4C3D5C)
 val enContenedorTerciarioOscuro = Color(0xFFE8CDFD)
 
-val fondoOscuro = Color(0xFF121318)
-val enFondoOscuro = Color(0xFFE4E5EA)
-val superficieOscuro = Color(0xFF1B1F2A)
-val enSuperficieOscuro = Color(0xFFE4E5EA)
-val varianteSuperficieOscuro = Color(0xFF464A59)
-val enVarianteSuperficieOscuro = Color(0xFFC6C6D0)
+val fondoOscuro = Color(0xFF0F1629)
+val enFondoOscuro = Color(0xFFE2E8F5)
+val superficieOscuro = Color(0xFF172240)
+val enSuperficieOscuro = Color(0xFFE2E8F5)
+val varianteSuperficieOscuro = Color(0xFF405780)
+val enVarianteSuperficieOscuro = Color(0xFFC8D4EA)
 
-val superficieDimOscuro = Color(0xFF121318)
-val superficieBrillanteOscuro = Color(0xFF323744)
-val superficieContenedorMinimaOscuro = Color(0xFF0F1219)
-val superficieContenedorBajaOscuro = Color(0xFF1F2430)
-val superficieContenedorOscuro = Color(0xFF232836)
-val superficieContenedorAltaOscuro = Color(0xFF2E3444)
-val superficieContenedorMaximaOscuro = Color(0xFF393F50)
+val superficieDimOscuro = Color(0xFF0C1222)
+val superficieBrillanteOscuro = Color(0xFF3A5088)
+val superficieContenedorMinimaOscuro = Color(0xFF121C36)
+val superficieContenedorBajaOscuro = Color(0xFF1A2848)
+val superficieContenedorOscuro = Color(0xFF1F3158)
+val superficieContenedorAltaOscuro = Color(0xFF263B66)
+val superficieContenedorMaximaOscuro = Color(0xFF2E4678)
 
-val contornoOscuro = Color(0xFF8F9099)
-val contornoVarianteOscuro = Color(0xFF464A52)
+val contornoOscuro = Color(0xFF7B8FBA)
+val contornoVarianteOscuro = Color(0xFF4A5F8F)
 
 val errorOscuro = Color(0xFFFFB4AB)
 val enErrorOscuro = Color(0xFF690005)
@@ -92,10 +92,10 @@ val contenedorErrorOscuro = Color(0xFF93000A)
 val enContenedorErrorOscuro = Color(0xFFFFDAD6)
 
 val superficieInversaOscuro = Color(0xFFE4E5EA)
-val enSuperficieInversaOscuro = Color(0xFF1B1F2A)
+val enSuperficieInversaOscuro = Color(0xFF172240)
 val primarioInversoOscuro = Color(0xFF234A8C)
 
-// -------- Aliases (tema heredado) --------
+val azulTarjetaInfoPerfilClaro = Color(0xFFD0E0FF)
 val Purple40 = primarioClaro
 val PurpleGrey40 = secundarioClaro
 val Pink40 = terciarioClaro

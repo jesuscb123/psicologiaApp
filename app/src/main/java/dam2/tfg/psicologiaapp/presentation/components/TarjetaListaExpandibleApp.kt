@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +30,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoTarjetaNotasTareasApp
+
 /**
  * Tarjeta de lista expandible (notas, tareas): mismo shell visual en toda la app.
  */
@@ -45,19 +45,16 @@ fun TarjetaListaExpandibleApp(
 ) {
     var expanded by rememberSaveable(claveExpandido) { mutableStateOf(false) }
 
-    Card(
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = modifier.fillMaxWidth(),
+    TarjetaSuperficieAzulApp(
+        modifier = modifier,
+        colorFondo = colorFondoTarjetaNotasTareasApp(),
+        alphaBorde = 0.12f,
     ) {
         Column(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
                 .animateContentSize()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 18.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.Top,
@@ -88,13 +85,14 @@ fun TarjetaListaExpandibleApp(
             }
 
             if (expanded) {
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(10.dp))
                 contenidoExpandido()
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(14.dp))
             HorizontalDivider(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
+                thickness = 1.5.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.32f),
             )
             Spacer(Modifier.height(10.dp))
             Row(

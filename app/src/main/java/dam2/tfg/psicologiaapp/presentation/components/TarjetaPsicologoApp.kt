@@ -31,7 +31,6 @@ fun TarjetaPsicologoApp(
         .firstOrNull()
         .orEmpty()
     TarjetaApp(
-        elevacion = 1.dp,
         modifier = modifier.clickable { alPulsar(psicologo) },
     ) {
         Column(

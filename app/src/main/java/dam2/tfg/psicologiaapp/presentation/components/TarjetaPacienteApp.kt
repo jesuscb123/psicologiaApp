@@ -36,6 +36,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoTarjetaAzulApp
 
 @Composable
 fun TarjetaPacienteApp(
@@ -75,7 +76,7 @@ fun TarjetaPacienteApp(
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.16f),
+            containerColor = colorFondoTarjetaAzulApp(),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(

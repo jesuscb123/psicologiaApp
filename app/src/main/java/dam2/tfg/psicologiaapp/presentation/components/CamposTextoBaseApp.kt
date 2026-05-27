@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoCampoAzulApp
 
 enum class EstiloCampoTextoApp {
     Normal,
@@ -223,10 +224,6 @@ fun CampoTextoBaseApp(
         colors = colores,
     )
 }
-
-@Composable
-fun colorFondoCampoAzulApp(): Color =
-    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.24f)
 
 @Composable
 fun coloresOutlinedCampoBusquedaApp() = OutlinedTextFieldDefaults.colors(

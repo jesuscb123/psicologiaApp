@@ -30,6 +30,8 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoTarjetaAzulActivaApp
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoTarjetaAzulSuaveApp
 
 @Composable
 fun TarjetaCitaPacienteApp(
@@ -95,9 +97,9 @@ fun TarjetaCitaApp(
 ) {
     val esActiva = estado == EstadoCitaCalculado.ACTIVA
     val fondoTarjeta = if (esActiva) {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.22f)
+        colorFondoTarjetaAzulActivaApp()
     } else {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+        colorFondoTarjetaAzulSuaveApp()
     }
     val bordeTarjeta = MaterialTheme.colorScheme.primary.copy(
         alpha = if (esActiva) 0.22f else 0.12f,

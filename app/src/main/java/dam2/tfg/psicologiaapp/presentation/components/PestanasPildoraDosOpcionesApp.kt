@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoSubTarjetaApp
 
 /**
  * Segmento de dos pestañas estilo píldora (design tipo Stitch / “Digital Sanctuary”):
@@ -66,7 +67,7 @@ private fun PildoraOpcion(
         modifier = modifier,
         shape = RoundedCornerShape(999.dp),
         color = if (seleccionada) {
-            MaterialTheme.colorScheme.surface
+            colorFondoSubTarjetaApp()
         } else {
             MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0f)
         },

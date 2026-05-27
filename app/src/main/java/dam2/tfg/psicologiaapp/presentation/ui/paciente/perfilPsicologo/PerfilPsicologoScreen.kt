@@ -1,6 +1,7 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente.perfilPsicologo
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,8 @@ import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
-import dam2.tfg.psicologiaapp.ui.theme.sombraAmbientalColor
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoSubTarjetaApp
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoTarjetaInfoPsicologoApp
 
 private val formaTarjetaInfoPsicologo = RoundedCornerShape(24.dp)
 private val formaTarjetaInfoContacto = RoundedCornerShape(16.dp)
@@ -222,7 +224,7 @@ private fun CabeceraPerfilPsicologo(
 
         Surface(
             shape = RoundedCornerShape(999.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            color = colorFondoSubTarjetaApp(),
         ) {
             Text(
                 text = "Valoración de la comunidad — próximamente",
@@ -241,15 +243,19 @@ private fun CabeceraPerfilPsicologo(
 @Composable
 private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
     val especialidadesTokens = psicologo.especialidades
+    val colorTarjeta = colorFondoTarjetaInfoPsicologoApp()
+    val colorBordeTarjeta = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
 
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = formaTarjetaInfoPsicologo,
-        color = MaterialTheme.colorScheme.background,
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-        ),
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(formaTarjetaInfoPsicologo)
+            .background(colorTarjeta)
+            .border(
+                width = 1.dp,
+                color = colorBordeTarjeta,
+                shape = formaTarjetaInfoPsicologo,
+            ),
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -311,21 +317,15 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     especialidadesTokens.forEach { esp ->
-                        val sombra = sombraAmbientalColor(MaterialTheme.colorScheme.onSurface)
-                        Surface(
-                            modifier = Modifier.shadow(
-                                elevation = 3.dp,
-                                shape = formaChipEspecialidad,
-                                clip = false,
-                                ambientColor = sombra,
-                                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                            ),
-                            shape = formaChipEspecialidad,
-                            color = MaterialTheme.colorScheme.surface,
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
-                            ),
+                        Box(
+                            modifier = Modifier
+                                .clip(formaChipEspecialidad)
+                                .background(colorFondoSubTarjetaApp())
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                                    shape = formaChipEspecialidad,
+                                ),
                         ) {
                             Text(
                                 text = esp,
@@ -352,21 +352,17 @@ private fun TarjetaInfoContacto(
     icono: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val sombra = sombraAmbientalColor(MaterialTheme.colorScheme.onSurface)
-    Surface(
-        modifier = modifier.shadow(
-            elevation = 4.dp,
-            shape = formaTarjetaInfoContacto,
-            clip = false,
-            ambientColor = sombra,
-            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
-        ),
-        shape = formaTarjetaInfoContacto,
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-        ),
+    val colorBorde = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
+
+    Box(
+        modifier = modifier
+            .clip(formaTarjetaInfoContacto)
+            .background(colorFondoSubTarjetaApp())
+            .border(
+                width = 1.dp,
+                color = colorBorde,
+                shape = formaTarjetaInfoContacto,
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -375,9 +371,10 @@ private fun TarjetaInfoContacto(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top,
         ) {
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
             ) {
                 Box(
                     modifier = Modifier.padding(8.dp),

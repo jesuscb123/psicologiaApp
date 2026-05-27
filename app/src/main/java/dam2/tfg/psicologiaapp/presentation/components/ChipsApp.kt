@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoSubTarjetaApp
 
 @Composable
 fun ChipApp(
@@ -23,7 +24,7 @@ fun ChipApp(
         shape = MaterialTheme.shapes.extraLarge,
         label = { Text(text = texto, style = MaterialTheme.typography.labelLarge) },
         colors = AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = colorFondoSubTarjetaApp(),
             labelColor = MaterialTheme.colorScheme.onSurface
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -44,7 +45,7 @@ fun ChipSeleccionableApp(
         shape = MaterialTheme.shapes.extraLarge,
         label = { Text(text = texto, style = MaterialTheme.typography.labelLarge) },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = colorFondoSubTarjetaApp(),
             labelColor = MaterialTheme.colorScheme.onSurface,
             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer

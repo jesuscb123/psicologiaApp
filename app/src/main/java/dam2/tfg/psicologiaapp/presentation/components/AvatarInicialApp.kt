@@ -10,7 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import dam2.tfg.psicologiaapp.ui.theme.colorFondoAvatarInicialApp
+import dam2.tfg.psicologiaapp.ui.theme.colorTextoAvatarInicialApp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,13 +27,13 @@ fun AvatarInicialApp(
         modifier = modifier
             .size(tamano)
             .clip(CircleShape)
-            .background(Color(0xFFEEF2FF))
+            .background(colorFondoAvatarInicialApp())
     ) {
         Text(
             text = inicial,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1E3A8A),
+            color = colorTextoAvatarInicialApp(),
             modifier = Modifier.padding((tamano.value / 4).dp)
         )
     }

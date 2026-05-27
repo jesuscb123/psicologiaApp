@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,12 +29,8 @@ import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
 import dam2.tfg.psicologiaapp.presentation.components.BotonSecundarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
-import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaCitaPacienteApp
 import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
-import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MisCitasPacienteScreen(
@@ -152,7 +147,7 @@ fun MisCitasPacienteScreen(
                         items = citasVisibles,
                         key = { it.id },
                     ) { cita ->
-                        TarjetaCitaPaciente(
+                        TarjetaCitaPacienteApp(
                             cita = cita,
                             mostrarCancelar = viewModel.puedeCancelar(cita.estadoCalculado),
                             alCancelar = { citaPendienteCancelar = cita },
@@ -163,47 +158,4 @@ fun MisCitasPacienteScreen(
         }
     }
 }
-
-@Composable
-private fun TarjetaCitaPaciente(
-    cita: Cita,
-    mostrarCancelar: Boolean,
-    alCancelar: () -> Unit,
-) {
-    TarjetaApp(modifier = Modifier.fillMaxWidth(), mostrarBorde = false) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text("Psicólogo: ${cita.nombrePsicologo}", style = MaterialTheme.typography.titleSmall)
-            Text(
-                text = "Inicio: ${formatearIso(cita.inicio)}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = "Fin: ${formatearIso(cita.fin)}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = "Estado: ${cita.estadoCalculado}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (mostrarCancelar) {
-                Button(
-                    onClick = alCancelar,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                ) { Text("Cancelar") }
-            }
-        }
-    }
-}
-
-private fun formatearIso(isoOffset: String): String =
-    runCatching {
-        // El backend devuelve inicio/fin en UTC; mostramos siempre en hora local del dispositivo.
-        val instant = OffsetDateTime.parse(isoOffset).toInstant()
-        instant.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-    }.getOrElse { isoOffset }
 

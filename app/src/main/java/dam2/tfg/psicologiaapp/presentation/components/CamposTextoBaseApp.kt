@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,7 @@ import androidx.compose.ui.unit.dp
 enum class EstiloCampoTextoApp {
     Normal,
     Minimal,
-    /** Fondo `surfaceContainerHigh`, borde invisible hasta foco (inputs tipo Stitch). */
+    /** Fondo azul suave, borde invisible hasta foco (inputs tipo Stitch). */
     ContenedorAlta,
     /** Formularios de registro: esquinas rectas y fondo suave. */
     Registro,
@@ -54,8 +55,10 @@ fun CampoTextoBaseApp(
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
     val esError = !textoError.isNullOrBlank()
-    val colorContenedorHabilitado = MaterialTheme.colorScheme.surface
-    val colorContenedorDeshabilitado = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+    val fondoCampoAzul = colorFondoCampoAzulApp()
+    val fondoCampoAzulDeshabilitado = fondoCampoAzul.copy(alpha = fondoCampoAzul.alpha * 0.55f)
+    val colorContenedorHabilitado = fondoCampoAzul
+    val colorContenedorDeshabilitado = fondoCampoAzulDeshabilitado
     val formaCampo: Shape = when (estilo) {
         EstiloCampoTextoApp.Registro -> RectangleShape
         EstiloCampoTextoApp.ContenedorAlta -> MaterialTheme.shapes.medium
@@ -68,16 +71,17 @@ fun CampoTextoBaseApp(
             disabledContainerColor = colorContenedorDeshabilitado,
             errorContainerColor = colorContenedorHabilitado,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
+            disabledBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
             focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             cursorColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = MaterialTheme.colorScheme.error,
             errorCursorColor = MaterialTheme.colorScheme.error,
             errorLabelColor = MaterialTheme.colorScheme.error,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+            disabledLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
             errorLeadingIconColor = MaterialTheme.colorScheme.error,
             focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -110,22 +114,22 @@ fun CampoTextoBaseApp(
         )
 
         EstiloCampoTextoApp.ContenedorAlta -> OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f),
-            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-            unfocusedBorderColor = Color.Transparent,
-            disabledBorderColor = Color.Transparent,
-            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedContainerColor = fondoCampoAzul,
+            unfocusedContainerColor = fondoCampoAzul,
+            disabledContainerColor = fondoCampoAzulDeshabilitado,
+            errorContainerColor = fondoCampoAzul,
+            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+            disabledBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             cursorColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = MaterialTheme.colorScheme.error,
             errorCursorColor = MaterialTheme.colorScheme.error,
             errorLabelColor = MaterialTheme.colorScheme.error,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.outlineVariant,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.outlineVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+            disabledLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
             errorLeadingIconColor = MaterialTheme.colorScheme.error,
             focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -134,19 +138,19 @@ fun CampoTextoBaseApp(
         )
 
         EstiloCampoTextoApp.Registro -> OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f),
-            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedContainerColor = fondoCampoAzul,
+            unfocusedContainerColor = fondoCampoAzul,
+            disabledContainerColor = fondoCampoAzulDeshabilitado,
+            errorContainerColor = fondoCampoAzul,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = Color.Transparent,
-            disabledBorderColor = Color.Transparent,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+            disabledBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
             cursorColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = MaterialTheme.colorScheme.error,
             errorCursorColor = MaterialTheme.colorScheme.error,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+            disabledLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
             errorLeadingIconColor = MaterialTheme.colorScheme.error,
             focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -219,6 +223,33 @@ fun CampoTextoBaseApp(
         colors = colores,
     )
 }
+
+@Composable
+fun colorFondoCampoAzulApp(): Color =
+    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.24f)
+
+@Composable
+fun coloresOutlinedCampoBusquedaApp() = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = colorFondoCampoAzulApp(),
+    unfocusedContainerColor = colorFondoCampoAzulApp(),
+    focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
+    unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+    cursorColor = MaterialTheme.colorScheme.primary,
+    focusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+    unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+)
+
+@Composable
+fun coloresTextFieldCampoBusquedaApp() = TextFieldDefaults.colors(
+    focusedContainerColor = colorFondoCampoAzulApp(),
+    unfocusedContainerColor = colorFondoCampoAzulApp(),
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent,
+    cursorColor = MaterialTheme.colorScheme.primary,
+    focusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+    unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+)
 
 @Composable
 fun CampoCorreoBaseApp(

@@ -23,12 +23,8 @@ import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
 import dam2.tfg.psicologiaapp.presentation.components.BotonSecundarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
-import dam2.tfg.psicologiaapp.presentation.components.TarjetaApp
+import dam2.tfg.psicologiaapp.presentation.components.TarjetaCitaPsicologoApp
 import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
-import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MisCitasPsicologoScreen(
@@ -124,40 +120,11 @@ fun MisCitasPsicologoScreen(
                         items = citasVisibles,
                         key = { it.id },
                     ) { cita ->
-                        TarjetaCitaPsicologo(cita = cita)
+                        TarjetaCitaPsicologoApp(cita = cita)
                     }
                 }
             }
         }
     }
 }
-
-@Composable
-private fun TarjetaCitaPsicologo(
-    cita: Cita,
-) {
-    TarjetaApp(modifier = Modifier.fillMaxWidth(), mostrarBorde = false) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text("Paciente: ${cita.nombrePaciente}", style = MaterialTheme.typography.titleSmall)
-            Text(
-                text = "Inicio: ${formatearIso(cita.inicio)}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = "Estado: ${cita.estadoCalculado}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-private fun formatearIso(isoOffset: String): String =
-    runCatching {
-        // El backend devuelve inicio/fin en UTC; mostramos siempre en hora local del dispositivo.
-        val instant = OffsetDateTime.parse(isoOffset).toInstant()
-        instant.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-    }.getOrElse { isoOffset }
 

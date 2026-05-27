@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -74,9 +75,13 @@ fun TarjetaPacienteApp(
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.16f),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+        ),
         modifier = cardModifier,
     ) {
         Row(
@@ -111,7 +116,9 @@ fun TarjetaPacienteApp(
                 )
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHigh)
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+        )
         if (alPulsarChat == null) {
             Row(
                 verticalAlignment = Alignment.Top,

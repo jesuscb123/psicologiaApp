@@ -2,6 +2,7 @@ package dam2.tfg.psicologiaapp.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,12 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Canvas
+import dam2.tfg.psicologiaapp.ui.theme.brushGradienteFirma
 
 @Composable
 fun PantallaConCabeceraOndaApp(
@@ -32,11 +35,12 @@ fun PantallaConCabeceraOndaApp(
     cabecera: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
     colorCabecera: Color? = null,
-    paddingEncabezado: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-    alineacionEncabezado: Alignment = Alignment.TopCenter,
-    paddingContenido: PaddingValues = PaddingValues(horizontal = 22.dp, vertical = 22.dp),
-    proporcionAlturaCabecera: Float = 0.15f,
-    alturaOnda: Dp = 72.dp,
+    usarGradienteCabecera: Boolean = true,
+    paddingEncabezado: PaddingValues = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+    alineacionEncabezado: Alignment = Alignment.Center,
+    paddingContenido: PaddingValues = PaddingValues(horizontal = 22.dp, vertical = 14.dp),
+    proporcionAlturaCabecera: Float = 0.09f,
+    alturaOnda: Dp = 48.dp,
     elevacionHoja: Dp = 0.dp,
     contenido: @Composable ColumnScope.() -> Unit,
 ) {
@@ -47,6 +51,7 @@ fun PantallaConCabeceraOndaApp(
         val colorContenidoBajoOnda = MaterialTheme.colorScheme.background
         val colorCabeceraDefecto = MaterialTheme.colorScheme.surface
         val colorCabeceraFinal = colorCabecera ?: colorCabeceraDefecto
+        val mostrarGradiente = usarGradienteCabecera && colorCabecera == null
         val formaHoja = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         val contenidoCabecera = cabecera ?: encabezado
 
@@ -55,16 +60,38 @@ fun PantallaConCabeceraOndaApp(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(alturaCabecera)
-                    .background(colorCabeceraFinal),
+                    .then(
+                        if (mostrarGradiente) {
+                            Modifier.shadow(
+                                elevation = 4.dp,
+                                shape = RectangleShape,
+                                clip = false,
+                                ambientColor = Color.Black.copy(alpha = 0.06f),
+                                spotColor = Color.Black.copy(alpha = 0.10f),
+                            )
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .then(
+                        if (mostrarGradiente) {
+                            Modifier.background(brushGradienteFirma())
+                        } else {
+                            Modifier.background(colorCabeceraFinal)
+                        },
+                    ),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .statusBarsPadding()
                         .padding(paddingEncabezado),
                     contentAlignment = alineacionEncabezado,
                 ) {
-                    contenidoCabecera()
+                    CompositionLocalProvider(
+                        LocalCabeceraSobreGradiente provides mostrarGradiente,
+                    ) {
+                        contenidoCabecera()
+                    }
                 }
             }
 
@@ -111,7 +138,7 @@ fun PantallaConCabeceraOndaApp(
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = alturaCabecera + alturaOnda - 24.dp),
+                    .padding(top = alturaCabecera + alturaOnda - 40.dp),
                 color = colorContenidoBajoOnda,
                 shape = formaHoja,
                 tonalElevation = elevacionHoja,
@@ -120,7 +147,7 @@ fun PantallaConCabeceraOndaApp(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingContenido),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     contenido()
                 }

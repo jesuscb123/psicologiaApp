@@ -21,13 +21,15 @@ fun TarjetaApp(
     mostrarBorde: Boolean = true,
     contenido: @Composable ColumnScope.() -> Unit,
 ) {
+    val fondoTarjetaAzul = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.18f)
+    val bordeTarjetaAzul = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = fondoTarjetaAzul),
         elevation = CardDefaults.cardElevation(defaultElevation = elevacion),
         border = if (mostrarBorde) {
-            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f))
+            BorderStroke(1.dp, bordeTarjetaAzul)
         } else {
             null
         }

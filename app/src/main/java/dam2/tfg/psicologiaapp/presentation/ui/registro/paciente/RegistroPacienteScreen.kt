@@ -79,6 +79,7 @@ fun PantallaRegistroPaciente(
         },
         modifier = Modifier.fillMaxSize(),
         colorCabecera = MaterialTheme.colorScheme.background,
+        usarGradienteCabecera = false,
         paddingEncabezado = PaddingValues(horizontal = 24.dp, vertical = 4.dp),
         alineacionEncabezado = Alignment.TopStart,
         proporcionAlturaCabecera = 0.10f,

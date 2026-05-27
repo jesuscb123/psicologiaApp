@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente.perfilPsicologo
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,11 @@ import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
+import dam2.tfg.psicologiaapp.ui.theme.sombraAmbientalColor
+
+private val formaTarjetaInfoPsicologo = RoundedCornerShape(24.dp)
+private val formaTarjetaInfoContacto = RoundedCornerShape(16.dp)
+private val formaChipEspecialidad = RoundedCornerShape(999.dp)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -238,8 +244,12 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = formaTarjetaInfoPsicologo,
+        color = MaterialTheme.colorScheme.background,
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+        ),
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -249,7 +259,7 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                 text = "Sobre mí",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.primary,
             )
             Text(
                 text = psicologo.descripcion?.takeIf { it.isNotBlank() }
@@ -258,9 +268,9 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 TarjetaInfoContacto(
                     titulo = "Educación / colegiado",
@@ -269,11 +279,10 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                         Icon(
                             Icons.Filled.Info,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     },
-                    colorIconoFondo = MaterialTheme.colorScheme.tertiaryContainer,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 TarjetaInfoContacto(
                     titulo = "Disponibilidad",
@@ -282,11 +291,10 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                         Icon(
                             Icons.Filled.DateRange,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     },
-                    colorIconoFondo = MaterialTheme.colorScheme.secondaryContainer,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
@@ -295,7 +303,7 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                     text = "Especialidades",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -303,9 +311,21 @@ private fun TarjetaInformacionPsicologo(psicologo: Psicologo) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     especialidadesTokens.forEach { esp ->
+                        val sombra = sombraAmbientalColor(MaterialTheme.colorScheme.onSurface)
                         Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                            modifier = Modifier.shadow(
+                                elevation = 3.dp,
+                                shape = formaChipEspecialidad,
+                                clip = false,
+                                ambientColor = sombra,
+                                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                            ),
+                            shape = formaChipEspecialidad,
+                            color = MaterialTheme.colorScheme.surface,
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                            ),
                         ) {
                             Text(
                                 text = esp,
@@ -330,22 +350,34 @@ private fun TarjetaInfoContacto(
     titulo: String,
     subtitulo: String,
     icono: @Composable () -> Unit,
-    colorIconoFondo: Color,
     modifier: Modifier = Modifier,
 ) {
+    val sombra = sombraAmbientalColor(MaterialTheme.colorScheme.onSurface)
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        modifier = modifier.shadow(
+            elevation = 4.dp,
+            shape = formaTarjetaInfoContacto,
+            clip = false,
+            ambientColor = sombra,
+            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+        ),
+        shape = formaTarjetaInfoContacto,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+        ),
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Surface(
-                shape = RoundedCornerShape(999.dp),
-                color = colorIconoFondo,
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
             ) {
                 Box(
                     modifier = Modifier.padding(8.dp),
@@ -354,7 +386,10 @@ private fun TarjetaInfoContacto(
                     icono()
                 }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 Text(
                     text = titulo,
                     style = MaterialTheme.typography.titleSmall,

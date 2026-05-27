@@ -62,7 +62,7 @@ class CitasViewModel @Inject constructor(
         val zonaHoraria = _uiState.value.zonaHoraria.ifBlank { ZoneId.systemDefault().id }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true, mensajeError = null) }
+            _uiState.update { it.copy(cargando = true) }
             obtenerDisponibilidadDiaUseCase(fecha, zonaHoraria).fold(
                 onSuccess = { dispo ->
                     _uiState.update {

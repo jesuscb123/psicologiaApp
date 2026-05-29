@@ -110,7 +110,7 @@ fun PantallaAnadirNota(
                         limiteCaracteres = LimitesCaracteresNota.DESCRIPCION,
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
-                        alturaMaxima = 200.dp,
+                        maxLineas = 6,
                     )
 
                     uiState.mensajeError?.let {

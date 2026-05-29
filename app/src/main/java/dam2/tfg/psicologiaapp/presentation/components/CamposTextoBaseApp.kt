@@ -44,6 +44,7 @@ fun CampoTextoBaseApp(
     soloLectura: Boolean = false,
     singleLine: Boolean = true,
     minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
     iconoInicio: ImageVector? = null,
     contenidoDescripcionIconoInicio: String? = null,
     iconoFin: ImageVector? = null,
@@ -170,6 +171,7 @@ fun CampoTextoBaseApp(
         readOnly = soloLectura,
         singleLine = singleLine,
         minLines = minLines,
+        maxLines = maxLines,
         label = if (etiqueta.isNotBlank()) {
             { Text(etiqueta) }
         } else {
@@ -308,4 +310,3 @@ fun CampoContrasenaBaseApp(
         modifier = modifier,
     )
 }
-

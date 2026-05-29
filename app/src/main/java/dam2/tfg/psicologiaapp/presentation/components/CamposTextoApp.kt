@@ -3,10 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -110,6 +107,7 @@ fun CampoTextoApp(
 
 /**
  * Campo de texto multilinea con contador de caracteres y scroll interno.
+ * El campo mantiene su tamaño fijo (no crece) y permite scroll interno automático.
  * Ideal para descripciones largas con límite de caracteres.
  */
 @Composable
@@ -122,7 +120,7 @@ fun CampoTextoConContadorApp(
     placeholder: String? = null,
     habilitado: Boolean = true,
     textoError: String? = null,
-    alturaMaxima: Dp = 200.dp,
+    maxLineas: Int = 6,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
 ) {
@@ -134,13 +132,11 @@ fun CampoTextoConContadorApp(
             alCambiar = alCambiar,
             etiqueta = etiqueta,
             placeholder = placeholder,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = alturaMaxima)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth(),
             habilitado = habilitado,
             singleLine = false,
             minLines = 4,
+            maxLines = maxLineas,
             textoError = textoError,
             paddingExterno = paddingExterno,
             estilo = estilo,

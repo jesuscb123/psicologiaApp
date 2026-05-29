@@ -224,7 +224,7 @@ fun PantallaRegistroPsicologo(
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                         textoError = uiState.errorLongitudDescripcion,
-                        alturaMaxima = 180.dp,
+                        maxLineas = 5,
                         paddingExterno = EstiloCamposRegistro.paddingCampo,
                         estilo = EstiloCamposRegistro.estiloCampo,
                     )

@@ -109,7 +109,7 @@ fun PantallaAnadirTareaPsicologo(
                             limiteCaracteres = LimitesCaracteresTarea.DESCRIPCION,
                             modifier = Modifier.fillMaxWidth(),
                             habilitado = !uiState.cargando,
-                            alturaMaxima = 200.dp,
+                            maxLineas = 6,
                         )
 
                         uiState.mensajeError?.let {

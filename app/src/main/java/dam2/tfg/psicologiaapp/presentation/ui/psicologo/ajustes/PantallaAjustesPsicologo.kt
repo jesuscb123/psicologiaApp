@@ -163,7 +163,7 @@ fun PantallaAjustesPsicologo(
                             limiteCaracteres = LimitesCaracteresRegistro.Psicologo.DESCRIPCION,
                             modifier = Modifier.fillMaxWidth(),
                             habilitado = !uiState.guardando,
-                            alturaMaxima = 180.dp,
+                            maxLineas = 5,
                         )
                     }
                 }

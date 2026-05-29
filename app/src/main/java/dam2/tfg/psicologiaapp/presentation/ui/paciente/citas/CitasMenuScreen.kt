@@ -43,7 +43,7 @@ fun CitasMenuScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         Text(
-            text = "Citas",
+            text = "Planifica tus sesiones",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,

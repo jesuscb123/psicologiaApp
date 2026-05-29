@@ -70,7 +70,7 @@ fun PantallaAnadirTareaPsicologo(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Nueva tarea",
+                    text = "Crear una nueva tarea",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,

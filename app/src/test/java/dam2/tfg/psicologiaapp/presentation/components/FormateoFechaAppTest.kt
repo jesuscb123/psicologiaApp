@@ -41,4 +41,19 @@ class FormateoFechaAppTest {
         val invalido = "fecha-no-valida"
         assertEquals(invalido, formatearFechaLista(invalido))
     }
+
+    @Test
+    fun `parsearFechaNotaLocal parsea OffsetDateTime ISO`() {
+        assertEquals(LocalDate.of(2026, 5, 27), parsearFechaNotaLocal("2026-05-27T10:30:00+02:00"))
+    }
+
+    @Test
+    fun `parsearFechaNotaLocal parsea LocalDateTime ISO`() {
+        assertEquals(LocalDate.of(2026, 5, 27), parsearFechaNotaLocal("2026-05-27T10:30:00"))
+    }
+
+    @Test
+    fun `parsearFechaNotaLocal devuelve null si no puede parsear`() {
+        assertEquals(null, parsearFechaNotaLocal("fecha-no-valida"))
+    }
 }

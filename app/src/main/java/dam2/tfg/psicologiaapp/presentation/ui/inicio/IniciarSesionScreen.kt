@@ -123,7 +123,7 @@ fun PantallaIniciarSesion(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Tu espacio digital seguro.",
+                text = "Acompañándote durante todo tu proceso.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

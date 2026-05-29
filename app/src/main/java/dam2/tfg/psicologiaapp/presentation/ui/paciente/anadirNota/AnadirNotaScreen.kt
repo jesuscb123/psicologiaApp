@@ -71,7 +71,7 @@ fun PantallaAnadirNota(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "Nueva nota",
+                text = "Escribe lo que sientes",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,

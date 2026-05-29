@@ -34,6 +34,7 @@ import dam2.tfg.psicologiaapp.presentation.components.CampoConEtiquetaExternaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoContrasenaApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoCorreoApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
+import dam2.tfg.psicologiaapp.presentation.components.CampoTextoConContadorApp
 import dam2.tfg.psicologiaapp.presentation.components.EditorEspecialidadesApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 import dam2.tfg.psicologiaapp.presentation.ui.registro.util.EstiloCamposRegistro
@@ -214,16 +215,16 @@ fun PantallaRegistroPsicologo(
                     etiqueta = "Descripción (opcional)",
                     etiquetaEnMayusculas = true,
                 ) {
-                    CampoTextoApp(
+                    CampoTextoConContadorApp(
                         valor = uiState.descripcion,
                         alCambiar = viewModel::alCambiarDescripcion,
                         etiqueta = "",
                         placeholder = "Cuéntale a tus pacientes tu enfoque…",
+                        limiteCaracteres = LimitesCaracteresRegistro.Psicologo.DESCRIPCION,
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
-                        singleLine = false,
-                        minLines = 3,
                         textoError = uiState.errorLongitudDescripcion,
+                        alturaMaxima = 180.dp,
                         paddingExterno = EstiloCamposRegistro.paddingCampo,
                         estilo = EstiloCamposRegistro.estiloCampo,
                     )

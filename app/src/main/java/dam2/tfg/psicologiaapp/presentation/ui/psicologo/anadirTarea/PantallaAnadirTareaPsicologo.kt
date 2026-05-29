@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
+import dam2.tfg.psicologiaapp.presentation.components.CampoTextoConContadorApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
+import dam2.tfg.psicologiaapp.tarea.domain.LimitesCaracteresTarea
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
 @Composable
@@ -100,13 +102,14 @@ fun PantallaAnadirTareaPsicologo(
                             singleLine = true,
                         )
 
-                        CampoTextoApp(
+                        CampoTextoConContadorApp(
                             valor = uiState.descripcion,
                             alCambiar = viewModel::alCambiarDescripcion,
                             etiqueta = "Descripción",
+                            limiteCaracteres = LimitesCaracteresTarea.DESCRIPCION,
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = false,
-                            minLines = 4,
+                            habilitado = !uiState.cargando,
+                            alturaMaxima = 200.dp,
                         )
 
                         uiState.mensajeError?.let {

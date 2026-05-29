@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.presentation.navegacion.RutasApp
+import dam2.tfg.psicologiaapp.tarea.domain.LimitesCaracteresTarea
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.CrearTareaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,15 @@ class AnadirTareaPsicologoViewModel @Inject constructor(
     val uiState: StateFlow<AnadirTareaPsicologoUiState> = _uiState
 
     fun alCambiarTitulo(nuevoTitulo: String) {
-        _uiState.update { it.copy(titulo = nuevoTitulo, mensajeError = null) }
+        if (nuevoTitulo.length <= LimitesCaracteresTarea.TITULO) {
+            _uiState.update { it.copy(titulo = nuevoTitulo, mensajeError = null) }
+        }
     }
 
     fun alCambiarDescripcion(nuevaDescripcion: String) {
-        _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+        if (nuevaDescripcion.length <= LimitesCaracteresTarea.DESCRIPCION) {
+            _uiState.update { it.copy(descripcion = nuevaDescripcion, mensajeError = null) }
+        }
     }
 
     fun alConsumirEventoNavegacion() {

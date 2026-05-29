@@ -1,11 +1,22 @@
 package dam2.tfg.psicologiaapp.presentation.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -97,3 +108,57 @@ fun CampoTextoApp(
     )
 }
 
+/**
+ * Campo de texto multilinea con contador de caracteres y scroll interno.
+ * Ideal para descripciones largas con límite de caracteres.
+ */
+@Composable
+fun CampoTextoConContadorApp(
+    valor: String,
+    alCambiar: (String) -> Unit,
+    etiqueta: String,
+    limiteCaracteres: Int,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    habilitado: Boolean = true,
+    textoError: String? = null,
+    alturaMaxima: Dp = 200.dp,
+    paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        CampoTextoBaseApp(
+            valor = valor,
+            alCambiar = alCambiar,
+            etiqueta = etiqueta,
+            placeholder = placeholder,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = alturaMaxima)
+                .verticalScroll(rememberScrollState()),
+            habilitado = habilitado,
+            singleLine = false,
+            minLines = 4,
+            textoError = textoError,
+            paddingExterno = paddingExterno,
+            estilo = estilo,
+        )
+
+        // Contador de caracteres
+        Text(
+            text = "${valor.length}/$limiteCaracteres",
+            style = MaterialTheme.typography.bodySmall,
+            color = if (valor.length >= limiteCaracteres) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            fontWeight = if (valor.length >= limiteCaracteres) FontWeight.SemiBold else FontWeight.Normal,
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 14.dp, top = 4.dp),
+        )
+    }
+}

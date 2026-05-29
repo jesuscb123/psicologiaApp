@@ -21,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dam2.tfg.psicologiaapp.nota.domain.LimitesCaracteresNota
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.CampoTextoApp
+import dam2.tfg.psicologiaapp.presentation.components.CampoTextoConContadorApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
 
@@ -101,13 +103,14 @@ fun PantallaAnadirNota(
                         singleLine = true,
                     )
 
-                    CampoTextoApp(
+                    CampoTextoConContadorApp(
                         valor = uiState.descripcion,
                         alCambiar = viewModel::alCambiarDescripcion,
                         etiqueta = "Descripción",
+                        limiteCaracteres = LimitesCaracteresNota.DESCRIPCION,
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = false,
-                        minLines = 4,
+                        habilitado = !uiState.cargando,
+                        alturaMaxima = 200.dp,
                     )
 
                     uiState.mensajeError?.let {

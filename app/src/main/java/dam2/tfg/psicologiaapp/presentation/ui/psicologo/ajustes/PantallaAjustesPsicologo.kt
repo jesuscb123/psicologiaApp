@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.AvatarPerfilCircularApp
 import dam2.tfg.psicologiaapp.presentation.components.BotonPrimarioApp
-import dam2.tfg.psicologiaapp.presentation.components.CampoTextoBaseApp
+import dam2.tfg.psicologiaapp.presentation.components.CampoTextoConContadorApp
 import dam2.tfg.psicologiaapp.presentation.components.EditorEspecialidadesApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
@@ -155,14 +155,15 @@ fun PantallaAjustesPsicologo(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        CampoTextoBaseApp(
+                        CampoTextoConContadorApp(
                             valor = uiState.descripcion,
                             alCambiar = viewModel::alCambiarDescripcion,
                             etiqueta = "Descripción",
                             placeholder = "Cuéntale a tus pacientes tu enfoque, especialidades, etc.",
-                            singleLine = false,
-                            minLines = 4,
+                            limiteCaracteres = LimitesCaracteresRegistro.Psicologo.DESCRIPCION,
                             modifier = Modifier.fillMaxWidth(),
+                            habilitado = !uiState.guardando,
+                            alturaMaxima = 180.dp,
                         )
                     }
                 }

@@ -3,9 +3,9 @@
 Aplicación móvil del **Trabajo de Fin de Grado (DAM2)** que conecta **pacientes** y **psicólogos** en un entorno digital seguro: gestión de notas, tareas terapéuticas, citas, chat en tiempo real y notificaciones push. Forma parte del ecosistema **PsicologíaApp** junto con la API REST **bdPsicologiaApp** (repositorio hermano del backend).
 
 <p align="center">
-  <img src="doc/capturas-app/pantalla_iniciosesion.jpg" alt="Pantalla de inicio de sesión" width="280" />
-  <img src="doc/capturas-app/home-paciente.jpg" alt="Inicio paciente" width="280" />
-  <img src="doc/capturas-app/home-psicologo.jpg" alt="Inicio psicólogo" width="280" />
+  <img src="doc/pantallas-app/iniciar-sesion.jpeg" alt="Pantalla de inicio de sesión" width="280" />
+  <img src="doc/pantallas-app/home-paciente.jpeg" alt="Inicio paciente" width="280" />
+  <img src="doc/pantallas-app/home-psicologo.jpeg" alt="Inicio psicólogo" width="280" />
 </p>
 
 ---
@@ -204,11 +204,45 @@ Opcional: `FIREBASE_RTDB_URL` en `build.gradle.kts` si la URL de Realtime Databa
 
 ---
 
+## Galería de pantallas
+
+### Autenticación y selección de rol
+
+<p align="center">
+  <img src="doc/pantallas-app/iniciar-sesion.jpeg" alt="Iniciar sesión" width="250" />
+  <img src="doc/pantallas-app/elegir-rol.jpg" alt="Elegir rol (Paciente/Psicólogo)" width="250" />
+</p>
+
+### Pantallas principales
+
+<p align="center">
+  <img src="doc/pantallas-app/home-paciente.jpeg" alt="Home Paciente" width="250" />
+  <img src="doc/pantallas-app/home-psicologo.jpeg" alt="Home Psicólogo" width="250" />
+</p>
+
+### Gestión de notas y tareas
+
+<p align="center">
+  <img src="doc/pantallas-app/notas-paciente.jpeg" alt="Notas del paciente" width="250" />
+  <img src="doc/pantallas-app/resumen-notas.jpeg" alt="Resumen de notas con IA" width="250" />
+  <img src="doc/pantallas-app/tareas-psico.jpeg" alt="Tareas del psicólogo" width="250" />
+</p>
+
+### Citas y chat
+
+<p align="center">
+  <img src="doc/pantallas-app/menu-sesiones.jpeg" alt="Menú de sesiones/citas" width="250" />
+  <img src="doc/pantallas-app/agendar-cita.jpeg" alt="Agendar cita" width="250" />
+  <img src="doc/pantallas-app/chat.jpeg" alt="Chat en tiempo real" width="250" />
+</p>
+
+---
+
 ## Capturas y diseño
 
 | Recurso | Ubicación |
 |---------|-----------|
-| Capturas de la app | `doc/capturas-app/` |
+| Pantallas de la app | `doc/pantallas-app/` |
 | Mockups / diseño UI | `doc/diseño-interfaz-app/` |
 | Diseño de arquitectura | `doc/DISEÑO_SISTEMA.md` |
 

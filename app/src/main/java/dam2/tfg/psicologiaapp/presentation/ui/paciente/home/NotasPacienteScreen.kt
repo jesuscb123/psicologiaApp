@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -26,9 +25,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,9 +47,9 @@ import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 import dam2.tfg.psicologiaapp.presentation.components.BotonFlotantePrimarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EstadoVacioContenidoApp
-import dam2.tfg.psicologiaapp.presentation.components.ItemNotaEnListaApp
+import dam2.tfg.psicologiaapp.presentation.components.ListaNotasApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
-import dam2.tfg.psicologiaapp.presentation.components.coloresTextFieldCampoBusquedaApp
+import dam2.tfg.psicologiaapp.presentation.components.coloresOutlinedCampoBusquedaApp
 import dam2.tfg.psicologiaapp.presentation.components.formatearFechaLista
 import dam2.tfg.psicologiaapp.presentation.components.parsearFechaNotaLocal
 import java.time.Instant
@@ -109,42 +108,57 @@ fun NotasPacienteScreen(
                 )
             },
             modifier = Modifier.fillMaxSize(),
-            contenido = {
-                when {
-                    uiState.cargando -> {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
+                    .imePadding(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                uiState.mensajeError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    when {
+                        uiState.cargando -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+
+                        uiState.perfilPaciente?.psicologoId == null -> {
+                            Text(
+                                text = "Aun no tienes psicologo asignado.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.align(Alignment.TopStart),
+                            )
+                        }
+
+                        uiState.notas.isEmpty() -> {
+                            EstadoVacioContenidoApp(
+                                titulo = "Tu diario está en blanco",
+                                subtitulo = "Pulsa el botón + para registrar cómo te sientes y compartirlo con tu psicólogo.",
+                                modifier = Modifier.align(Alignment.Center),
+                            )
+                        }
+
+                        else -> {
+                            NotasPacienteListaConFiltros(
+                                notas = uiState.notas,
+                                alSolicitarEliminar = { notaPendienteEliminar = it },
+                                modifier = Modifier.fillMaxSize(),
+                            )
                         }
                     }
-
-                    uiState.perfilPaciente?.psicologoId == null -> {
-                        Text(
-                            text = "Aun no tienes psicologo asignado.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-
-                    uiState.notas.isEmpty() -> {
-                        EstadoVacioContenidoApp(
-                            titulo = "Tu diario está en blanco",
-                            subtitulo = "Pulsa el botón + para registrar cómo te sientes y compartirlo con tu psicólogo.",
-                        )
-                    }
-
-                    else -> {
-                        NotasPacienteListaConFiltros(
-                            mensajeError = uiState.mensajeError,
-                            notas = uiState.notas,
-                            alSolicitarEliminar = { notaPendienteEliminar = it },
-                        )
-                    }
                 }
-            },
-        )
+            }
+        }
 
         if (!uiState.cargando && uiState.perfilPaciente?.psicologoId != null && !tecladoVisible) {
             BotonFlotantePrimarioApp(
@@ -162,9 +176,9 @@ fun NotasPacienteScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotasPacienteListaConFiltros(
-    mensajeError: String?,
     notas: List<Nota>,
     alSolicitarEliminar: (Nota) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var textoBusqueda by rememberSaveable { mutableStateOf("") }
     var fechaFiltroIso by rememberSaveable { mutableStateOf<String?>(null) }
@@ -212,26 +226,17 @@ private fun NotasPacienteListaConFiltros(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        mensajeError?.let {
-            Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-
-        TextField(
+        OutlinedTextField(
             value = textoBusqueda,
             onValueChange = { textoBusqueda = it },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text(
                     text = "Buscar en título o descripción…",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
@@ -244,7 +249,7 @@ private fun NotasPacienteListaConFiltros(
             },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
-            colors = coloresTextFieldCampoBusquedaApp(),
+            colors = coloresOutlinedCampoBusquedaApp(),
         )
 
         Row(
@@ -289,9 +294,13 @@ private fun NotasPacienteListaConFiltros(
             }
         }
 
-        if (notasFiltradas.isEmpty()) {
-            Text(
-                text = when {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            if (notasFiltradas.isEmpty()) {
+                val mensaje = when {
                     textoBusqueda.isNotBlank() && fechaFiltro != null ->
                         "No hay notas que coincidan con tu búsqueda y la fecha seleccionada."
                     textoBusqueda.isNotBlank() ->
@@ -300,29 +309,21 @@ private fun NotasPacienteListaConFiltros(
                         "No hay notas en esta fecha."
                     else ->
                         "No hay notas que mostrar."
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 88.dp),
-            ) {
-                items(
-                    items = notasFiltradas,
-                    key = { it.id },
-                ) { nota ->
-                    ItemNotaEnListaApp(
-                        nota = nota,
-                        permitirEliminar = true,
-                        alSolicitarEliminar = alSolicitarEliminar,
-                    )
                 }
+                Text(
+                    text = mensaje,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                ListaNotasApp(
+                    notas = notasFiltradas,
+                    modifier = Modifier.fillMaxSize(),
+                    paddingContenido = PaddingValues(bottom = 88.dp),
+                    permitirEliminar = true,
+                    alSolicitarEliminar = alSolicitarEliminar,
+                )
             }
         }
     }

@@ -1,5 +1,7 @@
 package dam2.tfg.psicologiaapp.presentation.navegacion
 
+import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
+
 object RutasApp {
     const val SPLASH = "splash"
     const val INICIAR_SESION = "iniciar_sesion"
@@ -28,13 +30,20 @@ object RutasGrafoPaciente {
     const val ANADIR_NOTA = "nota/anadir"
     const val CITAS_MENU = "citas"
     const val AGENDAR_CITA = "citas/agendar"
-    const val MIS_CITAS = "citas/mis_citas"
+    const val MIS_CITAS = "citas/mis_citas?filtro={filtro}"
+    const val ARG_FILTRO_CITAS = "filtro"
     const val PERFIL_PSICOLOGO = "psicologo/{psicologoId}"
     const val AJUSTES = "ajustes"
     const val ACERCA = "acerca"
     const val CHAT_PSICOLOGO = "chat/psicologo"
 
     fun crearRutaPerfilPsicologo(psicologoId: String): String = "psicologo/$psicologoId"
+
+    fun crearRutaMisCitas(filtro: FiltroMisCitas = FiltroMisCitas.ACTIVAS): String =
+        when (filtro) {
+            FiltroMisCitas.ACTIVAS -> "citas/mis_citas?filtro=activas"
+            FiltroMisCitas.FINALIZADAS -> "citas/mis_citas?filtro=finalizadas"
+        }
 }
 
 /** Rutas del [androidx.navigation.compose.NavHost] interno del grafo psicólogo. */

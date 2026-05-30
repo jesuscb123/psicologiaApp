@@ -43,6 +43,7 @@ import dam2.tfg.psicologiaapp.presentation.ui.paciente.acerca.PantallaAcercaDePa
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.ajustes.PantallaAjustesPaciente
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.anadirNota.PantallaAnadirNota
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasScreen
+import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.CitasMenuScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.citas.MisCitasPacienteScreen
 import dam2.tfg.psicologiaapp.presentation.ui.paciente.home.NotasPacienteScreen
@@ -199,7 +200,7 @@ fun GrafoPacienteNavegacion(
                     navegarDesdeMenu(RutasGrafoPaciente.AGENDAR_CITA)
                 },
                 alIrMisCitas = {
-                    navegarDesdeMenu(RutasGrafoPaciente.MIS_CITAS)
+                    navegarDesdeMenu(RutasGrafoPaciente.crearRutaMisCitas())
                 },
                 alIrAjustes = {
                     navegarDesdeMenu(RutasGrafoPaciente.AJUSTES)
@@ -300,7 +301,11 @@ fun GrafoPacienteNavegacion(
                     fotoPerfilUrlBarra = menuUi.fotoPerfilUrl,
                     revisionCacheFotoBarra = menuUi.revisionCacheFoto,
                     alIrAgendar = { navPaciente.navigate(RutasGrafoPaciente.AGENDAR_CITA) },
-                    alIrMisCitas = { navPaciente.navigate(RutasGrafoPaciente.MIS_CITAS) },
+                    alIrMisCitas = {
+                        navPaciente.navigate(
+                            RutasGrafoPaciente.crearRutaMisCitas(FiltroMisCitas.FINALIZADAS),
+                        )
+                    },
                 )
             }
 
@@ -314,7 +319,15 @@ fun GrafoPacienteNavegacion(
                 )
             }
 
-            composable(RutasGrafoPaciente.MIS_CITAS) {
+            composable(
+                route = RutasGrafoPaciente.MIS_CITAS,
+                arguments = listOf(
+                    navArgument(RutasGrafoPaciente.ARG_FILTRO_CITAS) {
+                        type = NavType.StringType
+                        defaultValue = "activas"
+                    },
+                ),
+            ) {
                 MisCitasPacienteScreen(
                     alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,

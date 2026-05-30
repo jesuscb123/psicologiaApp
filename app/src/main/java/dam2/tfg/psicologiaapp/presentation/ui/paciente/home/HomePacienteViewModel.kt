@@ -2,8 +2,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dam2.tfg.psicologiaapp.cita.domain.model.Cita
-import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
+import dam2.tfg.psicologiaapp.presentation.ui.citas.calcularProximaCitaActiva
 import kotlinx.coroutines.CancellationException
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
@@ -30,8 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.OffsetDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -240,21 +237,6 @@ class HomePacienteViewModel @Inject constructor(
     ): dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo? {
         if (psicologoId == null) return null
         return listaPsicologos.firstOrNull { it.idEntidadPsicologo == psicologoId }
-    }
-
-    private fun calcularProximaCitaActiva(citas: List<Cita>): Cita? {
-        val ahora = Instant.now()
-        return citas
-            .asSequence()
-            .filter { it.estadoCalculado == EstadoCitaCalculado.ACTIVA }
-            .mapNotNull { cita ->
-                val inicio = runCatching { OffsetDateTime.parse(cita.inicio).toInstant() }
-                    .getOrNull() ?: return@mapNotNull null
-                if (inicio.isBefore(ahora)) return@mapNotNull null
-                cita to inicio
-            }
-            .minByOrNull { it.second }
-            ?.first
     }
 }
 

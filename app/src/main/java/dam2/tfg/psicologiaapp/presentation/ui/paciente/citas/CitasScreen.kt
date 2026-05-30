@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,16 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
+import dam2.tfg.psicologiaapp.presentation.ui.citas.DialogoConfirmarCitaApp
+import dam2.tfg.psicologiaapp.presentation.ui.citas.GrillaFranjasHorariasCitaApp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitasScreen(
     alVolver: () -> Unit,
@@ -81,30 +78,15 @@ fun CitasScreen(
     }
 
     horaParaConfirmar?.let { hora ->
-        AlertDialog(
-            onDismissRequest = { horaParaConfirmar = null },
-            title = { Text("Confirmar cita") },
-            text = {
-                Text(
-                    "¿Deseas reservar una cita el ${
-                        uiState.fechaSeleccionada.format(
-                            DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))
-                        )
-                    } a las ${hora.format(DateTimeFormatter.ofPattern("HH:mm"))}?"
-                )
+        DialogoConfirmarCitaApp(
+            fecha = uiState.fechaSeleccionada,
+            hora = hora,
+            alConfirmar = {
+                viewModel.seleccionarHora(hora)
+                viewModel.reservar()
+                horaParaConfirmar = null
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.seleccionarHora(hora)
-                        viewModel.reservar()
-                        horaParaConfirmar = null
-                    }
-                ) { Text("Confirmar") }
-            },
-            dismissButton = {
-                TextButton(onClick = { horaParaConfirmar = null }) { Text("Cancelar") }
-            },
+            alCancelar = { horaParaConfirmar = null },
         )
     }
 
@@ -272,68 +254,14 @@ fun CitasScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
-                    val zona = runCatching { ZoneId.of(uiState.zonaHoraria.ifBlank { ZoneId.systemDefault().id }) }
-                        .getOrElse { ZoneId.systemDefault() }
-                    val ahora = ZonedDateTime.now(zona)
-                    val esHoy = uiState.fechaSeleccionada == ahora.toLocalDate()
-                    val fueraDeHorarioHoy = esHoy && ahora.toLocalTime() >= LocalTime.of(17, 0)
-                    val slotsDia = remember {
-                        (9..16).map { LocalTime.of(it, 0) }
-                    }
-
-                    when {
-                        uiState.cargando -> {
-                            Text("Cargando...", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        uiState.disponibilidad == null -> {
-                            Text(
-                                "Selecciona o cambia la fecha para ver la disponibilidad.",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        fueraDeHorarioHoy -> {
-                            Text(
-                                "No hay horarios disponibles para esta fecha.",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        else -> {
-                            val horasDisponiblesSet = uiState.disponibilidad?.horasDisponibles.orEmpty().toSet()
-                            val todasDeshabilitadas = slotsDia.all { slot ->
-                                val pasada = esHoy && slot.isBefore(ahora.toLocalTime())
-                                val disponibleServidor = slot in horasDisponiblesSet
-                                !disponibleServidor || pasada
-                            }
-
-                            if (todasDeshabilitadas) {
-                                Text(
-                                    "No hay horas disponibles para este día.",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                slotsDia.forEach { hora ->
-                                    val pasada = esHoy && hora.isBefore(ahora.toLocalTime())
-                                    val disponibleServidor = hora in horasDisponiblesSet
-                                    val habilitada = disponibleServidor && !pasada && !uiState.cargando
-
-                                    FilterChip(
-                                        selected = uiState.horaSeleccionada == hora,
-                                        onClick = {
-                                            if (habilitada) horaParaConfirmar = hora
-                                        },
-                                        label = { Text(hora.toString()) },
-                                        enabled = habilitada,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    GrillaFranjasHorariasCitaApp(
+                        fecha = uiState.fechaSeleccionada,
+                        zonaHoraria = uiState.zonaHoraria,
+                        horasDisponibles = uiState.disponibilidad?.horasDisponibles,
+                        cargando = uiState.cargando,
+                        horaSeleccionada = uiState.horaSeleccionada,
+                        alSeleccionarHora = { horaParaConfirmar = it },
+                    )
                 }
             }
 

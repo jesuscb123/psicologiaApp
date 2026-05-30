@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente.citas
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
@@ -7,6 +8,7 @@ import dam2.tfg.psicologiaapp.cita.domain.usecase.CancelarCitaUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.presentation.ui.citas.FiltroMisCitas
+import dam2.tfg.psicologiaapp.presentation.navegacion.RutasGrafoPaciente
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,9 +22,15 @@ class MisCitasPacienteViewModel @Inject constructor(
     private val observarMisCitasPacienteUseCase: ObservarMisCitasPacienteUseCase,
     private val sincronizarMisCitasPacienteUseCase: SincronizarMisCitasPacienteUseCase,
     private val cancelarCitaUseCase: CancelarCitaUseCase,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MisCitasPacienteUiState())
+    private val filtroInicial = when (savedStateHandle.get<String>(RutasGrafoPaciente.ARG_FILTRO_CITAS)) {
+        "finalizadas" -> FiltroMisCitas.FINALIZADAS
+        else -> FiltroMisCitas.ACTIVAS
+    }
+
+    private val _uiState = MutableStateFlow(MisCitasPacienteUiState(filtroSeleccionado = filtroInicial))
     val uiState: StateFlow<MisCitasPacienteUiState> = _uiState
 
     init {

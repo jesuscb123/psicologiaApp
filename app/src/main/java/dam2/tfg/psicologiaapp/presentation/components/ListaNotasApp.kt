@@ -28,6 +28,23 @@ import dam2.tfg.psicologiaapp.nota.domain.model.Nota
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ItemNotaEnListaApp(
+    nota: Nota,
+    modifier: Modifier = Modifier,
+    permitirEliminar: Boolean = true,
+    alSolicitarEliminar: (Nota) -> Unit = {},
+) {
+    Box(modifier = modifier) {
+        ContenidoItemNota(
+            nota = nota,
+            permitirEliminar = permitirEliminar,
+            alSolicitarEliminar = alSolicitarEliminar,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ListaNotasApp(
     notas: List<Nota>,
     modifier: Modifier = Modifier,

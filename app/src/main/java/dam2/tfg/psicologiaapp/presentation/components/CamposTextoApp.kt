@@ -87,6 +87,7 @@ fun CampoTextoApp(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    habilitarDictadoVoz: Boolean = false,
 ) {
     CampoTextoBaseApp(
         valor = valor,
@@ -102,6 +103,7 @@ fun CampoTextoApp(
         visualTransformation = visualTransformation,
         paddingExterno = paddingExterno,
         estilo = estilo,
+        habilitarDictadoVoz = habilitarDictadoVoz,
     )
 }
 
@@ -123,6 +125,7 @@ fun CampoTextoConContadorApp(
     maxLineas: Int = 6,
     paddingExterno: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
     estilo: EstiloCampoTextoApp = EstiloCampoTextoApp.Normal,
+    habilitarDictadoVoz: Boolean = false,
 ) {
     Column(
         modifier = modifier,
@@ -140,6 +143,7 @@ fun CampoTextoConContadorApp(
             textoError = textoError,
             paddingExterno = paddingExterno,
             estilo = estilo,
+            habilitarDictadoVoz = habilitarDictadoVoz,
         )
 
         // Contador de caracteres

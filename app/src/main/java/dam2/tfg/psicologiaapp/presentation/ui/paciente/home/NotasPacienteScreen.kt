@@ -50,6 +50,7 @@ import dam2.tfg.psicologiaapp.presentation.components.EncabezadoUsuarioApp
 import dam2.tfg.psicologiaapp.presentation.components.EstadoVacioContenidoApp
 import dam2.tfg.psicologiaapp.presentation.components.ItemNotaEnListaApp
 import dam2.tfg.psicologiaapp.presentation.components.PantallaConCabeceraOndaApp
+import dam2.tfg.psicologiaapp.presentation.components.TrailingIconDictadoVozApp
 import dam2.tfg.psicologiaapp.presentation.components.coloresTextFieldCampoBusquedaApp
 import dam2.tfg.psicologiaapp.presentation.components.formatearFechaLista
 import dam2.tfg.psicologiaapp.presentation.components.parsearFechaNotaLocal
@@ -240,6 +241,12 @@ private fun NotasPacienteListaConFiltros(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+                )
+            },
+            trailingIcon = {
+                TrailingIconDictadoVozApp(
+                    valor = textoBusqueda,
+                    alCambiar = { textoBusqueda = it },
                 )
             },
             singleLine = true,

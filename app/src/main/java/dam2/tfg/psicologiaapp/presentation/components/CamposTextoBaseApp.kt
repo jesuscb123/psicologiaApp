@@ -50,6 +50,7 @@ fun CampoTextoBaseApp(
     iconoFin: ImageVector? = null,
     contenidoDescripcionIconoFin: String? = null,
     alPulsarIconoFin: (() -> Unit)? = null,
+    habilitarDictadoVoz: Boolean = false,
     textoError: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -161,6 +162,16 @@ fun CampoTextoBaseApp(
         )
     }
 
+    val iniciarDictado = if (habilitarDictadoVoz) {
+        rememberControladorDictadoVoz(
+            valorActual = valor,
+            alCambiar = alCambiar,
+            habilitado = habilitado && !soloLectura,
+        )
+    } else {
+        null
+    }
+
     OutlinedTextField(
         value = valor,
         onValueChange = alCambiar,
@@ -193,21 +204,55 @@ fun CampoTextoBaseApp(
                 )
             }
         },
-        trailingIcon = if (iconoFin == null) null else {
+        trailingIcon = if (iconoFin == null && !habilitarDictadoVoz) null else {
             {
-                if (alPulsarIconoFin == null) {
-                    Icon(
-                        imageVector = iconoFin,
-                        contentDescription = contenidoDescripcionIconoFin,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    IconButton(onClick = alPulsarIconoFin) {
-                        Icon(
-                            imageVector = iconoFin,
-                            contentDescription = contenidoDescripcionIconoFin,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                when {
+                    iconoFin != null && habilitarDictadoVoz -> {
+                        Row {
+                            IconoDictadoVozApp(
+                                onClick = { iniciarDictado?.invoke() },
+                                habilitado = habilitado && !soloLectura,
+                            )
+                            if (alPulsarIconoFin == null) {
+                                Icon(
+                                    imageVector = iconoFin,
+                                    contentDescription = contenidoDescripcionIconoFin,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            } else {
+                                IconButton(onClick = alPulsarIconoFin) {
+                                    Icon(
+                                        imageVector = iconoFin,
+                                        contentDescription = contenidoDescripcionIconoFin,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    habilitarDictadoVoz -> {
+                        IconoDictadoVozApp(
+                            onClick = { iniciarDictado?.invoke() },
+                            habilitado = habilitado && !soloLectura,
                         )
+                    }
+                    else -> {
+                        val icono = iconoFin!!
+                        if (alPulsarIconoFin == null) {
+                            Icon(
+                                imageVector = icono,
+                                contentDescription = contenidoDescripcionIconoFin,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        } else {
+                            IconButton(onClick = alPulsarIconoFin) {
+                                Icon(
+                                    imageVector = icono,
+                                    contentDescription = contenidoDescripcionIconoFin,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
                     }
                 }
             }

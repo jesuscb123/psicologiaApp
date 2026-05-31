@@ -14,4 +14,9 @@
     <string name="permiso_notificaciones_mensaje">Recibirás avisos cuando llegue un mensaje del chat o cuando se te asigne una nueva tarea.</string>
     <string name="permiso_notificaciones_aceptar">Activar</string>
     <string name="permiso_notificaciones_rechazar">Ahora no</string>
+
+    <!-- Dictado por voz -->
+    <string name="dictado_voz_cd">Dictar por voz</string>
+    <string name="dictado_voz_prompt">Habla ahora…</string>
+    <string name="dictado_voz_no_disponible">El dictado por voz no está disponible en este dispositivo</string>
 </resources>

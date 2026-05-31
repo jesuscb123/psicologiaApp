@@ -100,6 +100,7 @@ fun PantallaAnadirTareaPsicologo(
                             etiqueta = "Título",
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            habilitarDictadoVoz = true,
                         )
 
                         CampoTextoConContadorApp(
@@ -110,6 +111,7 @@ fun PantallaAnadirTareaPsicologo(
                             modifier = Modifier.fillMaxWidth(),
                             habilitado = !uiState.cargando,
                             maxLineas = 6,
+                            habilitarDictadoVoz = true,
                         )
 
                         uiState.mensajeError?.let {

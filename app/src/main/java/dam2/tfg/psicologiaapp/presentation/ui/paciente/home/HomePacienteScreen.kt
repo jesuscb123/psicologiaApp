@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import dam2.tfg.psicologiaapp.presentation.components.TrailingIconDictadoVozApp
 import dam2.tfg.psicologiaapp.presentation.components.coloresOutlinedCampoBusquedaApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -268,6 +269,12 @@ private fun HomePacienteSeleccionPsicologo(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+                )
+            },
+            trailingIcon = {
+                TrailingIconDictadoVozApp(
+                    valor = textoBusqueda,
+                    alCambiar = { textoBusqueda = it },
                 )
             },
             singleLine = true,

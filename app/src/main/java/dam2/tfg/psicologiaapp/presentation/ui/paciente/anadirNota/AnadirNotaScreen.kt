@@ -101,6 +101,7 @@ fun PantallaAnadirNota(
                         etiqueta = "Asunto",
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        habilitarDictadoVoz = true,
                     )
 
                     CampoTextoConContadorApp(
@@ -111,6 +112,7 @@ fun PantallaAnadirNota(
                         modifier = Modifier.fillMaxWidth(),
                         habilitado = !uiState.cargando,
                         maxLineas = 6,
+                        habilitarDictadoVoz = true,
                     )
 
                     uiState.mensajeError?.let {

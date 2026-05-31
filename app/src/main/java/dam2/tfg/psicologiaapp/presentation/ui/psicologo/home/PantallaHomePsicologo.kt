@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import dam2.tfg.psicologiaapp.presentation.components.TrailingIconDictadoVozApp
 import dam2.tfg.psicologiaapp.presentation.components.coloresTextFieldCampoBusquedaApp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -213,6 +214,12 @@ private fun HomePsicologoListaPacientes(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
+                )
+            },
+            trailingIcon = {
+                TrailingIconDictadoVozApp(
+                    valor = busqueda,
+                    alCambiar = { busqueda = it },
                 )
             },
             singleLine = true,

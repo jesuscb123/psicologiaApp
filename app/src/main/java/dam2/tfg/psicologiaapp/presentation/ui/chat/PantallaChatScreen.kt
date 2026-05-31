@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dam2.tfg.psicologiaapp.chat.domain.model.MensajeChat
 import dam2.tfg.psicologiaapp.presentation.components.AvatarPerfilCircularApp
+import dam2.tfg.psicologiaapp.presentation.components.TrailingIconDictadoVozApp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -251,6 +252,13 @@ private fun BarraEntradaMensajeChatApp(
             shape = RoundedCornerShape(24.dp),
             maxLines = 4,
             enabled = habilitado,
+            trailingIcon = {
+                TrailingIconDictadoVozApp(
+                    valor = texto,
+                    alCambiar = alCambiarTexto,
+                    habilitado = habilitado && !enviando,
+                )
+            },
         )
         FilledIconButton(
             onClick = alEnviar,

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.auth.domain.usecase.CrearCuentaUseCase
 import dam2.tfg.psicologiaapp.auth.domain.usecase.EliminarUsuarioFirebaseActualUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.model.PacienteRequest
+import dam2.tfg.psicologiaapp.auth.util.mensajeErrorCreacionCuenta
 import dam2.tfg.psicologiaapp.presentation.ui.registro.util.LimitesCaracteresRegistro
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.CrearUsuarioUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -129,7 +130,7 @@ class RegistroPacienteViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cargando = false,
-                            mensajeError = error.message ?: "No se pudo crear la cuenta"
+                            mensajeError = error.mensajeErrorCreacionCuenta()
                         )
                     }
                 }

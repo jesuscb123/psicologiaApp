@@ -7,6 +7,7 @@ import dam2.tfg.psicologiaapp.paciente.data.remote.AsignarPsicologoRequestDto
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteApi
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
 import dam2.tfg.psicologiaapp.paciente.domain.repository.PacienteRepository
+import dam2.tfg.psicologiaapp.util.runSuspendCatching
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -18,26 +19,26 @@ class PacienteRepositoryImpl @Inject constructor(
     private val pacienteDao: PacienteDao,
 ) : PacienteRepository {
 
-    override suspend fun listarPacientes(): Result<List<Paciente>> = runCatching {
+    override suspend fun listarPacientes(): Result<List<Paciente>> = runSuspendCatching {
         val lista = pacienteApi.listarPacientes()
         pacienteDao.borrarTodos()
         pacienteDao.guardarTodos(lista.map { it.toEntity() })
         lista.map { it.toDomain() }
     }
 
-    override suspend fun buscarPacientes(nombreUsuario: String): Result<List<Paciente>> = runCatching {
+    override suspend fun buscarPacientes(nombreUsuario: String): Result<List<Paciente>> = runSuspendCatching {
         pacienteApi.buscarPacientes(nombreUsuario).map { it.toDomain() }
     }
 
-    override suspend fun getPacientePorFirebase(firebaseId: String): Result<Paciente> = runCatching {
+    override suspend fun getPacientePorFirebase(firebaseId: String): Result<Paciente> = runSuspendCatching {
         pacienteApi.getPacientePorFirebase(firebaseId).toDomain()
     }
 
-    override suspend fun asignarPsicologo(psicologoId: Long): Result<Paciente> = runCatching {
+    override suspend fun asignarPsicologo(psicologoId: Long): Result<Paciente> = runSuspendCatching {
         pacienteApi.asignarPsicologo(AsignarPsicologoRequestDto(psicologoId = psicologoId)).toDomain()
     }
 
-    override suspend fun cancelarTerapia(): Result<Paciente> = runCatching {
+    override suspend fun cancelarTerapia(): Result<Paciente> = runSuspendCatching {
         pacienteApi.cancelarTerapia().toDomain()
     }
 

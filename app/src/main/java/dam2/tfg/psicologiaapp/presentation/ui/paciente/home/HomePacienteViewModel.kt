@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.presentation.ui.citas.calcularProximaCitaActiva
+import dam2.tfg.psicologiaapp.util.mensajeErrorParaUi
 import kotlinx.coroutines.CancellationException
 import dam2.tfg.psicologiaapp.cita.domain.usecase.ObservarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
@@ -150,12 +151,12 @@ class HomePacienteViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        mensajeError = errCitas?.message,
+                        mensajeError = errCitas.mensajeErrorParaUi(),
                     )
                 }
             } else if (perfilPaciente != null) {
                 _uiState.update {
-                    it.copy(cargando = false, notas = emptyList(), tareas = emptyList(), proximaCita = null)
+                    it.copy(cargando = false, tareas = emptyList(), proximaCita = null)
                 }
             } else {
                 _uiState.update { it.copy(cargando = false) }
@@ -169,7 +170,7 @@ class HomePacienteViewModel @Inject constructor(
                 onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
-                        it.copy(mensajeError = error.message ?: "No se pudo aceptar la tarea")
+                        it.copy(mensajeError = error.mensajeErrorParaUi("No se pudo aceptar la tarea"))
                     }
                 }
             )
@@ -183,8 +184,9 @@ class HomePacienteViewModel @Inject constructor(
                 onFailure = { error ->
                     _uiState.update {
                         it.copy(
-                            mensajeError = error.message
-                                ?: "No se pudo actualizar el estado de la tarea"
+                            mensajeError = error.mensajeErrorParaUi(
+                                "No se pudo actualizar el estado de la tarea"
+                            )
                         )
                     }
                 }
@@ -198,7 +200,7 @@ class HomePacienteViewModel @Inject constructor(
                 onSuccess = { _uiState.update { it.copy(mensajeError = null) } },
                 onFailure = { error ->
                     _uiState.update {
-                        it.copy(mensajeError = error.message ?: "No se pudo eliminar la nota")
+                        it.copy(mensajeError = error.mensajeErrorParaUi("No se pudo eliminar la nota"))
                     }
                 }
             )

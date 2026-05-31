@@ -12,6 +12,7 @@ import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPacientesDePsicol
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPacientesDePsicologoUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarPerfilActualUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dam2.tfg.psicologiaapp.util.mensajeErrorParaUi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -116,7 +117,7 @@ class HomePsicologoViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     cargando = false,
-                    mensajeError = resultadoPacientes.exceptionOrNull()?.message,
+                    mensajeError = resultadoPacientes.exceptionOrNull().mensajeErrorParaUi(),
                 )
             }
         }

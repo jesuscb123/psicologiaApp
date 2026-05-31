@@ -4,17 +4,20 @@ import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUse
 import dam2.tfg.psicologiaapp.paciente.domain.repository.PacienteRepository
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarPerfilActualUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
 import javax.inject.Inject
 
 class CancelarTerapiaUseCase @Inject constructor(
     private val pacienteRepository: PacienteRepository,
     private val sincronizarPerfilActualUseCase: SincronizarPerfilActualUseCase,
+    private val sincronizarNotasPacienteActualUseCase: SincronizarNotasPacienteActualUseCase,
     private val sincronizarTareasPacienteActualUseCase: SincronizarTareasPacienteActualUseCase,
     private val sincronizarMisCitasPacienteUseCase: SincronizarMisCitasPacienteUseCase,
 ) {
     suspend operator fun invoke(): Result<Unit> = runCatching {
         pacienteRepository.cancelarTerapia().getOrThrow()
         sincronizarPerfilActualUseCase().getOrThrow()
+        sincronizarNotasPacienteActualUseCase().getOrThrow()
         sincronizarTareasPacienteActualUseCase().getOrThrow()
         sincronizarMisCitasPacienteUseCase().getOrThrow()
     }

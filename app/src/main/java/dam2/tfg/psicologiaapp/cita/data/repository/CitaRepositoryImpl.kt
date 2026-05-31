@@ -11,6 +11,7 @@ import dam2.tfg.psicologiaapp.cita.domain.repository.CitaRepository
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
+import dam2.tfg.psicologiaapp.util.runSuspendCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -23,14 +24,14 @@ class CitaRepositoryImpl @Inject constructor(
     override suspend fun getDisponibilidadDia(
         fecha: LocalDate,
         zonaHoraria: String,
-    ): Result<DisponibilidadDia> = runCatching {
+    ): Result<DisponibilidadDia> = runSuspendCatching {
         val respuesta = citaApi.getDisponibilidadDia(
             fechaIso = fecha.toString(),
             zonaHoraria = zonaHoraria,
         )
 
         if (respuesta.code() == 204) {
-            return@runCatching DisponibilidadDia(
+            return@runSuspendCatching DisponibilidadDia(
                 fecha = fecha,
                 zonaHoraria = zonaHoraria,
                 horasDisponibles = emptyList(),
@@ -46,7 +47,7 @@ class CitaRepositoryImpl @Inject constructor(
     override suspend fun reservarCita(
         inicioIsoOffset: String,
         zonaHoraria: String,
-    ): Result<Cita> = runCatching {
+    ): Result<Cita> = runSuspendCatching {
         val respuesta = citaApi.reservarCita(
             CitaCrearRequestDto(inicio = inicioIsoOffset, zonaHoraria = zonaHoraria)
         )
@@ -65,11 +66,11 @@ class CitaRepositoryImpl @Inject constructor(
         cita
     }
 
-    override suspend fun getMisCitasPaciente(): Result<List<Cita>> = runCatching {
+    override suspend fun getMisCitasPaciente(): Result<List<Cita>> = runSuspendCatching {
         val respuesta = citaApi.getMisCitasPaciente()
         if (respuesta.code() == 204) {
             citaDao.borrarCitasPaciente()
-            return@runCatching emptyList()
+            return@runSuspendCatching emptyList()
         }
         if (!respuesta.isSuccessful) {
             throw IllegalStateException("Error al obtener citas: HTTP ${respuesta.code()}")
@@ -80,11 +81,11 @@ class CitaRepositoryImpl @Inject constructor(
         lista.map { it.toDomain() }
     }
 
-    override suspend fun getMisCitasPsicologo(): Result<List<Cita>> = runCatching {
+    override suspend fun getMisCitasPsicologo(): Result<List<Cita>> = runSuspendCatching {
         val respuesta = citaApi.getMisCitasPsicologo()
         if (respuesta.code() == 204) {
             citaDao.borrarCitasPsicologo()
-            return@runCatching emptyList()
+            return@runSuspendCatching emptyList()
         }
         if (!respuesta.isSuccessful) {
             throw IllegalStateException("Error al obtener citas: HTTP ${respuesta.code()}")
@@ -95,7 +96,7 @@ class CitaRepositoryImpl @Inject constructor(
         lista.map { it.toDomain() }
     }
 
-    override suspend fun cancelarCita(citaId: Long): Result<Cita> = runCatching {
+    override suspend fun cancelarCita(citaId: Long): Result<Cita> = runSuspendCatching {
         val respuesta = citaApi.cancelarCita(citaId)
         if (!respuesta.isSuccessful) {
             throw IllegalStateException("Error al cancelar cita: HTTP ${respuesta.code()}")
@@ -114,12 +115,12 @@ class CitaRepositoryImpl @Inject constructor(
     override fun observarMisCitasPsicologo(): Flow<List<Cita>> =
         citaDao.observarCitasPsicologo().map { lista -> lista.map { it.toDomain() } }
 
-    override suspend fun sincronizarMisCitasPaciente(): Result<Unit> = runCatching {
+    override suspend fun sincronizarMisCitasPaciente(): Result<Unit> = runSuspendCatching {
         getMisCitasPaciente().getOrThrow()
         Unit
     }
 
-    override suspend fun sincronizarMisCitasPsicologo(): Result<Unit> = runCatching {
+    override suspend fun sincronizarMisCitasPsicologo(): Result<Unit> = runSuspendCatching {
         getMisCitasPsicologo().getOrThrow()
         Unit
     }

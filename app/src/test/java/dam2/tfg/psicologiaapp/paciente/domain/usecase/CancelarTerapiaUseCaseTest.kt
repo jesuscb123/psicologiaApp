@@ -1,7 +1,9 @@
 package dam2.tfg.psicologiaapp.paciente.domain.usecase
 
 import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
+import dam2.tfg.psicologiaapp.test.fakes.FakeNotaRepository
 import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasPacienteActualUseCase
 import dam2.tfg.psicologiaapp.test.fakes.FakeCitaRepository
 import dam2.tfg.psicologiaapp.test.fakes.FakePacienteRepository
@@ -57,6 +59,12 @@ class CancelarTerapiaUseCaseTest {
                 pasos += "guardarCache"
             }
         }
+        val notaRepo = object : FakeNotaRepository() {
+            override suspend fun sincronizarNotasPacienteActual(): Result<Unit> {
+                pasos += "syncNotas"
+                return Result.success(Unit)
+            }
+        }
         val tareaRepo = object : FakeTareaRepository() {
             override suspend fun sincronizarTareasPacienteActual(): Result<Unit> {
                 pasos += "syncTareas"
@@ -73,6 +81,7 @@ class CancelarTerapiaUseCaseTest {
         val useCase = CancelarTerapiaUseCase(
             pacienteRepository = pacienteRepo,
             sincronizarPerfilActualUseCase = SincronizarPerfilActualUseCase(usuarioRepo, cacheRepo),
+            sincronizarNotasPacienteActualUseCase = SincronizarNotasPacienteActualUseCase(notaRepo),
             sincronizarTareasPacienteActualUseCase = SincronizarTareasPacienteActualUseCase(tareaRepo),
             sincronizarMisCitasPacienteUseCase = SincronizarMisCitasPacienteUseCase(citaRepo),
         )
@@ -81,7 +90,7 @@ class CancelarTerapiaUseCaseTest {
 
         assertTrue(resultado.isSuccess)
         assertEquals(
-            listOf("cancelarTerapia", "syncPerfil", "guardarCache", "syncTareas", "syncCitas"),
+            listOf("cancelarTerapia", "syncPerfil", "guardarCache", "syncNotas", "syncTareas", "syncCitas"),
             pasos,
         )
     }
@@ -99,6 +108,7 @@ class CancelarTerapiaUseCaseTest {
                 FakeUsuarioRepository(),
                 FakeUsuarioCacheRepository(),
             ),
+            sincronizarNotasPacienteActualUseCase = SincronizarNotasPacienteActualUseCase(FakeNotaRepository()),
             sincronizarTareasPacienteActualUseCase = SincronizarTareasPacienteActualUseCase(FakeTareaRepository()),
             sincronizarMisCitasPacienteUseCase = SincronizarMisCitasPacienteUseCase(FakeCitaRepository()),
         )

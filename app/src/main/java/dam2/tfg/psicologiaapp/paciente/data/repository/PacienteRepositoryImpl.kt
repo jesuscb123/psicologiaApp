@@ -37,6 +37,10 @@ class PacienteRepositoryImpl @Inject constructor(
         pacienteApi.asignarPsicologo(AsignarPsicologoRequestDto(psicologoId = psicologoId)).toDomain()
     }
 
+    override suspend fun cancelarTerapia(): Result<Paciente> = runCatching {
+        pacienteApi.cancelarTerapia().toDomain()
+    }
+
     override fun observarPacientes(): Flow<List<Paciente>> =
         pacienteDao.observarTodos().map { lista -> lista.map { it.toDomain() } }
 }

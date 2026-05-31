@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.presentation.ui.paciente.perfilPsicologo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dam2.tfg.psicologiaapp.paciente.domain.usecase.AsignarPsicologoUseCase
+import dam2.tfg.psicologiaapp.paciente.domain.usecase.CancelarTerapiaUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPsicologosUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPsicologosUseCase
 import dam2.tfg.psicologiaapp.usuario.domain.usecase.ObservarPerfilCacheadoUseCase
@@ -19,6 +20,7 @@ class PerfilPsicologoViewModel @Inject constructor(
     private val observarPsicologosUseCase: ObservarPsicologosUseCase,
     private val sincronizarPsicologosUseCase: SincronizarPsicologosUseCase,
     private val asignarPsicologoUseCase: AsignarPsicologoUseCase,
+    private val cancelarTerapiaUseCase: CancelarTerapiaUseCase,
     private val observarPerfilCacheadoUseCase: ObservarPerfilCacheadoUseCase,
 ) : ViewModel() {
 
@@ -39,7 +41,12 @@ class PerfilPsicologoViewModel @Inject constructor(
         }
         viewModelScope.launch {
             observarPerfilCacheadoUseCase().collectLatest { perfil ->
-                _uiState.update { it.copy(pacienteYaTienePsicologo = perfil?.psicologoId != null) }
+                _uiState.update {
+                    it.copy(
+                        pacienteYaTienePsicologo = perfil?.psicologoId != null,
+                        psicologoAsignadoId = perfil?.psicologoId,
+                    )
+                }
             }
         }
     }
@@ -102,6 +109,31 @@ class PerfilPsicologoViewModel @Inject constructor(
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun cancelarTerapia() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(cancelandoTerapia = true, mensajeError = null) }
+            val resultado = cancelarTerapiaUseCase()
+            resultado.fold(
+                onSuccess = {
+                    _uiState.update {
+                        it.copy(
+                            cancelandoTerapia = false,
+                            eventoNavegacion = EventoNavegacionPerfilPsicologo.CancelacionTerapiaCompletada,
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            cancelandoTerapia = false,
+                            mensajeError = error.message ?: "No se pudo cancelar la terapia",
+                        )
+                    }
+                },
             )
         }
     }

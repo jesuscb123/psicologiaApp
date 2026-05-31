@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -29,10 +30,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +62,7 @@ private val formaChipEspecialidad = RoundedCornerShape(999.dp)
 fun PantallaPerfilPsicologo(
     psicologoId: String,
     alAsignacionCompletada: () -> Unit,
+    alCancelacionTerapiaCompletada: () -> Unit,
     alVolver: () -> Unit,
     alAbrirMenuPerfil: () -> Unit,
     nombreUsuarioBarra: String,
@@ -65,6 +71,7 @@ fun PantallaPerfilPsicologo(
     viewModel: PerfilPsicologoViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var mostrarDialogoCancelarTerapia by remember { mutableStateOf(false) }
 
     LaunchedEffect(psicologoId) {
         viewModel.cargar(psicologoId)
@@ -76,8 +83,31 @@ fun PantallaPerfilPsicologo(
                 viewModel.alConsumirEventoNavegacion()
                 alAsignacionCompletada()
             }
+            EventoNavegacionPerfilPsicologo.CancelacionTerapiaCompletada -> {
+                viewModel.alConsumirEventoNavegacion()
+                alCancelacionTerapiaCompletada()
+            }
             null -> Unit
         }
+    }
+
+    if (mostrarDialogoCancelarTerapia) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoCancelarTerapia = false },
+            title = { Text("Cancelar terapia") },
+            text = { Text("¿Seguro que quieres cancelar la terapia con este psicólogo?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoCancelarTerapia = false
+                        viewModel.cancelarTerapia()
+                    },
+                ) { Text("Cancelar terapia") }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogoCancelarTerapia = false }) { Text("Volver") }
+            },
+        )
     }
 
     PantallaConCabeceraOndaApp(
@@ -129,7 +159,10 @@ fun PantallaPerfilPsicologo(
                 .joinToString(" ")
 
             val mostrarBotonAsignar = !uiState.pacienteYaTienePsicologo
-            val paddingInferiorBoton = if (mostrarBotonAsignar) 72.dp else 0.dp
+            val esPsicologoAsignado = uiState.psicologo?.idEntidadPsicologo == uiState.psicologoAsignadoId
+            val mostrarBotonCancelar = uiState.psicologoAsignadoId != null && esPsicologoAsignado
+            val mostrarBotonInferior = mostrarBotonAsignar || mostrarBotonCancelar
+            val paddingInferiorBoton = if (mostrarBotonInferior) 72.dp else 0.dp
 
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -157,6 +190,19 @@ fun PantallaPerfilPsicologo(
                         alPulsar = viewModel::asignarPsicologo,
                         habilitado = !uiState.asignando,
                         cargando = uiState.asignando,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                    )
+                }
+
+                if (mostrarBotonCancelar) {
+                    BotonPrimarioApp(
+                        texto = if (uiState.cancelandoTerapia) "Cancelando..." else "Cancelar terapia",
+                        alPulsar = { mostrarDialogoCancelarTerapia = true },
+                        habilitado = !uiState.cancelandoTerapia,
+                        cargando = uiState.cancelandoTerapia,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()

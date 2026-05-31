@@ -16,5 +16,7 @@ interface PacienteRepository {
 
     suspend fun asignarPsicologo(psicologoId: Long): Result<Paciente>
 
+    suspend fun cancelarTerapia(): Result<Paciente>
+
     fun observarPacientes(): Flow<List<Paciente>>
 }

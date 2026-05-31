@@ -10,5 +10,6 @@ open class FakePacienteRepository : PacienteRepository {
     override suspend fun buscarPacientes(nombreUsuario: String): Result<List<Paciente>> = Result.success(emptyList())
     override suspend fun getPacientePorFirebase(firebaseId: String): Result<Paciente> = Result.failure(NotImplementedError())
     override suspend fun asignarPsicologo(psicologoId: Long): Result<Paciente> = Result.failure(NotImplementedError())
+    override suspend fun cancelarTerapia(): Result<Paciente> = Result.failure(NotImplementedError())
     override fun observarPacientes(): Flow<List<Paciente>> = emptyFlow()
 }

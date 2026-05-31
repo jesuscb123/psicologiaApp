@@ -1,7 +1,16 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente.perfilPsicologo
 
 import dam2.tfg.psicologiaapp.paciente.domain.model.Paciente
+import dam2.tfg.psicologiaapp.cita.domain.usecase.SincronizarMisCitasPacienteUseCase
 import dam2.tfg.psicologiaapp.paciente.domain.usecase.AsignarPsicologoUseCase
+import dam2.tfg.psicologiaapp.paciente.domain.usecase.CancelarTerapiaUseCase
+import dam2.tfg.psicologiaapp.nota.domain.usecase.SincronizarNotasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.tarea.domain.usecase.SincronizarTareasPacienteActualUseCase
+import dam2.tfg.psicologiaapp.test.fakes.FakeNotaRepository
+import dam2.tfg.psicologiaapp.test.fakes.FakeCitaRepository
+import dam2.tfg.psicologiaapp.test.fakes.FakeTareaRepository
+import dam2.tfg.psicologiaapp.test.fakes.FakeUsuarioRepository
+import dam2.tfg.psicologiaapp.usuario.domain.usecase.SincronizarPerfilActualUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.ObservarPsicologosUseCase
 import dam2.tfg.psicologiaapp.psicologo.domain.usecase.SincronizarPsicologosUseCase
@@ -98,14 +107,42 @@ class PerfilPsicologoViewModelTest {
         }
         val pacienteRepo = object : FakePacienteRepository() {
             override suspend fun asignarPsicologo(psicologoId: Long) = asignar(psicologoId)
+            override suspend fun cancelarTerapia(): Result<Paciente> =
+                Result.success(Paciente(1L, "uid-pac", "Ana", "López", null, null, 3L))
         }
         val cacheRepo = object : FakeUsuarioCacheRepository() {
             override fun observarPerfilCacheado() = perfilFlow
         }
+        val usuarioRepo = object : FakeUsuarioRepository() {
+            override suspend fun getPerfilActual() = Result.success(
+                dam2.tfg.psicologiaapp.usuario.domain.model.UsuarioPerfilBasico(
+                    1L, "uid-pac", "Ana", "López", "ana@test.com", null, RolUsuario.PACIENTE,
+                ),
+            )
+        }
         return PerfilPsicologoViewModel(
             ObservarPsicologosUseCase(psicologoRepo),
             SincronizarPsicologosUseCase(psicologoRepo),
-            AsignarPsicologoUseCase(pacienteRepo),
+            AsignarPsicologoUseCase(
+                pacienteRepository = pacienteRepo,
+                sincronizarPerfilActualUseCase = SincronizarPerfilActualUseCase(
+                    usuarioRepo,
+                    cacheRepo,
+                ),
+                sincronizarNotasPacienteActualUseCase = SincronizarNotasPacienteActualUseCase(FakeNotaRepository()),
+                sincronizarTareasPacienteActualUseCase = SincronizarTareasPacienteActualUseCase(FakeTareaRepository()),
+                sincronizarMisCitasPacienteUseCase = SincronizarMisCitasPacienteUseCase(FakeCitaRepository()),
+            ),
+            CancelarTerapiaUseCase(
+                pacienteRepository = pacienteRepo,
+                sincronizarPerfilActualUseCase = SincronizarPerfilActualUseCase(
+                    usuarioRepo,
+                    cacheRepo,
+                ),
+                sincronizarNotasPacienteActualUseCase = SincronizarNotasPacienteActualUseCase(FakeNotaRepository()),
+                sincronizarTareasPacienteActualUseCase = SincronizarTareasPacienteActualUseCase(FakeTareaRepository()),
+                sincronizarMisCitasPacienteUseCase = SincronizarMisCitasPacienteUseCase(FakeCitaRepository()),
+            ),
             ObservarPerfilCacheadoUseCase(cacheRepo),
         )
     }

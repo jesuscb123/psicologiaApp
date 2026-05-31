@@ -5,12 +5,15 @@ import dam2.tfg.psicologiaapp.psicologo.domain.model.Psicologo
 data class PerfilPsicologoUiState(
     val cargando: Boolean = false,
     val asignando: Boolean = false,
+    val cancelandoTerapia: Boolean = false,
     val psicologo: Psicologo? = null,
     val mensajeError: String? = null,
     val eventoNavegacion: EventoNavegacionPerfilPsicologo? = null,
     val pacienteYaTienePsicologo: Boolean = false,
+    val psicologoAsignadoId: Long? = null,
 )
 
 sealed interface EventoNavegacionPerfilPsicologo {
     data object AsignacionCompletada : EventoNavegacionPerfilPsicologo
+    data object CancelacionTerapiaCompletada : EventoNavegacionPerfilPsicologo
 }

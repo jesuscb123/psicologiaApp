@@ -187,5 +187,8 @@ class PacienteRepositoryImplTest {
             ultimaAsignacion = body
             return pacienteAsignado
         }
+
+        override suspend fun cancelarTerapia(): PacienteResponseDto =
+            pacienteAsignado.copy(psicologoId = null)
     }
 }

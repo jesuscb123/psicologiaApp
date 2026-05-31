@@ -12,6 +12,7 @@ import dam2.tfg.psicologiaapp.paciente.data.mappers.toEntity as pacienteToEntity
 import dam2.tfg.psicologiaapp.psicologo.data.mappers.toDomain as psicologoToDomain
 import dam2.tfg.psicologiaapp.psicologo.data.mappers.toEntity as psicologoToEntity
 import dam2.tfg.psicologiaapp.psicologo.domain.repository.PsicologoRepository
+import dam2.tfg.psicologiaapp.util.runSuspendCatching
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -24,22 +25,22 @@ class PsicologoRepositoryImpl @Inject constructor(
     private val pacienteDao: PacienteDao,
 ) : PsicologoRepository {
 
-    override suspend fun listarPsicologos(): Result<List<Psicologo>> = runCatching {
+    override suspend fun listarPsicologos(): Result<List<Psicologo>> = runSuspendCatching {
         val lista = psicologoApi.listarPsicologos()
         psicologoDao.borrarTodos()
         psicologoDao.guardarTodos(lista.map { it.psicologoToEntity() })
         lista.map { it.psicologoToDomain() }
     }
 
-    override suspend fun buscarPsicologos(nombreUsuario: String): Result<List<Psicologo>> = runCatching {
+    override suspend fun buscarPsicologos(nombreUsuario: String): Result<List<Psicologo>> = runSuspendCatching {
         psicologoApi.buscarPsicologos(nombreUsuario).map { it.psicologoToDomain() }
     }
 
-    override suspend fun getPsicologoPorFirebase(firebaseId: String): Result<Psicologo> = runCatching {
+    override suspend fun getPsicologoPorFirebase(firebaseId: String): Result<Psicologo> = runSuspendCatching {
         psicologoApi.getPsicologoPorFirebase(firebaseId).psicologoToDomain()
     }
 
-    override suspend fun getPacientesDePsicologo(): Result<List<Paciente>> = runCatching {
+    override suspend fun getPacientesDePsicologo(): Result<List<Paciente>> = runSuspendCatching {
         val respuesta = psicologoApi.getPacientesDePsicologo()
         if (!respuesta.isSuccessful) {
             throw IllegalStateException("Error al obtener pacientes: HTTP ${respuesta.code()}")
@@ -54,13 +55,13 @@ class PsicologoRepositoryImpl @Inject constructor(
         lista.map { it.pacienteToDomain() }
     }
 
-    override suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo> = runCatching {
+    override suspend fun actualizarMiDescripcion(descripcion: String?): Result<Psicologo> = runSuspendCatching {
         psicologoApi.actualizarMiDescripcion(
             ActualizarDescripcionPsicologoRequestDto(descripcion = descripcion)
         ).psicologoToDomain()
     }
 
-    override suspend fun actualizarMisEspecialidades(especialidades: List<String>): Result<Psicologo> = runCatching {
+    override suspend fun actualizarMisEspecialidades(especialidades: List<String>): Result<Psicologo> = runSuspendCatching {
         psicologoApi.actualizarMisEspecialidades(
             ActualizarEspecialidadesPsicologoRequestDto(especialidades = especialidades)
         ).psicologoToDomain()

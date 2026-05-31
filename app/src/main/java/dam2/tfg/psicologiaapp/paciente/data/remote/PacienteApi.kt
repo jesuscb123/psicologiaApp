@@ -3,6 +3,7 @@ package dam2.tfg.psicologiaapp.paciente.data.remote
 import dam2.tfg.psicologiaapp.paciente.data.remote.AsignarPsicologoRequestDto
 import dam2.tfg.psicologiaapp.paciente.data.remote.PacienteResponseDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.Path
@@ -25,4 +26,7 @@ interface PacienteApi {
 
     @PATCH("api/pacientes/me/psicologo")
     suspend fun asignarPsicologo(@Body body: AsignarPsicologoRequestDto): PacienteResponseDto
+
+    @DELETE("api/pacientes/me/psicologo")
+    suspend fun cancelarTerapia(): PacienteResponseDto
 }

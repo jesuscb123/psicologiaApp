@@ -251,6 +251,11 @@ fun GrafoPacienteNavegacion(
                             popUpTo(RutasGrafoPaciente.HOME) { inclusive = true }
                         }
                     },
+                    alCancelacionTerapiaCompletada = {
+                        navPaciente.navigate(RutasGrafoPaciente.HOME) {
+                            popUpTo(RutasGrafoPaciente.HOME) { inclusive = true }
+                        }
+                    },
                     alVolver = manejarVolver,
                     alAbrirMenuPerfil = abrirMenu,
                     nombreUsuarioBarra = nombreBarra,

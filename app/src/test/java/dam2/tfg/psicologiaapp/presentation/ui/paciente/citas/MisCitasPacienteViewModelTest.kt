@@ -1,5 +1,6 @@
 package dam2.tfg.psicologiaapp.presentation.ui.paciente.citas
 
+import androidx.lifecycle.SavedStateHandle
 import dam2.tfg.psicologiaapp.cita.domain.model.Cita
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaCalculado
 import dam2.tfg.psicologiaapp.cita.domain.model.EstadoCitaPersistido
@@ -101,6 +102,7 @@ class MisCitasPacienteViewModelTest {
             ObservarMisCitasPacienteUseCase(repo),
             SincronizarMisCitasPacienteUseCase(repo),
             CancelarCitaUseCase(repo),
+            SavedStateHandle(),
         )
     }
 }

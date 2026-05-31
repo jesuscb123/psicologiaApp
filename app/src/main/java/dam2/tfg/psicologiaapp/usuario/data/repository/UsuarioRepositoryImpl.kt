@@ -15,6 +15,9 @@ import dam2.tfg.psicologiaapp.usuario.domain.repository.UsuarioRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import dam2.tfg.psicologiaapp.util.runSuspendCatching
+import dam2.tfg.psicologiaapp.util.mensajeErrorHttp
+import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,35 +26,45 @@ class UsuarioRepositoryImpl @Inject constructor(
     private val usuarioApi: UsuarioApi
 ) : UsuarioRepository {
 
-    override suspend fun existeCorreo(email: String): Result<Boolean> = runCatching {
+    override suspend fun existeCorreo(email: String): Result<Boolean> = runSuspendCatching {
         usuarioApi.existeCorreo(email = email).existe
     }
 
-    override suspend fun getPerfilActual(): Result<UsuarioPerfil> = runCatching {
+    override suspend fun getPerfilActual(): Result<UsuarioPerfil> = runSuspendCatching {
         usuarioApi.getPerfilActual().toDomain().conFotoUrlNormalizada()
     }
 
-    override suspend fun crearUsuario(request: UsuarioRequest): Result<Usuario> = runCatching {
+    override suspend fun crearUsuario(request: UsuarioRequest): Result<Usuario> = runSuspendCatching {
         usuarioApi.crearUsuario(request.toDto()).toDomain()
     }
 
-    override suspend fun actualizarEmail(nuevoEmail: String): Result<UsuarioPerfil> = runCatching {
+    override suspend fun actualizarEmail(nuevoEmail: String): Result<UsuarioPerfil> = runSuspendCatching {
         usuarioApi.actualizarEmail(ActualizarEmailRequestDto(nuevoEmail = nuevoEmail))
             .toDomain()
             .conFotoUrlNormalizada()
     }
 
-    override suspend fun subirFotoPerfil(bytes: ByteArray, tipoMime: String): Result<UsuarioPerfil> = runCatching {
-        val mediaType = tipoMime.toMediaTypeOrNull()
-            ?: "application/octet-stream".toMediaTypeOrNull()
+    override suspend fun subirFotoPerfil(bytes: ByteArray, tipoMime: String): Result<UsuarioPerfil> = runSuspendCatching {
+        val tipoEnvio = normalizarTipoMimeImagen(tipoMime)
+        val mediaType = tipoEnvio.toMediaTypeOrNull()
+            ?: "image/jpeg".toMediaTypeOrNull()
         val cuerpo = bytes.toRequestBody(mediaType)
         val extension = when {
-            tipoMime.contains("png", ignoreCase = true) -> "png"
-            tipoMime.contains("webp", ignoreCase = true) -> "webp"
+            tipoEnvio.contains("png", ignoreCase = true) -> "png"
+            tipoEnvio.contains("webp", ignoreCase = true) -> "webp"
             else -> "jpg"
         }
         val parte = MultipartBody.Part.createFormData("archivo", "foto_perfil.$extension", cuerpo)
-        usuarioApi.subirFotoPerfil(parte).toDomain().conFotoUrlNormalizada()
+        try {
+            usuarioApi.subirFotoPerfil(parte).toDomain().conFotoUrlNormalizada()
+        } catch (e: HttpException) {
+            throw IllegalStateException(e.mensajeErrorHttp())
+        }
+    }
+
+    private fun normalizarTipoMimeImagen(tipoMime: String): String {
+        val limpio = tipoMime.substringBefore(';').trim()
+        return if (limpio.startsWith("image/", ignoreCase = true)) limpio else "image/jpeg"
     }
 
     /**
@@ -79,11 +92,11 @@ class UsuarioRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun borrarUsuario(): Result<Unit> = runCatching {
+    override suspend fun borrarUsuario(): Result<Unit> = runSuspendCatching {
         usuarioApi.borrarUsuario()
     }
 
-    override suspend fun obtenerUsuarioPorFirebase(fireBaseUid: String): Result<Usuario> = runCatching {
+    override suspend fun obtenerUsuarioPorFirebase(fireBaseUid: String): Result<Usuario> = runSuspendCatching {
         usuarioApi.obtenerUsuarioPorFirebase(fireBaseUid).toDomain()
     }
 }
